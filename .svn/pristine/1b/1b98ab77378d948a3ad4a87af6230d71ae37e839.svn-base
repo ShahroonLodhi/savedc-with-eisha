@@ -1,0 +1,151 @@
+using System;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+using SaveDC.ControlPanel.Src.DB;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class ListBalance : Page
+    {
+        #region Delegates
+
+        public delegate void delPopulateData(int nCurrentPage);
+
+        #endregion
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // page validation
+                var oValidator = new Validator();
+                oValidator.ValidateRequest(Request);
+                oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                                  new[]
+                                                      {
+                                                          UserAccessLevels.SuperAdmin, UserAccessLevels.Admin,
+                                                          UserAccessLevels.Operator, UserAccessLevels.Donor
+                                                      });
+                oValidator = null;
+
+                LoadFunds(1);
+
+                RenderError(Request.QueryString["status"]);
+            }
+            delPopulateData delPopulate = LoadFunds;
+            pagerApps.UpdatePageIndex = delPopulate;
+        }
+
+        private void LoadFunds(int nCurrentPage)
+        {
+            string szBalanceOn = "";
+
+            if (!string.IsNullOrEmpty(Request.QueryString["BalanceOn"]))
+                szBalanceOn = Request.QueryString["BalanceOn"];
+
+            var oFund = new Fund();
+            oFund.FundedOnDateString = szBalanceOn;
+
+            var oFundManager = new FundManager(oFund);
+            Balance[] funds = oFundManager.GetBalances(nCurrentPage, pagerApps.RecordsPerPage);
+
+            //===============================================================
+            pagerApps.TotalRecords = Convert.ToInt32(oFundManager.RecordCount);
+            //===============================================================
+
+            dgFunds.DataSource = funds;
+            dgFunds.DataBind();
+
+
+            // hide/show grid if no rec found
+            if (funds == null || funds.Length <= 0)
+            {
+                tbDataFound.Visible = false;
+                tbNoDataFound.Visible = true;
+                // set the total
+                lblTotal.Text = 0.ToString();
+            }
+            else
+            {
+                tbDataFound.Visible = true;
+                tbNoDataFound.Visible = false;
+
+                if (SaveDCSession.UserAccessLevel == UserAccessLevels.Donor && dgFunds.Columns.Count > 4)
+                    dgFunds.Columns.RemoveAt(2);
+
+                // set the total
+                lblTotal.Text = funds.Length.ToString();
+            }
+        }
+
+        private void RenderError(string szErrorCode)
+        {
+            if (string.IsNullOrEmpty(szErrorCode))
+            {
+                lblError.Text = "";
+                return;
+            }
+
+            string szErrorDesc = Utils.GetMessageText(szErrorCode);
+            if (!szErrorCode.EndsWith("1"))
+                lblError.CssClass = "FailureMessage";
+            else
+                lblError.CssClass = "SuccessMessage";
+
+            lblError.Text = szErrorDesc;
+        }
+
+        protected void searchbtn_Click(object sender, ImageClickEventArgs e)
+        {
+            //string szSrchBankName = txtBankName.SelectedIndex.ToString();
+            //if (!string.IsNullOrEmpty(Request.Form["ctl00$ContentPlaceHolder1$txtFundName"]))
+            //    szSrchFundName = Request.Form["ctl00$ContentPlaceHolder1$txtFundName"];
+
+            Response.Redirect("ListBalance.aspx?BalanceOn=" + txtBalanceOn.Text);
+        }
+
+        protected void dgFunds_Databound(object sender, DataGridItemEventArgs e)
+        {
+        }
+
+        protected void btnEditFund_Click(object sender, EventArgs e)
+        {
+            #region User Right Validation.
+
+            // only admin and super admin are allowed to execute this part.
+            new Validator().CheckUserRightsOnEditDelete(Request);
+
+            #endregion
+
+            string szCurBalanceId = hdnFundID.Value;
+            Response.Redirect("AddBalance.aspx?BalanceId=" + szCurBalanceId);
+        }
+
+        protected void btnDelFund_Click(object sender, EventArgs e)
+        {
+            #region User Right Validation.
+
+            // only admin and super admin are allowed to execute this part.
+            new Validator().CheckUserRightsOnEditDelete(Request);
+
+            #endregion
+
+            string nEditBalanceId = hdnFundID.Value;
+
+            string szStatus = "5120020";
+            var fundDAO = new FundDAO();
+            bool nStatus = fundDAO.DeleteBalance(Convert.ToInt32(nEditBalanceId));
+
+            if (nStatus)
+            {
+                szStatus = "5120031";
+            }
+
+            Response.Redirect("ListBalance.aspx?status=" + szStatus);
+        }
+    }
+}

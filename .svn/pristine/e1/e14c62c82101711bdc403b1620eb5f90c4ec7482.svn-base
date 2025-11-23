@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+
+<configuration>
+  <configSections>
+    <sectionGroup name="system.web.extensions"
+                  type="System.Web.Configuration.SystemWebExtensionsSectionGroup, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
+      <sectionGroup name="scripting"
+                    type="System.Web.Configuration.ScriptingSectionGroup, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
+        <section name="scriptResourceHandler"
+                 type="System.Web.Configuration.ScriptingScriptResourceHandlerSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"
+                 requirePermission="false" allowDefinition="MachineToApplication" />
+        <sectionGroup name="webServices"
+                      type="System.Web.Configuration.ScriptingWebServicesSectionGroup, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
+          <section name="jsonSerialization"
+                   type="System.Web.Configuration.ScriptingJsonSerializationSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"
+                   requirePermission="false" allowDefinition="Everywhere" />
+          <section name="profileService"
+                   type="System.Web.Configuration.ScriptingProfileServiceSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"
+                   requirePermission="false" allowDefinition="MachineToApplication" />
+          <section name="authenticationService"
+                   type="System.Web.Configuration.ScriptingAuthenticationServiceSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"
+                   requirePermission="false" allowDefinition="MachineToApplication" />
+          <section name="roleService"
+                   type="System.Web.Configuration.ScriptingRoleServiceSection, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"
+                   requirePermission="false" allowDefinition="MachineToApplication" />
+        </sectionGroup>
+      </sectionGroup>
+    </sectionGroup>
+  </configSections>
+  <appSettings>
+
+    <add key="aspnet:MaxHttpCollectionKeys" value="2001" />
+    <!-- Database -->
+
+    <add key="DbServer" value="(local)" />
+    <add key="Catalog" value="SaveDC" />
+    <add key="UID" value="sa" />
+    <add key="PWD" value="sa" />
+
+    <add key="MessageFilePath" value="D:\My Programs\My Websites\save-dc.org\finsoft.save-dc.org\www\ControlPanel\Errors" />
+    <add key="ErrorLogFilePath" value="D:\My Programs\My Websites\save-dc.org\finsoft.save-dc.org\www\ControlPanel\Logs" />
+
+    <add key="MailBodyPath" value="D:\My Programs\My Websites\save-dc.org\finsoft.save-dc.org\www\ControlPanel\EmailTemplate\Email.txt" />
+    <add key="DonationMailBodyPath" value="D:\My Programs\My Websites\save-dc.org\finsoft.save-dc.org\www\ControlPanel\EmailTemplate\DonationAddedEmail.txt" />
+    <add key="PRMailBodyPath" value="D:\My Programs\My Websites\save-dc.org\finsoft.save-dc.org\www\ControlPanel\EmailTemplate\PRAddedEmail.txt" />
+    <add key="StudentMailBodyPath" value="D:\My Programs\My Websites\save-dc.org\finsoft.save-dc.org\www\ControlPanel\EmailTemplate\StudentAddedEmail.txt" />
+
+    <!--<add key="DbServer" value="74.86.133.56"/>
+    <add key="Catalog" value="finsoft_save_dc_org_savedc"/>
+    <add key="UID" value="finsoft_save_dc_org_savedc"/>
+    <add key="PWD" value="savedc"/>-->
+
+    <!--
+    <add key="MessageFilePath" value="e:\web\haider\sohail\finsoft.save-dc.org\www\ControlPanel\Errors" />
+    <add key="ErrorLogFilePath" value="e:\web\haider\sohail\finsoft.save-dc.org\www\ControlPanel\Logs" />
+
+    <add key="MailBodyPath" value="e:\web\haider\sohail\finsoft.save-dc.org\www\ControlPanel\EmailTemplate\Email.txt" />
+    <add key="DonationMailBodyPath" value="e:\web\haider\sohail\finsoft.save-dc.org\www\ControlPanel\EmailTemplate\DonationAddedEmail.txt" />
+    <add key="PRMailBodyPath" value="e:\web\haider\sohail\finsoft.save-dc.org\www\ControlPanel\EmailTemplate\PRAddedEmail.txt" />
+    <add key="StudentMailBodyPath" value="e:\web\haider\sohail\finsoft.save-dc.org\www\ControlPanel\EmailTemplate\StudentAddedEmail.txt" />
+    -->
+
+    <add key="MailSendReminders" value="false" />    
+    <add key="MailSMTPHost" value="mail.save-dc.org" />
+    <add key="MailSMTPPort" value="366" />
+    <add key="MailFromAddressInfo" value="info@save-dc.org" />
+    <add key="MailFromPwdInfo" value="SLsxEgx6" />
+    <add key="MailFromAddressAccounts" value="accounts@save-dc.org" />
+    <add key="MailFromPwdAccount" value="FbchVkmM" />
+    <add key="MailSubject" value="Save DC Donation Reminder..." />
+
+    <add key="MarkitingSMSTop" value="Dear Member" />
+    <add key="MarkitingSMSBottom" value="Plz do not reply to this SMS.
+Regards,
+SAVE DC SMS Service
+http://save-dc.org" />
+    <add key="SMSSender" value="SAVE DC" />
+  </appSettings>
+  <connectionStrings />
+  <system.web>
+    <customErrors mode="Off" />
+    <pages theme="Default">
+      <controls>
+        <add tagPrefix="asp" namespace="System.Web.UI"
+             assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+        <add tagPrefix="asp" namespace="System.Web.UI.WebControls"
+             assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+      </controls>
+    </pages>
+    <compilation debug="true">
+      <assemblies>
+        <add assembly="Microsoft.ReportViewer.WebForms, Version=8.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
+        <add assembly="Microsoft.ReportViewer.Common, Version=8.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A" />
+        <add assembly="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
+        <add assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+        <add assembly="System.Xml.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
+        <add assembly="System.Data.DataSetExtensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089" />
+      </assemblies>
+    </compilation>
+    <authentication mode="Forms">
+      <forms loginUrl="ControlPanel/Login.aspx" protection="All" timeout="30" name="UserName" path="/ControlPanel" />
+    </authentication>
+    <authorization>
+      <allow users="*" />
+    </authorization>
+    <sessionState mode="InProc" cookieless="false" timeout="30" />
+    <httpModules>
+      <!--<add type="QueryStringModule,SaveDC" name="QueryStringModule"/>-->
+      <add name="ScriptModule"
+           type="System.Web.Handlers.ScriptModule, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+    </httpModules>
+    <httpHandlers>
+      <remove verb="*" path="*.asmx" />
+      <add verb="*" path="*.asmx" validate="false"
+           type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+      <add verb="*" path="*_AppService.axd" validate="false"
+           type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+      <add verb="GET,HEAD" path="ScriptResource.axd" validate="false"
+           type="System.Web.Handlers.ScriptResourceHandler, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+    </httpHandlers>
+  </system.web>
+  <location path="ControlPanel">
+    <system.web>
+      <authorization>
+        <deny users="?" />
+      </authorization>
+    </system.web>
+  </location>
+  <system.codedom>
+    <compilers>
+      <compiler language="c#;cs;csharp" extension=".cs"
+                type="Microsoft.CSharp.CSharpCodeProvider,System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+                warningLevel="4">
+        <providerOption name="CompilerVersion" value="v3.5" />
+        <providerOption name="WarnAsError" value="false" />
+      </compiler>
+    </compilers>
+  </system.codedom>
+  <system.webServer>
+    <validation validateIntegratedModeConfiguration="false" />
+    <modules>
+      <remove name="ScriptModule" />
+      <add name="ScriptModule" preCondition="managedHandler"
+           type="System.Web.Handlers.ScriptModule, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+    </modules>
+    <handlers>
+      <!--<add name="QueryStringModule" path="/ControlPanel/*.aspx" verb="*" type="QueryStringModule,SaveDC" resourceType="Unspecified" preCondition="integratedMode" />-->
+      <remove name="WebServiceHandlerFactory-Integrated" />
+      <remove name="ScriptHandlerFactory" />
+      <remove name="ScriptHandlerFactoryAppServices" />
+      <remove name="ScriptResource" />
+      <add name="ScriptHandlerFactory" verb="*" path="*.asmx" preCondition="integratedMode"
+           type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+      <add name="ScriptHandlerFactoryAppServices" verb="*" path="*_AppService.axd" preCondition="integratedMode"
+           type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+      <add name="ScriptResource" verb="GET,HEAD" path="ScriptResource.axd" preCondition="integratedMode"
+           type="System.Web.Handlers.ScriptResourceHandler, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+    </handlers>
+  </system.webServer>
+  <runtime>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+      <dependentAssembly>
+        <assemblyIdentity name="System.Web.Extensions" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="1.0.0.0-1.1.0.0" newVersion="3.5.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Web.Extensions.Design" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="1.0.0.0-1.1.0.0" newVersion="3.5.0.0" />
+      </dependentAssembly>
+    </assemblyBinding>
+  </runtime>
+</configuration>

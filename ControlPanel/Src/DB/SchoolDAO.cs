@@ -1,0 +1,203 @@
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using SaveDC.ControlPanel.Src.Objects;
+
+namespace SaveDC.ControlPanel.Src.DB
+{
+    public class SchoolDAO
+    {
+        private readonly School school;
+
+        public SchoolDAO()
+        {
+        }
+
+        public SchoolDAO(School oSchool)
+        {
+            school = oSchool;
+        }
+
+        public Int32 RecordCount { get; set; }
+
+        public School[] GetSchools(int nPageNo, int nPageSize)
+        {
+            var dbmanager = new DBManager();
+            School[] schools = null;
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@SchoolName", SqlDbType.NVarChar, 250,
+                                                                      school.SchoolName),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet data = dbmanager.GetDataSetProc("GetSchoolsList", parameters);
+                if (data != null)
+                {
+                    RecordCount = Utils.Utils.fixNullInt(parameters[3].Value);
+                    if (data.Tables[0].Rows.Count > 0)
+                    {
+                        schools = new School[data.Tables[0].Rows.Count];
+
+                        for (int i = 0; i < data.Tables[0].Rows.Count; i++)
+                        {
+                            schools[i] = new School();
+                            DataRow row = data.Tables[0].Rows[i];
+                            schools[i].SchoolID = Utils.Utils.fixNullInt(row["SchoolId"]);
+                            schools[i].SchoolName = Utils.Utils.fixNullString(row["SchoolName"]);
+                            schools[i].PrincipalName = Utils.Utils.fixNullString(row["PrincipalName"]);
+                            schools[i].SocialOrganizerName = Utils.Utils.fixNullString(row["SocialOrganizerName"]);
+                            schools[i].Address = Utils.Utils.fixNullString(row["Address"]);
+                            schools[i].PhoneNumber = Utils.Utils.fixNullString(row["PhoneNum"]);
+                            schools[i].Notes = Utils.Utils.fixNullString(row["Notes"]);
+                            schools[i].EmailAddress = Utils.Utils.fixNullString(row["Email"]);
+                            schools[i].TotalStudents = Utils.Utils.fixNullInt(row["TotalStudents"]);
+                        }
+                    }
+                }
+                return schools;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+            finally
+            {
+                dbmanager = null;
+            }
+        }
+
+        public DataSet GetSchoolsInDS(int nPageNo, int nPageSize)
+        {
+            DataSet data = new DataSet();
+            var dbmanager = new DBManager();
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@SchoolName", SqlDbType.NVarChar, 250,
+                                                                      school.SchoolName),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                data = dbmanager.GetDataSetProc("GetSchoolsList", parameters);
+                
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+            return data;
+        }
+
+        public School LoadSchool(int schoolID)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] sqlparameter = {
+                                                  dbmanager.makeInParam("@SchoolID", SqlDbType.Int, 0, schoolID)
+                                              };
+
+                SqlDataReader sqldatareader = dbmanager.GetDataReaderProc("LoadSchool", sqlparameter);
+                if (sqldatareader.Read())
+                {
+                    school.SchoolID = schoolID;
+                    school.SchoolName =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("SchoolName")));
+                    school.PrincipalName =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("PrincipalName")));
+                    school.SocialOrganizerName =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("SocialOrganizerName")));
+                    school.Address =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("Address")));
+                    school.EmailAddress =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("Email")));
+                    school.PhoneNumber =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("PhoneNum")));
+                    school.Notes = Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("Notes")));
+
+                    sqldatareader.Close();
+
+                    return school;
+                }
+                sqldatareader.Close();
+
+                return null;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+        public int AddSchool()
+        {
+            var dbmanager = new DBManager();
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@SchoolId", SqlDbType.Int, 0, school.SchoolID),
+                                                dbmanager.makeInParam("@SchoolName", SqlDbType.NVarChar, 255,
+                                                                      school.SchoolName),
+                                                dbmanager.makeInParam("@PrincipalName", SqlDbType.NVarChar, 255,
+                                                                      school.PrincipalName),
+                                                dbmanager.makeInParam("@SocialOrganizerName", SqlDbType.NVarChar, 255,
+                                                                      school.SocialOrganizerName),
+                                                dbmanager.makeInParam("@Address", SqlDbType.NVarChar, 255,
+                                                                      school.Address),
+                                                dbmanager.makeInParam("@Email", SqlDbType.NVarChar, 255,
+                                                                      school.EmailAddress),
+                                                dbmanager.makeInParam("@PhoneNum", SqlDbType.NVarChar, 255,
+                                                                      school.PhoneNumber),
+                                                dbmanager.makeInParam("@Notes", SqlDbType.NVarChar, 255, school.Notes),
+                                            };
+
+                int nRet = dbmanager.RunProc("AddSchool", parameters);
+
+                return nRet;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return 0;
+            }
+            finally
+            {
+                dbmanager = null;
+            }
+        }
+
+        public bool DeleteSchool()
+        {
+            var dbmanager = new DBManager();
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@SchoolId", SqlDbType.Int, 0, school.SchoolID)
+                                            };
+
+                int nRet = dbmanager.RunProc("DeleteSchool", parameters);
+
+                if (nRet > 0)
+                    return true;
+                else
+                    return false;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+            finally
+            {
+                dbmanager = null;
+            }
+        }
+    }
+}

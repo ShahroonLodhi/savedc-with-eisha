@@ -1,0 +1,17 @@
+<asp:Image runat="server" ImageUrl="images/LoginTitle.gif" SkinId="sknImgLoginTitle"/>
+<asp:Image runat="server" ImageUrl="images/logintitle1.GIF" SkinId="sknImgCPTitle"/>
+<asp:Image runat="server" ImageUrl="images/Arrow.gif" SkinId="sknImgArrow"/>
+
+<asp:ImageButton runat="server" ImageUrl="images/submit.png" SkinId="sknImgBtnAddUser"/>
+
+
+<asp:ImageButton runat="server" ImageUrl="images/approve.png" SkinId="sknImgBtnApprove"/>
+<asp:ImageButton runat="server" ImageUrl="images/reject.png" SkinId="sknImgBtnReject"/>
+
+<asp:ImageButton runat="server" ImageUrl="images/login.png" SkinId="sknImgBtnLogin"/>
+<asp:ImageButton runat="server" ImageUrl="images/rest.png" SkinId="sknImgBtnReset"/>
+<asp:ImageButton runat="server" ImageUrl="images/backward.png" SkinId="sknImgBack"/>
+<asp:ImageButton runat="server" ImageUrl="images/print.png" SkinId="sknImgPrint"/>
+<asp:ImageButton runat="server" ImageUrl="images/print_preview.png" SkinId="sknImgPrintPreview"/>
+
+<asp:DataGrid runat="server" Width="100%" HeaderStyle-CssClass="GridHeader" ItemStyle-CssClass="GridItem" SkinId="StanderdGrid" />

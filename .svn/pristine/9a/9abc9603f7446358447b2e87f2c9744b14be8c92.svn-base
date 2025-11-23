@@ -1,0 +1,314 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Messages>
+
+  <Section name="UserManager" code="501">
+    <Message id="5011241">
+      User updated successfully.
+    </Message>
+    <Message id="5011250">
+      User already exists.
+    </Message>
+    <Message id="5011260">
+      Error occured while adding user.
+    </Message>
+    <Message id="5011261">
+      User added successfully
+    </Message>
+    <Message id="5011270">
+      Error occured while deleting user. It might be in use.
+    </Message>
+    <Message id="5011271">
+      User deleted successfully.
+    </Message>
+    <Message id="5011280">
+      Invalid User Name or Password.
+    </Message>
+    <Message id="5011280">
+      Invalid User Name or Password.
+    </Message>
+    <Message id="5011290">
+      Invalid request formate or hacking attempt. Please login again.
+    </Message>
+    <Message id="5011300">
+      Invalid page access. Please login again.
+    </Message>
+    <Message id="5011310">
+      Error occured while adding remarks.
+    </Message>
+    <Message id="5011311">
+      Remarks added successfully
+    </Message>
+    <Message id="5011320">
+      Error occured while adding note.
+    </Message>
+    <Message id="5011321">
+      Note added successfully
+    </Message>
+  </Section>
+
+  <Section name="SchoolManager" code="502">
+    <!--Expense-->
+    <Message id="5021000">
+      Expense already exists.
+    </Message>
+    <Message id="5021010">
+      Error occured while adding expense.
+    </Message>
+    <Message id="5021011">
+      Expense added successfully.
+    </Message>
+    <Message id="5021021">
+      Expense updated successfully.
+    </Message>
+    <Message id="5021030">
+      Error occured while deleting expense.
+    </Message>
+    <Message id="5021031">
+      Expense deleted successfully.
+    </Message>
+    <!--School-->
+    <Message id="5021040">
+      School already exists.
+    </Message>
+    <Message id="5021050">
+      Error occured while adding school.
+    </Message>
+    <Message id="5021051">
+      School added successfully.
+    </Message>
+    <Message id="5021060">
+      Error occured while deleting school. It might be in use.
+    </Message>
+    <Message id="5021061">
+      School deleted successfully.
+    </Message>
+    <Message id="5021071">
+      School updated successfully.
+    </Message>
+  </Section>
+
+  <Section name="StudentManager" code="503">
+    <!--Progress Reports-->
+    <Message id="5031000">
+      Report already exists.
+    </Message>
+    <Message id="5031010">
+      Error occured while adding report.
+    </Message>
+    <Message id="5031011">
+      Report added successfully.
+    </Message>
+    <Message id="5031021">
+      Report updated successfully.
+    </Message>
+    <Message id="5031030">
+      Error occured while deleting report.
+    </Message>
+    <Message id="5031031">
+      Report deleted successfully.
+    </Message>
+    <Message id="5031080">
+      Student already exists.
+    </Message>
+    <Message id="5031090">
+      Error occured while adding student.
+    </Message>
+    <Message id="5031091">
+      Student added successfully.
+    </Message>
+    <Message id="5031100">
+      Error occured while deleting student. It might be in use.
+    </Message>
+    <Message id="5031101">
+      Student deleted successfully.
+    </Message>
+    <Message id="5031120">
+      Error occured while assigning selected school.
+    </Message>
+    <Message id="5031121">
+      School assigned successfully.
+    </Message>
+    <Message id="5031130">
+      Error occured while assigning donor.
+    </Message>
+    <Message id="5031131">
+      Donor assigned successfully.
+    </Message>
+    <Message id="5031140">
+      Student has already been verified.
+    </Message>
+    <Message id="5031141">
+      Student's verification information added successfully.
+    </Message>
+    <Message id="5031151">
+      Student's verification information updated successfully.
+    </Message>
+    <Message id="5031161">
+      Student updated successfully
+    </Message>
+    <Message id="5031170">
+      Error occured while adding verification information.
+    </Message>
+    <Message id="5031180">
+      Either the student has already been approved/rejected or you have already approved/rejected this student.
+    </Message>
+    <Message id="5031190">
+      Error occured while updating student approval information.
+    </Message>
+    <Message id="5031200">
+      Student's current status not found.
+    </Message>
+    <Message id="5031210">
+      Error occured while adding estimation.
+    </Message>
+    <Message id="5031211">
+      Estimation added successfully
+    </Message>
+    <Message id="5031221">
+      Estimation updated successfully.
+    </Message>
+    <Message id="5031230">
+      Error occured while deleting estimation.
+    </Message>
+    <Message id="5031231">
+      Estimation deleted successfully.
+    </Message>
+    <Message id="5031240">
+      Cannnot assign school. A school has already been assigned to student.
+    </Message>
+    <Message id="5031250">
+      Error occured while un-assigning donor.
+    </Message>
+    <Message id="5031251">
+      Donor un-assigned successfully.
+    </Message>
+    <Message id="5031261">
+      Student status(con./discon.) updated successfully.
+    </Message>
+    <Message id="5031260">
+      Error occured while discontinuing student.
+    </Message>
+    <Message id="5031270">
+      Error occured while adding Attachment.
+    </Message>
+    <Message id="5031271">
+      Attachment added successfully.
+    </Message>
+    <Message id="5031280">
+      No attachment currently attached with the student.
+    </Message>
+    <Message id="5031281">
+      Attachment updated successfully.
+    </Message>
+    <Message id="5032010">
+      Error occured while deleting attachment.
+    </Message>
+    <Message id="5032011">
+      Attachment deleted successfully.
+    </Message>
+  </Section>
+
+  <Section name="FamilyManager" code="504">
+    <Message id="5041000">
+      Family already exists.
+    </Message>
+    <Message id="5041010">
+      Error occured while adding family.
+    </Message>
+    <Message id="5041011">
+      Family added successfully.
+    </Message>
+    <Message id="5041021">
+      Family updated successfully.
+    </Message>
+    <Message id="5041030">
+      Error occured while deleting family. It might be in use.
+    </Message>
+    <Message id="5041031">
+      Family deleted successfully.
+    </Message>
+  </Section>
+
+  <Section name="SettingManager" code="506">
+    <Message id="5060010">
+      Error occured while saving system settings.
+    </Message>
+    <Message id="5060011">
+      Settings saved successfully.
+    </Message>
+  </Section>
+
+  <Section name="FundManager" code="507">
+    <Message id="5071000">
+      Error occured while adding funds.
+    </Message>
+    <Message id="5071001">
+      Funds added successfully.
+    </Message>
+    <Message id="5071011">
+      Funds updated successfully.
+    </Message>
+    <Message id="5071020">
+      Error occured while deleting funds.
+    </Message>
+    <Message id="5071021">
+      Funds deleted successfully.
+    </Message>
+  </Section>
+
+  <Section name="SMSManager" code="509">
+    <Message id="5091000">
+      Some unknown error occured while sending SMS.
+    </Message>
+    <Message id="5091001">
+      SMS sent successfully.
+    </Message>
+    <Message id="5091002">
+      You do not have sufficient balance to send this SMS.
+    </Message>
+    <Message id="5091003">
+      Authentication error; please update your latest SMS sending credentials in the system.
+    </Message>
+    <Message id="5091004">
+      Invalid request formate.
+    </Message>
+    <Message id="5091005">
+      SMS sending failed. Recipients numbers are invalid.
+    </Message>
+    <Message id="5091006">
+      No recipient found.
+    </Message>
+  </Section>
+
+  <Section name="EmailManager" code="510">
+    <Message id="5101000">
+      Some unknown error occured while sending Email.
+    </Message>
+    <Message id="5101001">
+      Email sent successfully.
+    </Message>
+  </Section>
+
+  <Section name="SettingManager" code="511">
+    <Message id="5110010">
+      Error occured while adding new application.
+    </Message>
+    <Message id="5110011">
+      New application added successfully.
+    </Message>
+    <Message id="5110020">
+      Error occured while deleting new application.
+    </Message>
+    <Message id="5110021">
+      New application deleted successfully.
+    </Message>
+    <Message id="5110041">
+      Changes saved successfully.
+    </Message>
+    <Message id="5110031">
+      New application moved successfully.
+    </Message>
+  </Section>
+
+</Messages>

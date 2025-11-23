@@ -1,0 +1,130 @@
+using System;
+using System.Data.SqlClient;
+using System.Threading;
+using System.Web.UI;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class CPHome : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                var oCommon = new Common();
+
+                int nDonorId = 0;
+                if (SaveDCSession.UserAccessLevel == UserAccessLevels.Donor)
+                    nDonorId = SaveDCSession.UserId;
+
+                SqlDataReader reader = oCommon.GetPanelSummary(nDonorId);
+                if (reader.Read())
+                {
+                    if (SaveDCSession.UserAccessLevel == UserAccessLevels.Donor)
+                    {
+                        PlaceHolder1.Visible = false;
+                        trStudentSummary.Visible = false;
+                    }
+                    else
+                    {
+                        lblTotalFamilies.Text = Utils.fixNullString(reader["FamilyCount"]);
+                        lblTotalSchools.Text = Utils.fixNullString(reader["SchoolCount"]);
+                        lblTotalDonors.Text = Utils.fixNullString(reader["DonorCount"]);
+                        lblTotalAdmins.Text = Utils.fixNullString(reader["AdminCount"]);
+
+                        lblTotalOperatorss.Text = Utils.fixNullString(reader["OperatorCount"]);
+                        lblStdNew.Text = Utils.fixNullString(reader["NewStdCount"]);
+                        lblStdPending.Text = Utils.fixNullString(reader["PendingStdCount"]);
+                        lblStdApproved.Text = Utils.fixNullString(reader["ApproStdCount"]);
+                        lblStdSponsored.Text = Utils.fixNullString(reader["SponsoredStdCount"]);
+                        lblStdDiscontinued.Text = Utils.fixNullString(reader["DiscontinuedStdCount"]);
+                        lblStdRejected.Text = Utils.fixNullString(reader["RejStdCount"]);
+                    }
+                    lblTotalStd.Text = Utils.fixNullString(reader["StudentCount"]);
+
+
+                    if (SaveDCSession.UserAccessLevel != UserAccessLevels.Operator &&
+                        SaveDCSession.UserName.ToLower() != "fabiha" && SaveDCSession.UserName.ToLower() != "nadeem")
+                    {
+                        lblDonations.Text = Utils.fixNullString(reader["TotalDonations"]);
+                        lblExpenses.Text = Utils.fixNullString(reader["TotalExpenses"]);
+
+                        try
+                        {
+                            decimal balance = decimal.Parse(lblDonations.Text) - decimal.Parse(lblExpenses.Text);
+                            lblBalance.Text = balance.ToString();
+                        }
+                        catch
+                        {
+                        }
+
+
+                        if (SaveDCSession.UserAccessLevel != UserAccessLevels.Donor)
+                        {
+                            lblTotalDonationsLastMonth.Text = Utils.fixNullString(reader["TotalDonationsLastMonth"]);
+                            lblExpensesLastMonth.Text = Utils.fixNullString(reader["TotalExpensesLastMonth"]);
+
+                            try
+                            {
+                                decimal balance = decimal.Parse(lblTotalDonationsLastMonth.Text) -
+                                                  decimal.Parse(lblExpensesLastMonth.Text);
+                                lblBalanceLastMonth.Text = balance.ToString();
+                            }
+                            catch
+                            {
+                            }
+                        }
+                        else
+                        {
+                            tblFundSumaryLastMonth.Visible = false;
+                        }
+                    }
+                    else
+                    {
+                        tblFundSumary.Visible = false;
+                        tblFundSumaryLastMonth.Visible = false;
+                    }
+
+                    if (SaveDCSession.UserAccessLevel == UserAccessLevels.SuperAdmin || SaveDCSession.UserName.ToLower() == "azhar")
+                    {
+                        tblBalanceSummary.Visible = true;
+
+                        ABLbalance.Text = Utils.fixNullString(reader["ABLbalance"]);
+                        FBLbalance.Text = Utils.fixNullString(reader["FBLbalance"]);
+
+                        totalBalance.Text = Convert.ToString(Convert.ToDecimal(ABLbalance.Text) + Convert.ToDecimal(FBLbalance.Text));
+                    }
+                    else
+                    {
+                        tblBalanceSummary.Visible = false;
+
+                        if (SaveDCSession.UserAccessLevel == UserAccessLevels.Admin || SaveDCSession.UserAccessLevel == UserAccessLevels.Operator)
+                        {
+                            tblPanelSummaryTD.Width = "100%";
+                            tblStudentSummaryTD.Width = "100%";
+
+                            tblPanelSummaryTD.ColSpan = 3;
+                            tblStudentSummaryTD.ColSpan = 3;
+                        }
+                        else if (SaveDCSession.UserAccessLevel == UserAccessLevels.Donor)
+                        {
+                            tblFundSumaryTD.Width = "50%";
+                            tblFundSumaryTD.ColSpan = 2;
+                        }
+                    }
+
+                    if ((SaveDCSession.UserAccessLevel == UserAccessLevels.SuperAdmin ||
+                         SaveDCSession.UserAccessLevel == UserAccessLevels.Admin) && Session["AdjFlag"] == null)
+                    {
+                        Session["AdjFlag"] = "1";
+
+                        var thread = new Thread(oCommon.AddnAdjustDonorExp);
+                        thread.Start();
+                    }
+                }
+            }
+        }
+    }
+}

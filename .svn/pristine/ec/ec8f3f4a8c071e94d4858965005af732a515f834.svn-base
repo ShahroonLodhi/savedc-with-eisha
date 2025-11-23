@@ -1,0 +1,66 @@
+using System;
+using System.Web.UI;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class AddFeeForMember : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // page validation
+                var oValidator = new Validator();
+                oValidator.ValidateRequest(Request);
+                oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                                  new[]
+                                                      {
+                                                          UserAccessLevels.SuperAdmin, UserAccessLevels.Admin
+                                                      });
+
+
+                int nDonorId = Utils.fixNullInt(Request.QueryString["DonorId"]);
+                int nMemberId = Utils.fixNullInt(Request.QueryString["MemberId"]);
+
+                var user = new User();
+                user.UserID = (nDonorId == 0) ? nMemberId : nDonorId;
+                var userManager = new UserManager(user);
+                user = userManager.Load();
+
+                hdnDonorName.Value = user.FirstName + " " + user.LastName;
+                hdnDonorId.Value = user.UserID.ToString();
+
+                if (nDonorId == 0)
+                    hdnRole.Value = "Members Area";
+                else
+                    hdnRole.Value = "Donor Manager";
+            }
+        }
+
+        protected void btnUpdate_Click(object sender, ImageClickEventArgs e)
+        {
+            #region User Right Validation.
+
+            // only admin and super admin are allowed to execute this part.
+            new Validator().CheckUserRightsOnEditDelete(Request);
+
+            #endregion
+
+            int donorId = Utils.fixNullInt(hdnDonorId.Value);
+
+            var user = new User();
+            user.UserID = donorId;
+            user.RemarksPostedBy = SaveDCSession.UserId;
+            var userManager = new UserManager(user);
+
+            if (userManager.AddAnnualFee(Convert.ToInt32(txtMessage.Text), Convert.ToInt32(ddMonths.Text), Convert.ToInt32(ddYear.Text)))
+                Response.Redirect("ListMembers.aspx?status=5011331");
+            else
+                Response.Redirect("ListMembers.aspx?status=5011330");
+        }
+    }
+}

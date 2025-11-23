@@ -1,0 +1,186 @@
+<%@ Page Language="C#" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="AddProgressReport.aspx.cs" Inherits="SaveDC.ControlPanel.AddProgressReport" Title="Add Progress Report"%>
+<%--<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc1" %>--%>
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <script type="text/javascript" language="javascript">
+        function RemoveReport(which) {
+
+            document.getElementById('browseReport').style.display = '';
+            document.getElementById('viewReport').style.display = 'none';
+            document.getElementById("<%= hdnNewReport.ClientID %>").value = '';
+        }
+
+        function StartupScriptReports() {
+
+            var ViewHTML = "window.open('_REPLACEURL?modalwin=1', 'View', 'left=100,top=30,screenX=100,screenY=30, height=550,width=840,toolbar=no,directories=no,status=no,menubar=no,modal=yes,scrollbars=yes');";
+
+            var ReportNewVal = document.getElementById("<%= hdnNewReport.ClientID %>").value;
+            if (ReportNewVal) {
+                document.getElementById('browseReport').style.display = 'none';
+                document.getElementById('viewReport').style.display = '';
+                // document.getElementById('viewlink1').href = '../Uploads/ProgressReports/' + ReportNewVal + '.jpg';
+
+                document.getElementById('viewlink1').setAttribute("onclick", ViewHTML.replace("_REPLACEURL", '../Uploads/ProgressReports/' + ReportNewVal + '.jpg'));
+            } else {
+                document.getElementById('browseReport').style.display = '';
+                document.getElementById('viewReport').style.display = 'none';
+            }
+        }
+    </script>
+    <asp:ScriptManager ID="ScriptManager1" runat="server">
+    </asp:ScriptManager>
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <asp:HiddenField ID="hdnAddEdit" value ="Add" runat="server" />
+            <td height="20px" class="CellLabel"  colspan="3">
+                Student Manager :: List Student :: Progress Reports :: <%= hdnAddEdit.Value %> Progress Report
+            </td>
+        </tr>
+        <tr>
+            <td height="20px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label></td>
+        </tr>
+       
+        <tr>
+            <asp:HiddenField ID="hdnEditReportId" Value ="0" runat="server" />
+            <td class="CellHeading" width="40%"><%= hdnAddEdit.Value %> Progress Report for <asp:Label ID="lblStdName" runat="server"  style="font-style: italic"  Text="Label"></asp:Label></td>
+            <td class="ContextLinks" align="right"  colspan="2"></td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Report Month :
+            </td>
+            <td class="CellData" colspan="2">
+                <asp:DropDownList ID="ddMonths" runat="server">
+                    <asp:ListItem Value="1">January</asp:ListItem>
+                    <asp:ListItem Value="2">February</asp:ListItem>
+                    <asp:ListItem Value="3">March</asp:ListItem>
+                    <asp:ListItem Value="4">April</asp:ListItem>
+                    <asp:ListItem Value="5">May</asp:ListItem>
+                    <asp:ListItem Value="6">June</asp:ListItem>
+                    <asp:ListItem Value="7">July</asp:ListItem>
+                    <asp:ListItem Value="8">Augest</asp:ListItem>
+                    <asp:ListItem Value="9">September</asp:ListItem>
+                    <asp:ListItem Value="10">October</asp:ListItem>
+                    <asp:ListItem Value="11">November</asp:ListItem>
+                    <asp:ListItem Value="12">December</asp:ListItem>
+                </asp:DropDownList>
+                <asp:DropDownList ID="ddYear" runat="server">
+                    <asp:ListItem>2011</asp:ListItem>
+                    <asp:ListItem>2012</asp:ListItem>
+                    <asp:ListItem>2013</asp:ListItem>
+                    <asp:ListItem>2014</asp:ListItem>
+                    <asp:ListItem>2015</asp:ListItem>
+                    <asp:ListItem>2016</asp:ListItem>
+                    <asp:ListItem>2017</asp:ListItem>
+                    <asp:ListItem>2018</asp:ListItem>
+                    <asp:ListItem>2019</asp:ListItem>
+                    <asp:ListItem>2020</asp:ListItem>
+                </asp:DropDownList>
+            </td>
+        </tr>
+        <%--  <tr>
+           <td class="CellLabel">Student Name : </td>
+	      <td class="CellData"  colspan="2">
+              <asp:Label ID="lblStdName" runat="server" Text="Label"></asp:Label></td>
+	</tr>--%> 
+        <tr> 
+            <td class="CellLabel">School Name : </td>
+            <td class="CellData" colspan="2"> 
+                <asp:Label ID="lblSchoolName" runat="server" Text=""></asp:Label></td>
+        </tr> 
+	 
+        <asp:Repeater ID="Repeater1" runat="server" 
+                      onitemdatabound="Repeater1_ItemDataBound">
+            <HeaderTemplate>
+                <tr>
+                    <td class="SubHeading" style="height: 23px">
+                        Particular
+                    </td>
+                    <td class="SubHeading" style="height: 23px">
+                        Details
+                    </td>
+                    <td class="SubHeading" style="height: 23px">
+                        Remarks
+                    </td>
+                </tr>
+            </HeaderTemplate>
+            <ItemTemplate>
+                <tr>
+                    <td class="CellLabel">
+                        <asp:HiddenField ID="hdnReportParticularId" runat="server" Value = '<%# DataBinder.Eval(Container.DataItem, "ReportParticularId") %>' />
+                        <asp:HiddenField ID="hdnPrevRemarks" runat="server" Value = '<%# DataBinder.Eval(Container.DataItem, "RemarksId") %>' />
+                        <%# DataBinder.Eval(Container.DataItem, "ParticularDesc") %>  :
+                    </td>
+                    <td class="CellData">
+                        <asp:TextBox CssClass="Textbox" ID='txtNotes' runat="server" Columns="50" Text ='<%# DataBinder.Eval(Container.DataItem, "Notes") %>' />
+                    </td>
+                    <td class="CellData">
+                        <asp:RadioButtonList ID="chkRemarks" runat="server" 
+                                             RepeatDirection="Horizontal">
+                            <asp:ListItem Text ="Poor" Value = "1"/>
+                            <asp:ListItem Text ="Satisfactory" Value = "2"/>
+                            <asp:ListItem Text ="Good" Value = "3"/>
+                            <asp:ListItem Text ="Very Good" Value = "4"/>
+                            <asp:ListItem Text ="Excellent" Value = "5"/>
+                        </asp:RadioButtonList>
+                    </td>
+                </tr>
+            </ItemTemplate>
+        </asp:Repeater>
+	  
+        <tr>
+            <td class="SubHeading" colspan ="4" style="height: 23px">
+                Report Submitted by School  
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Scanned Report :
+            </td>
+            <td class="CellData" colspan="2">
+                <asp:PlaceHolder ID="PlaceHolder1" runat="server">
+                
+                    <asp:HiddenField runat="server" ID="hdnOldReport" Value="" />
+                    <asp:HiddenField runat="server" ID="hdnNewReport" Value="" />
+                    <span id="viewReport" ><a href="javascript:void(0);"  id="viewlink1">View Report</a> | <a
+                                                                                                               href="#" onclick=" RemoveReport(); return false; ">Remove Report</a> </span>
+                        
+                    <span id="browseReport">
+                        <input  type="file" accept="image/*" id="reportUpload" runat ="server"/>
+                        <%-- <cc1:AsyncFileUpload ID="AsyncFileUpload1" runat="server" OnUploadedComplete="ProcessUpload1"
+                                ThrobberID="spanUploading" />
+                            <span id="spanUploading" runat="server">Uploading...</span>--%> 
+                        <br />(select any image like jpg, gif, png etc...)
+                    </span>
+                
+                </asp:PlaceHolder>
+            </td>
+        </tr>
+	 
+        <tr>
+            <td class="SubHeading" colspan ="4" style="height: 23px">
+                Report Remarks
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Remarks:
+            </td>
+            <td class="CellData" colspan="2">
+                <asp:TextBox CssClass="Textbox" ID="txtRemarks" runat="server" Columns="50"
+                             MaxLength="1024" Rows="3" TextMode="MultiLine" />
+            </td></tr>
+	 
+        <tr><td><script language="javascript" type="text/javascript">
+                    StartupScriptReports();
+                </script>&nbsp;</td>
+            <td  colspan="2" class="ButtonSpacer"><asp:ImageButton runat="server" ID="btnUpdate" SkinID="sknImgBtnAddUser"  OnClick="btnUpdate_Click"/></td>
+        </tr>
+               
+    </table>
+
+</asp:Content>

@@ -1,0 +1,373 @@
+<%@ Page Language="C#" Theme="Default" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="AddMonthlyExpense.aspx.cs" Inherits="SaveDC.ControlPanel.AddMonthlyExpense" Title="Add Monthly Expense"%>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <script type="text/javascript" language="javascript">
+        function ShowHide(which) {return;
+
+            if (which == '1') {
+                document.getElementById("trCheque1").style.display = '';
+                document.getElementById("trCheque2").style.display = '';
+                document.getElementById("trCheque3").style.display = '';
+            } else {
+                document.getElementById("trCheque1").style.display = 'none';
+                document.getElementById("trCheque2").style.display = 'none';
+                document.getElementById("trCheque3").style.display = 'none';
+            }
+
+        }
+
+        function roundNumber(num, dec) {
+            var result = Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec);
+            return result;
+        }
+
+        function CalcSum(stdId) {
+
+            var stdSum = 0;
+            var inputElem = document.getElementsByTagName("input");
+            if (inputElem) {
+                for (var i = 0; i < inputElem.length; i++) {
+                    //  alert(inputElem[i].name);
+                    if (inputElem[i] && inputElem[i].type == "text" && inputElem[i].id.indexOf("_txtAmount") > -1) {
+                        if (isNaN(inputElem[i].value) || parseFloat(inputElem[i].value) < 0) {
+                            alert("Please enter a valid non-negative value for amount.");
+                            return false;
+                        }
+
+                        stdSum += parseFloat(inputElem[i].value);
+                    }
+                }
+            }
+
+            document.getElementById("<%= txtGTotal.ClientID %>").innerHTML = roundNumber(stdSum, 2);
+
+
+//        var inputTotalElem = document.getElementsByTagName("span");
+//        
+//         if (inputTotalElem) {
+//             for (var i = 0; i < inputTotalElem.length; i++) {
+//                 alert(stdId);
+//                 if (inputTotalElem[i] && inputTotalElem[i].name.indexOf("txtTotal_" + stdId)) {
+//                     inputTotalElem[i].innerHTML = stdSum;
+//                     alert("hi");
+//                  } 
+//             } 
+//         }
+
+        }
+
+
+        function ShowHideExpType(which) {
+
+            if (which == '1') {
+                document.getElementById("<%= PlaceHolderSchool.ClientID %>").style.display = '';
+                document.getElementById("<%= PlaceHolderOther.ClientID %>").style.display = 'none';
+            } else {
+                document.getElementById("<%= PlaceHolderSchool.ClientID %>").style.display = 'none';
+                document.getElementById("<%= PlaceHolderOther.ClientID %>").style.display = '';
+            }
+
+        }
+    </script>
+
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <asp:HiddenField ID="hdnAddEdit" value ="Add" runat="server" />
+            <td id="tdNav" height="20px" class="CellLabel"  colspan="<%= hdnColSpan.Value %>">
+	
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            Expense Manager :: <%= hdnAddEdit.Value %> Expense 
+                           
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack" Height="24"
+                                             Width="24" OnClientClick="javascript:window.history.back(); return false;" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td height="20px">
+            </td>
+        </tr>
+     
+        <tr>
+            <td colspan="<%= hdnColSpan.Value %>">
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label></td>
+        </tr>
+        <tr>
+            <asp:HiddenField ID="hdnColSpan" runat="server" />
+            <asp:HiddenField ID="hdnExpenseID" Value="0" runat="server" />
+            <td class="CellHeading" width="40%" colspan="2">
+                <%= hdnAddEdit.Value %> Expense
+            </td>
+            <td class="ContextLinks" align="right" colspan="<%= hdnColSpan.Value %>">
+            </td>
+        </tr>
+       
+        <tr>
+            <td class="CellLabel" colspan="2">
+                File #  :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:TextBox CssClass="Textbox" ID="txtFileNum" runat="server"></asp:TextBox>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel" colspan="2">
+                Voucher # :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:TextBox CssClass="Textbox" ID="txtVoucherNum" runat="server"></asp:TextBox>
+            </td>
+        </tr>
+        <tr  id="school2">
+            <td class="CellLabel" colspan="2">
+                For Month :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:DropDownList ID="ddMonths" runat="server">
+                    <asp:ListItem Value="1">January</asp:ListItem>
+                    <asp:ListItem Value="2">February</asp:ListItem>
+                    <asp:ListItem Value="3">March</asp:ListItem>
+                    <asp:ListItem Value="4">April</asp:ListItem>
+                    <asp:ListItem Value="5">May</asp:ListItem>
+                    <asp:ListItem Value="6">June</asp:ListItem>
+                    <asp:ListItem Value="7">July</asp:ListItem>
+                    <asp:ListItem Value="8">August</asp:ListItem>
+                    <asp:ListItem Value="9">September</asp:ListItem>
+                    <asp:ListItem Value="10">October</asp:ListItem>
+                    <asp:ListItem Value="11">November</asp:ListItem>
+                    <asp:ListItem Value="12">December</asp:ListItem>
+                </asp:DropDownList>
+                <asp:DropDownList ID="ddYear" runat="server">
+                    <%--<asp:ListItem>2011</asp:ListItem>
+                    <asp:ListItem>2012</asp:ListItem>
+                    <asp:ListItem>2013</asp:ListItem>
+                    <asp:ListItem>2014</asp:ListItem>
+                    <asp:ListItem>2015</asp:ListItem>
+                    <asp:ListItem>2016</asp:ListItem>
+                    <asp:ListItem>2017</asp:ListItem>
+                    <asp:ListItem>2018</asp:ListItem>
+                    <asp:ListItem>2019</asp:ListItem>
+                    <asp:ListItem>2020</asp:ListItem>--%>
+                </asp:DropDownList>
+            </td>
+        </tr>
+           
+        <tr>
+            <td class="CellLabel" colspan="2">
+                Select Category :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <!--<asp:RadioButtonList ID="rbExpType1" runat="server" CellPadding="1" CellSpacing="1"
+                                     RepeatDirection="Horizontal" 
+                                     onselectedindexchanged="rbExpType_SelectedIndexChanged" 
+                                     AutoPostBack="True">
+                    <asp:ListItem Selected="True"  Value="1">School Expense</asp:ListItem>
+                    <asp:ListItem  Value="0">Other Expense</asp:ListItem>
+                </asp:RadioButtonList>-->
+                <asp:DropDownList ID="rbExpType" runat="server" AutoPostBack="True" 
+                                  onselectedindexchanged="rbExpType_SelectedIndexChanged">
+                </asp:DropDownList>
+            </td>
+        </tr>
+      
+        <asp:Panel ID="PlaceHolderSchool" runat="server">
+	
+            <tr id="school1">
+                <td class="CellLabel" colspan="2">
+                    School Name :
+                </td>
+                <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                    <asp:DropDownList ID="ddSchools" runat="server" AutoPostBack="True" 
+                                      onselectedindexchanged="ddSchools_SelectedIndexChanged">
+                    </asp:DropDownList>
+                    <%-- <asp:Label ID="lblSchoolName" runat="server" Text="Label"></asp:Label>--%>
+                </td>
+            </tr>
+            <tr  id="school3">
+                <td class="SubHeading" style="height: 23px">
+                    Student Name
+                </td>
+                <td class="SubHeading" style="height: 23px">
+                    Student Class
+                </td>
+                <asp:Repeater ID="Repeater3" runat="server">
+                    <ItemTemplate>
+                        <td class="SubHeading" style="height: 23px">
+                            <%# DataBinder.Eval(Container.DataItem, "ExpenseName") %>
+                        </td>
+                    </ItemTemplate>
+                </asp:Repeater>
+                <%-- <td class="SubHeading" style="height: 23px">
+           Total&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+           </td> --%>
+            </tr>
+            <asp:Repeater ID="Repeater1" runat="server" OnItemDataBound="Repeater1_ItemDataBound">
+                <ItemTemplate>
+                    <tr>
+                        <td class="CellLabel">
+                            <asp:HiddenField ID="hdnStudentId" runat="server" Value='<%# DataBinder.Eval(Container.DataItem, "StudentId") %>' />
+                            <%# DataBinder.Eval(Container.DataItem, "FirstName") %>
+                            <%# DataBinder.Eval(Container.DataItem, "LastName") %>
+                        </td>
+                        <td class="CellLabel">
+                            <%# DataBinder.Eval(Container.DataItem, "ClassName") %>
+                        </td>
+                        <asp:Repeater ID="Repeater2" runat="server" OnItemDataBound="Repeater2_ItemDataBound">
+                            <ItemTemplate>
+                                <td class="CellData">
+                                    <asp:HiddenField ID="StudentId1" runat="server" Value='<%# DataBinder.Eval(Container.DataItem, "StudentId") %>' />
+                                    <asp:HiddenField ID="hdnExpenseId" runat="server" Value='<%# DataBinder.Eval(Container.DataItem, "ExpenseId") %>' />
+                                    <asp:TextBox CssClass="NumTextbox" ID='txtAmount' runat="server" Columns="15" Text='<%# DataBinder.Eval(Container.DataItem, "Amount") %>' />
+                                </td>
+                            </ItemTemplate>
+                        </asp:Repeater>
+                        <%-- <td class="CellLabel">
+                           <asp:Label ID="txtTotal"  runat="server" Text="0.00"></asp:Label>
+                      </td>--%>
+                    </tr>
+                </ItemTemplate>
+                <FooterTemplate>
+                </FooterTemplate>
+            </asp:Repeater>
+            <tr>
+                <td class="CellLabel" colspan="2">
+                    Total Amount :
+                </td>
+                <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                    <b>
+                        <asp:Label ID="txtGTotal" runat="server" Text="0"></asp:Label></b>
+                </td>
+            </tr>
+        </asp:Panel>
+        <asp:Panel ID="PlaceHolderOther" runat="server">
+
+            <tr id="eName" runat="server">
+                <td class="CellLabel" colspan="2">
+                    Employee Name :
+                </td>
+                <td class="CellData" colspan="2">
+                    <asp:DropDownList ID="EmployeeName" runat="server"></asp:DropDownList>
+                </td>
+            </tr>
+            <tr id="uBills" runat="server">
+                <td class="CellLabel" colspan="2">
+                    Utility Bill :
+                </td>
+                <td class="CellData" colspan="2">
+                    <asp:DropDownList ID="UtilityBill" runat="server"></asp:DropDownList>
+                </td>
+            </tr>
+            <tr id="ePayee" runat="server">
+                <td class="CellLabel" colspan="2">
+                    Expense Payee :
+                </td>
+                <td class="CellData" colspan="2">
+                    <asp:TextBox CssClass="Textbox" ID="txtPayee" runat="server"></asp:TextBox>
+                </td>
+            </tr>
+            <tr>
+                <td class="CellLabel" colspan="2">
+                    Total Amount :
+                </td>
+                <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                    <asp:TextBox CssClass="Textbox" ID="txtAmount" runat="server"></asp:TextBox>
+                </td>
+            </tr>
+            <tr>
+                <td class="CellLabel" colspan="2">
+                    Details :
+                </td>
+                <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                    <asp:TextBox CssClass="Textbox" ID="txtExpenseDetail" runat="server" Columns="50" MaxLength="1024"
+                                 Rows="4" TextMode="MultiLine" />
+                </td>
+            </tr>
+           
+        </asp:Panel>
+   
+        <tr>
+            <td class="SubHeading" id="tdpayment" colspan="<%= hdnColSpan.Value %>" style="height: 23px">
+                Payment Details
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel" colspan="2">
+                Payment Mode :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:RadioButtonList ID="rbPaymentMode" runat="server" CellPadding="1" CellSpacing="1"
+                                     RepeatDirection="Horizontal">
+                    <asp:ListItem class="RadioListItem"  onclick =" ShowHide('1') " Selected="True" Value="1">Cheque</asp:ListItem>
+                    <asp:ListItem class="RadioListItem"  onclick =" ShowHide('0') " Value="2">Cash</asp:ListItem>
+                </asp:RadioButtonList>
+            </td>
+        </tr>
+     
+        <tr id="trCheque1">
+            <td class="CellLabel" colspan="2">
+                Through Bank :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:DropDownList ID="ddBanks" runat="server">
+                </asp:DropDownList>
+             
+            </td>
+        </tr>
+        <tr  id="trCheque2">
+            <td class="CellLabel" colspan="2">
+                Beneficiary Name :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:TextBox CssClass="Textbox" ID="txtAccNum" runat="server" Columns="50" />
+             
+            </td>
+        </tr>
+        <tr  id="trCheque3">
+            <td class="CellLabel" colspan="2">
+                Cheque # :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:TextBox CssClass="Textbox" ID="txtChkNum" runat="server" Columns="50" />
+             
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel" colspan="2">
+                Note :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:TextBox CssClass="Textbox" ID="txtNote" runat="server" Columns="50" MaxLength="1024"
+                             Rows="4" TextMode="MultiLine" />
+             
+            </td>
+        </tr>
+         
+         
+        <tr>
+            <script language="javascript">
+                if ("<%= rbExpType.SelectedValue %>" == "1") {
+                    CalcSum(0);
+
+                    document.getElementById("tdpayment").colSpan = document.getElementById("tdpayment").colSpan + 1;
+                    document.getElementById("tdNav").colSpan = document.getElementById("tdNav").colSpan + 1;
+                } else {
+                    document.getElementById("tdpayment").colSpan = document.getElementById("tdpayment").colSpan + 2;
+                    document.getElementById("tdNav").colSpan = document.getElementById("tdNav").colSpan + 2;
+                }
+                ShowHide("<%= rbPaymentMode.SelectedValue %>");
+
+            </script>
+	
+            <td colspan="2" >&nbsp;</td>
+            <td   colspan="<%= hdnColSpan.Value %>" class="ButtonSpacer"><asp:ImageButton runat="server" ID="btnUpdate" SkinID="sknImgBtnAddUser"  OnClick="btnUpdate_Click"/></td>
+        </tr>
+               
+    </table>
+
+</asp:Content>

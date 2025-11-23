@@ -1,0 +1,145 @@
+<%@ Page Language="C#" Theme="Default" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="ListMarkettingSMS.aspx.cs" Inherits="SaveDC.ControlPanel.ListMarkettingSMS" Title="List Marketting SMS"%>
+<%@ Register Src="Controls/AdvDataPager.ascx" TagName="DataPager" TagPrefix="uc1" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+
+    <head>
+        <title>List Marketting SMS</title>
+        <style>
+            .mGrid td {   
+                text-align:center !important;
+            }
+        </style>
+    </head>
+
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <td height="20px" colspan="2" class="CellLabel" >
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            SMS Manager :: List Bulk SMS
+     	     
+                           
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack" Height="24"
+                                             Width="24" OnClientClick="javascript:window.history.back(); return false;" />
+                        </td>
+                    </tr>
+                </table>
+	
+            </td>
+        </tr>
+        <tr>
+            <td height="20px" colspan="2">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"> 
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label></td>
+        </tr>
+        
+        <tr>
+            <td colspan="1" class="CellLabel">
+                <table id="Table1" runat="server" width="100%">
+                    <form name="frmsearch" method="post" id="frmsearch">
+                        <tr>
+                            <td width="40%">
+                                Sent Date:
+                            </td>
+                            <td valign="middle">
+                                <asp:TextBox CssClass="Textbox" ID="txtActionDate" runat="server" />
+                            </td>
+                            <td width="70%" align="left">
+                                <asp:ImageButton ID="searchbtn" runat="server" ImageUrl="search.png" Height="40"
+                                                 Width="40" OnClick="searchbtn_Click" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="40%">
+                            </td>
+                            <td valign="middle" colspan="2">
+                                (valid search format is mm/dd/yyyy. e.g. 12/15/2011)
+                            </td>
+                        </tr>
+                    
+                    </form>
+                </table>
+            </td>
+        </tr>
+      
+        <tr>
+            <td colspan="2" height="10px" align="right">
+                [ <a href="SendMarkettingSMS.aspx">Send Bulk SMS</a> ]
+                <asp:LinkButton runat="server" ID="btnExportToExcel" OnClick="btnExportToExcel_Click" Style="color:black">[ Export To Excel ]</asp:LinkButton>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellHeading" width="60%">List Bulk SMS</td>
+            <td class="ContextLinks" align="right">Total Bulk SMS Sent: 
+                <asp:Label ID="lblTotal" runat="server" Text="0"></asp:Label>&nbsp; 
+            </td>
+        </tr>
+        <tr> 
+            <td class="CellLabel" colspan="2">
+                <table width="100%" border = 0 id="tbDataFound" runat="server">
+                    <tr>
+                        <td width="85%"  valign="top">
+                            <asp:HiddenField runat="server" ID="hdnSchoolID" Value ="" />
+                            <asp:HiddenField runat="server" ID="hdnDonorName" Value ="" />
+                            <asp:DataGrid ID="dgSchools" runat="server" AutoGenerateColumns="False" Width="100%" SkinID="StanderdGrid" OnItemDataBound="dgSchools_Databound" CssClass="mGrid">
+                                <Columns>
+                                   
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            SMS Text
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "MessageText") %>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="50%" />
+                                    </asp:TemplateColumn>	
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            Total Recipients
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "RecipientCount") %>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="30%" />
+                                    </asp:TemplateColumn>	
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            Sent On
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "ActionDate") %>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="20%" />
+                                    </asp:TemplateColumn>	
+                                    
+                                </Columns>
+                                <HeaderStyle BackColor="#6699CC" Font-Bold="False" Font-Italic="False" Font-Overline="False"
+                                             Font-Strikeout="False" Font-Underline="False" />
+                            </asp:DataGrid>
+          
+                            <%-- <br />--%>
+                            <uc1:DataPager ID="pagerApps" runat="server" PageIndex="1" RecordsPerPage="100" TotalRecords="0" />
+                        </td>
+                        <td valign="top">
+                         
+                        </td>
+                    </tr>
+                </table>
+               
+          
+                <table id="tbNoDataFound" runat="server" width="100%" visible="false">
+                    <tr>
+                        <td>No Sent SMS Found.</td>
+                    </tr>
+                </table>		
+            </td>
+        </tr> 
+    </table>
+</asp:Content>

@@ -1,0 +1,140 @@
+using System;
+using System.Data.SqlClient;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class AssignDonor : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            // page validation
+            var oValidator = new Validator();
+            oValidator.ValidateRequest(Request);
+            oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                              new[] {UserAccessLevels.SuperAdmin, UserAccessLevels.Admin});
+            oValidator = null;
+
+            if (!Page.IsPostBack)
+            {
+                // page validation
+
+                // get form/query string values.
+                int nSelectedStudentId = Utils.fixNullInt(Request.QueryString["StudentId"]);
+
+                var oUser = new User();
+                oUser.UserRoleID = 4;
+                var oUserManager = new UserManager(oUser);
+                User[] oUserList = oUserManager.GetUsers();
+
+                if (oUserList == null || oUserList.Length == 0)
+                {
+                    ddDonor.Items.Clear();
+                    var noUserItem = new ListItem();
+                    noUserItem.Text = "No Donor Found.";
+                    noUserItem.Value = "0";
+                    ddDonor.Items.Add(noUserItem);
+                    // ddDonor.Visible = false;
+                }
+                else
+                {
+                    //ddDonor.Visible = true;
+                    ddDonor.DataSource = oUserList;
+                    ddDonor.DataValueField = "UserId"; // ???
+                    ddDonor.DataTextField = "UserName";
+                    ddDonor.DataBind();
+                }
+
+                // load edit user details.
+                if (nSelectedStudentId > 0)
+                {
+                    var oStudent = new Student();
+                    oStudent.StudentId = nSelectedStudentId;
+                    var oStudentManager = new StudentManager(oStudent);
+                    oStudent = oStudentManager.Load();
+                    lblStudentName.Text = oStudent.FirstName + " " + oStudent.LastName;
+
+                    ddDonor.SelectedValue = (oStudent.DonorId > 0 ? oStudent.DonorId : 1).ToString();
+                    hdnStudentlId.Value = nSelectedStudentId.ToString();
+                }
+
+                FillDonorDetails();
+            }
+        }
+
+        private void FillDonorDetails()
+        {
+            try
+            {
+                var oUser = new User();
+                int nDonorId = Utils.fixNullInt(ddDonor.SelectedValue);
+                if (nDonorId > 0)
+                {
+                    repeaterChildren.DataSource = new Common().GetDonorStudents(nDonorId);
+                    repeaterChildren.DataBind();
+
+                    oUser.UserID = nDonorId;
+                    oUser.UserRoleID = 4;
+                    var oUserManager1 = new UserManager(oUser);
+                    oUser = oUserManager1.Load();
+
+                    lblFName.Text = oUser.FirstName;
+                    lblLName.Text = oUser.LastName;
+                    lblEmail.Text = oUser.EmailAddress;
+                    lblPhone.Text = oUser.PhoneNumber;
+
+                    var oCommon = new Common();
+                    SqlDataReader reader = oCommon.GetPanelSummary(nDonorId);
+                    if (reader != null && reader.Read())
+                    {
+                        try
+                        {
+                            decimal donations = Utils.fixNullDecimal(reader["TotalDonations"]);
+                            decimal expenses = Utils.fixNullDecimal(reader["TotalExpenses"]);
+
+                            decimal balance = donations - expenses;
+                            lblBalance.Text = balance.ToString();
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        protected void btnUpdate_Click(object sender, ImageClickEventArgs e)
+        {
+            string szStatus = "5031130";
+            string nCurDonorId = ddDonor.SelectedValue;
+            string szCurStudentId = hdnStudentlId.Value;
+
+
+            var oCommon = new Common();
+            int nStatus = oCommon.AssignDonor(szCurStudentId, nCurDonorId);
+            if (nStatus > 0)
+            {
+                szStatus = "5031131";
+                Response.Redirect("ListStudents.aspx?status=" + szStatus);
+            }
+            else
+            {
+                szStatus = "5031130";
+                Response.Redirect("ListStudents.aspx?status=" + szStatus);
+            }
+        }
+
+        protected void ddDonor_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            FillDonorDetails();
+        }
+    }
+}

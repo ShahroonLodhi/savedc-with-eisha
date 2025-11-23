@@ -1,0 +1,100 @@
+using System;
+using System.Data;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class GetExpenseReport : Page
+    {
+        #region Delegates
+
+        public delegate void delPopulateData(int nCurrentPage);
+
+        #endregion
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // page validation
+                var oValidator = new Validator();
+                oValidator.ValidateRequest(Request);
+                oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                                  new[] {UserAccessLevels.SuperAdmin, UserAccessLevels.Admin});
+                oValidator = null;
+
+                GetReport(1);
+            }
+            delPopulateData delPopulate = GetReport;
+            pagerApps.UpdatePageIndex = delPopulate;
+
+            if (SaveDCSession.UserAccessLevel == UserAccessLevels.SuperAdmin)
+            {
+                fullLinks.Visible = true;
+                shortLinks.Visible = false;
+            }
+            else
+            {
+                if (SaveDCSession.UserName.ToLower() == "azhar")
+                {
+                    fullLinks.Visible = true;
+                    shortLinks.Visible = false;
+                }
+                else
+                {
+                    fullLinks.Visible = false;
+                    shortLinks.Visible = true;
+                }
+            }
+        }
+
+        private void GetReport(int nCurrentPage)
+        {
+            Int32 nTotalRecord = 0;
+            string szSchoolName = Utils.fixNullString(Request.QueryString["SchoolName"]);
+            txtSchoolName.Text = szSchoolName;
+
+            var oCommon = new Common();
+            DataSet report = oCommon.GetExpenseReport(szSchoolName, nCurrentPage, pagerApps.RecordsPerPage,
+                                                      out nTotalRecord);
+
+            //===============================================================
+            pagerApps.TotalRecords = nTotalRecord;
+            //===============================================================
+
+            dgSchools.DataSource = report;
+            dgSchools.DataBind();
+
+            if (report == null || report.Tables == null || report.Tables[0].Rows.Count <= 0)
+            {
+                // set the total
+                lblTotal.Text = 0.ToString();
+                tbDataFound.Visible = false;
+                tbNoDataFound.Visible = true;
+            }
+            else
+            {
+                lblTotal.Text = report.Tables[0].Rows.Count.ToString();
+                tbDataFound.Visible = true;
+                tbNoDataFound.Visible = false;
+            }
+        }
+
+
+        protected void searchbtn_Click(object sender, ImageClickEventArgs e)
+        {
+            string szSrchSchoolName = "";
+            if (!string.IsNullOrEmpty(txtSchoolName.Text))
+                szSrchSchoolName = txtSchoolName.Text;
+
+            Response.Redirect("GetExpenseReport.aspx?SchoolName=" + szSrchSchoolName);
+        }
+
+        protected void dgSchools_Databound(object sender, DataGridItemEventArgs e)
+        {
+        }
+    }
+}

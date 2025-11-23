@@ -1,0 +1,21 @@
+﻿namespace SaveDC.ControlPanel.Src.Objects
+{
+    public class Email
+    {
+        public string DonorName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string DonorEmail { get; set; }
+        public string Amount { get; set; }
+    }
+
+    public class EmailEx
+    {
+        public string DonorName { get; set; }
+        public string DonorEmail { get; set; }
+        public string CC { get; set; }
+        public bool BCC { get; set; }
+        public string Subject { get; set; }
+        public string Body { get; set; }
+    }
+}

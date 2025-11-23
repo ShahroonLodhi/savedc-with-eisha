@@ -1,0 +1,190 @@
+using System;
+using System.IO;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class ListFamily : Page
+    {
+        #region Delegates
+
+        public delegate void delPopulateData(int nCurrentPage);
+
+        #endregion
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // page validation
+                var oValidator = new Validator();
+                oValidator.ValidateRequest(Request);
+                oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                                  new[]
+                                                      {
+                                                          UserAccessLevels.SuperAdmin, UserAccessLevels.Admin,
+                                                          UserAccessLevels.Operator
+                                                      });
+                oValidator = null;
+
+                // dont allow operator to edit.
+                if (SaveDCSession.UserAccessLevel == UserAccessLevels.Operator)
+                {
+                    btnDelFamily.Visible = false;
+                    btnEditFamily.Visible = false;
+                }
+
+
+                LoadFamilies(1);
+                RenderError(Request.QueryString["status"]);
+            }
+            delPopulateData delPopulate = LoadFamilies;
+            pagerApps.UpdatePageIndex = delPopulate;
+        }
+
+        private void LoadFamilies(int nCurrentPage)
+        {
+            string szSrchFamilyName = "";
+            if (!string.IsNullOrEmpty(Request.QueryString["FamilyName"]))
+            {
+                szSrchFamilyName = Request.QueryString["FamilyName"];
+                txtFamilyName.Text = szSrchFamilyName;
+            }
+
+
+            if (!string.IsNullOrEmpty(Request.QueryString["FatherName"]))
+                txtFatherName.Text = Request.QueryString["FatherName"];
+
+            var family = new Family();
+            family.DisplayName = szSrchFamilyName;
+            family.FatherName = txtFatherName.Text;
+
+            var oFamilyManager = new FamilyManager(family);
+            Family[] families = oFamilyManager.GetFamilies(nCurrentPage, pagerApps.RecordsPerPage);
+
+            //===============================================================
+            pagerApps.TotalRecords = Convert.ToInt32(oFamilyManager.RecordCount);
+            //===============================================================
+
+            dgFamilies.DataSource = families;
+            dgFamilies.DataBind();
+
+            // hide/show grid if no rec found
+            if (families == null || families.Length <= 0)
+            {
+                tbDataFound.Visible = false;
+                tbNoDataFound.Visible = true;
+                // set the total
+                lblTotal.Text = 0.ToString();
+            }
+            else
+            {
+                tbDataFound.Visible = true;
+                tbNoDataFound.Visible = false;
+                // set the total
+                lblTotal.Text = families.Length.ToString();
+            }
+        }
+
+        private void RenderError(string szErrorCode)
+        {
+            if (string.IsNullOrEmpty(szErrorCode))
+            {
+                lblError.Text = "";
+                return;
+            }
+
+            string szErrorDesc = Utils.GetMessageText(szErrorCode);
+            if (!szErrorCode.EndsWith("1"))
+                lblError.CssClass = "FailureMessage";
+            else
+                lblError.CssClass = "SuccessMessage";
+
+            lblError.Text = szErrorDesc;
+        }
+
+        protected void searchbtn_Click(object sender, ImageClickEventArgs e)
+        {
+            string szSrchFamilyName = txtFamilyName.Text;
+            //if (!string.IsNullOrEmpty(Request.Form["ctl00$ContentPlaceHolder1$txtFamilyName"]))
+            //    szSrchFamilyName = Request.Form["ctl00$ContentPlaceHolder1$txtFamilyName"];
+
+            Response.Redirect("ListFamily.aspx?FamilyName=" + szSrchFamilyName + "&FatherName=" + txtFatherName.Text);
+        }
+
+        protected void dgFamilies_Databound(object sender, DataGridItemEventArgs e)
+        {
+        }
+
+        protected void btnEditFamily_Click(object sender, EventArgs e)
+        {
+            #region User Right Validation.
+
+            // only admin and super admin are allowed to execute this part.
+            new Validator().CheckUserRightsOnEditDelete(Request);
+
+            #endregion
+
+            string szCurFamilyId = hdnFamilyID.Value;
+            Response.Redirect("AddFamily.aspx?FamilyId=" + szCurFamilyId);
+        }
+
+        protected void btnDelFamily_Click(object sender, EventArgs e)
+        {
+            #region User Right Validation.
+
+            // only admin and super admin are allowed to execute this part.
+            new Validator().CheckUserRightsOnEditDelete(Request);
+
+            #endregion
+
+            string szCurFamilyId = hdnFamilyID.Value;
+
+            var oFamily = new Family();
+            oFamily.FamilyId = int.Parse(szCurFamilyId);
+
+            string szStatus = "5041030";
+            var oFamilyManager = new FamilyManager(oFamily);
+            oFamily = oFamilyManager.Load();
+
+            if (oFamilyManager.Delete())
+            {
+                szStatus = "5041031";
+
+                // delete bills images.
+                try
+                {
+                    // bill1
+                    string szServerPath = Server.MapPath(SaveDCConstants.BillsUploadPath) + oFamily.Bill1GUID + ".jpg";
+                    if (File.Exists(szServerPath))
+                    {
+                        File.Delete(szServerPath);
+                    }
+                    // bill2
+                    szServerPath = Server.MapPath(SaveDCConstants.BillsUploadPath) + oFamily.Bill2GUID + ".jpg";
+                    if (File.Exists(szServerPath))
+                    {
+                        File.Delete(szServerPath);
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            Response.Redirect("ListFamily.aspx?status=" + szStatus);
+        }
+
+
+        protected void btnDetailsFamily_Click(object sender, EventArgs e)
+        {
+            string szCurFamilyId = hdnFamilyID.Value;
+            Response.Redirect("DetailsFamily.aspx?FamilyId=" + szCurFamilyId);
+        }
+    }
+}

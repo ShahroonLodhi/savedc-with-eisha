@@ -1,0 +1,89 @@
+<%@ Page Language="C#" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="DonorsNotes.aspx.cs" Inherits="SaveDC.ControlPanel.DonorsNotes" Title="Your Notes"%>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+                        
+            <td colspan="2" class="CellLabel" height="20px" class="CellLabel">
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            Notes :: Your Notes
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack" Height="24"
+                                             Width="24" OnClientClick="javascript:window.history.back(); return false;" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            
+        </tr>
+        <tr>
+            <td height="20px">
+            </td>
+        </tr>
+        <tr>
+            <td class="CellHeading" width="60%">
+                Your Notes
+            </td>
+            <td class="ContextLinks" align="right">
+                <%--Total Donors:
+                <asp:Label ID="lblTotal" runat="server" Text="0"></asp:Label>--%>&nbsp;<%--<a id="context" href= "ListUsers.aspx">[ List Users ]</a> <a id="context" href= "AddUsers.aspx">[ Add Users ]</a>--%>
+            </td>
+        </tr>
+	    <tr> 
+            <td class="CellLabel" colspan="2">
+                <table width="100%" border = 0 id="tbNotesFound" runat="server">
+                    <tr>
+                        <td width="100%"  valign="top">
+                            <asp:DataGrid ID="dgNotes" runat="server" AutoGenerateColumns="False" Width="100%" SkinID="StanderdGrid" OnItemDataBound="dgNotes_Databound" >
+                                <Columns>
+                                   
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            Note
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "Notes") %>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="60%" />
+                                    </asp:TemplateColumn>	
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            Posted By
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "PostedBy")%>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="20%" />
+                                    </asp:TemplateColumn>	
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            Posted On
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "DatePosted")%>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="20%" />
+                                    </asp:TemplateColumn>	
+                                    
+                                </Columns>
+                                <HeaderStyle BackColor="#6699CC" Font-Bold="False" Font-Italic="False" Font-Overline="False"
+                                             Font-Strikeout="False" Font-Underline="False" />
+                            </asp:DataGrid>
+                        </td>
+                        
+                    </tr>
+                </table>
+          
+                <table id="tbNoNotesFound" runat="server" width="100%" visible="false">
+                    <tr>
+                        <td>No Notes Found.</td>
+                    </tr>
+                </table>		
+            </td>
+        </tr>
+    </table>
+
+</asp:Content>

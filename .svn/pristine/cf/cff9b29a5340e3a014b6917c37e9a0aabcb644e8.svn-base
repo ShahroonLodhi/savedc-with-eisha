@@ -1,0 +1,218 @@
+using System;
+using System.Web.UI;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+using System.Web.Security;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class AddUsers : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            // page validation
+            var oValidator = new Validator();
+            oValidator.ValidateRequest(Request);
+            oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                              new[] {UserAccessLevels.SuperAdmin, UserAccessLevels.Admin, UserAccessLevels.Operator});
+            oValidator = null;
+
+            if (!Page.IsPostBack)
+            {
+                // get form/query string values.
+                int nEditUserId = Utils.fixNullInt(Request.QueryString["UserId"]);
+
+                string role = Utils.fixNullString(Request.QueryString["Role"]);
+
+                if (role.ToLower() == "member")
+                {
+                    trRoles.Visible = false;
+                    hdnArea.Value = "Members Area";
+                    hdnRole.Value = "Member";
+
+                    loginRow1.Visible = false;
+                    loginRow2.Visible = false;
+                    loginRow3.Visible = false;
+                    loginRow4.Visible = false;
+
+                    trGender.Visible = true;
+                    trReceivingDate.Visible = true;
+                    trCNIC.Visible = true;
+                    trOccupation.Visible = true;
+                    trQualification.Visible = true;
+                }
+                else if (role.ToLower() == "donor")
+                {
+                    trRoles.Visible = false;
+                    hdnArea.Value = "Donor Manager";
+                    hdnRole.Value = "Donor";
+                }
+                else
+                {
+                    hdnArea.Value = "User Manager";
+                    hdnRole.Value = "User";
+
+                    // load roles combo.
+                    comboUserRoles.DataSource = new Common().LoadUserRoles();
+                    comboUserRoles.DataValueField = "UserRoleId";
+                    comboUserRoles.DataTextField = "RoleDesc";
+                    comboUserRoles.DataBind();
+                }
+
+
+                // load edit user details.
+                if (nEditUserId > 0)
+                {
+                    var oUser = new User();
+                    oUser.UserID = nEditUserId;
+                    var oUserManager = new UserManager(oUser);
+                    oUser = oUserManager.Load();
+
+                    // txtUserName.Text = oUser.UserName;
+                    Control nameParent = txtUserName.Parent;
+                    nameParent.Controls.Remove(txtUserName);
+                    nameParent.Controls.Remove(RFV_txtUserName);
+
+                    var oCommon = new Common();
+                    nameParent.Controls.Add(oCommon.CreateTextLabel("txtUserName", oUser.UserName));
+
+                    //txtUserpassword.Text = oUser.UserPassword;
+                    //txtConfirmpassword.Text = oUser.UserPassword;
+                    txtUserpassword.Attributes.Add("value", oUser.UserPassword);
+                    txtConfirmpassword.Attributes.Add("value", oUser.UserPassword);
+
+                    comboUserRoles.SelectedValue = oUser.UserRoleID.ToString();
+                    txtFName.Text = oUser.FirstName;
+                    txtLName.Text = oUser.LastName;
+                    txtEmail.Text = oUser.EmailAddress;
+                    txtPhone.Text = oUser.PhoneNumber;
+                    txtNote.Text = oUser.Notes;
+                    txtAddress.Text = oUser.Address;
+                    cbCountry.Value = oUser.Country;
+
+                    if (oUser.Gender)
+                        txtGenderM.Checked = true;
+                    else
+                        txtGenderF.Checked = true;
+                    txtCNIC.Text = oUser.CNIC;
+                    if (oUser.RecevingDate != null && oUser.RecevingDate != "")
+                        txtRD.Text = Convert.ToDateTime(oUser.RecevingDate).ToString("dd/MM/yyyy");
+                    txtOccupation.Text = oUser.Occupation;
+                    txtQualification.Text = oUser.Qualification;
+
+                    hdnAddEdit.Value = "Edit";
+                    hdnEditUserId.Value = nEditUserId.ToString();
+                }
+                else
+                    cbCountry.Value = "Pakistan";
+
+                RenderError(Request.QueryString["status"]);
+            }
+        }
+
+
+        protected void btnUpdate_Click(object sender, ImageClickEventArgs e)
+        {
+            var oUser = new User();
+            oUser.UserName = (hdnRole.Value.ToLower() == "member") ? Membership.GeneratePassword(12, 1) : txtUserName.Text;
+            oUser.UserPassword = (hdnRole.Value.ToLower() == "member") ? Membership.GeneratePassword(12, 1) : txtUserpassword.Text;
+            //txtConfirmpassword.Text = oUser.UserPassword = txtConfirmpassword.Text;
+
+            oUser.UserRoleID = (hdnRole.Value.ToLower() == "donor") ? 4 : (hdnRole.Value.ToLower() == "member") ? 5 : Utils.fixNullInt(comboUserRoles.SelectedValue);
+
+            oUser.FirstName = txtFName.Text;
+            oUser.LastName = txtLName.Text;
+            oUser.EmailAddress = txtEmail.Text;
+            oUser.PhoneNumber = txtPhone.Text;
+            oUser.Notes = txtNote.Text;
+            oUser.Address = txtAddress.Text;
+            oUser.Country = cbCountry.Value;
+
+            oUser.Gender = txtGenderM.Checked;
+            oUser.CNIC = txtCNIC.Text;
+            oUser.RecevingDate = txtRD.Text;
+            oUser.Occupation = txtOccupation.Text;
+            oUser.Qualification = txtQualification.Text;
+
+            int nEditUserId = 0;
+            int.TryParse(hdnEditUserId.Value, out nEditUserId);
+            oUser.UserID = nEditUserId;
+            var oUserManager = new UserManager(oUser);
+            int nStatus = oUserManager.Save();
+
+            if (hdnRole.Value.ToLower() == "donor")
+            {
+                if (nStatus > 0)
+                {
+                    if (nEditUserId > 0)
+                        Response.Redirect("ListDonors.aspx?status=5011241"); //  user updated successfully.
+                    else
+                        Response.Redirect("ListDonors.aspx?status=5011261");
+                }
+                else if (nStatus == 0)
+                {
+                    Response.Redirect("AddUsers.aspx?status=5011260&Role=donor");
+                }
+                else if (nStatus == -1)
+                {
+                    Response.Redirect("AddUsers.aspx?status=5011250&Role=donor");
+                }
+            }
+            else if (hdnRole.Value.ToLower() == "member")
+            {
+                if (nStatus > 0)
+                {
+                    if (nEditUserId > 0)
+                        Response.Redirect("ListMembers.aspx?status=5011241"); //  user updated successfully.
+                    else
+                        Response.Redirect("ListMembers.aspx?status=5011261");
+                }
+                else if (nStatus == 0)
+                {
+                    Response.Redirect("AddUsers.aspx?status=5011260&Role=member");
+                }
+                else if (nStatus == -1)
+                {
+                    Response.Redirect("AddUsers.aspx?status=5011250&Role=member");
+                }
+            }
+            else
+            {
+                if (nStatus > 0)
+                {
+                    if (nEditUserId > 0)
+                        Response.Redirect("ListUsers.aspx?status=5011241"); //  user updated successfully.
+                    else
+                        Response.Redirect("ListUsers.aspx?status=5011261");
+                }
+                else if (nStatus == 0)
+                {
+                    Response.Redirect("AddUsers.aspx?status=5011260");
+                }
+                else if (nStatus == -1)
+                {
+                    Response.Redirect("AddUsers.aspx?status=5011250");
+                }
+            }
+        }
+
+        private void RenderError(string szErrorCode)
+        {
+            if (string.IsNullOrEmpty(szErrorCode))
+            {
+                lblError.Text = "";
+                return;
+            }
+
+            string szErrorDesc = Utils.GetMessageText(szErrorCode);
+            if (!szErrorCode.EndsWith("1"))
+                lblError.CssClass = "FailureMessage";
+            else
+                lblError.CssClass = "SuccessMessage";
+
+            lblError.Text = szErrorDesc;
+        }
+    }
+}

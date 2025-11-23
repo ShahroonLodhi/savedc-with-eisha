@@ -1,0 +1,248 @@
+<%@ Page Language="C#" Theme="Default" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="AddFund.aspx.cs" Inherits="SaveDC.ControlPanel.AddFund" Title="Add Funds"%>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <script type="text/javascript" language="javascript">
+        function RemoveAttachment() {
+
+            document.getElementById('browseCert2').style.display = '';
+            document.getElementById('viewCert2').style.display = 'none';
+            document.getElementById("<%= hdnNewCerti2.ClientID %>").value = '';
+        }
+
+        function StartupScriptBills() {
+
+            var ViewHTML = "window.open('_REPLACEURL?modalwin=1', 'View', 'left=100,top=30,screenX=100,screenY=30, height=550,width=840,toolbar=no,directories=no,status=no,menubar=no,modal=yes,scrollbars=yes');";
+
+            // certificates
+            var certNewVal2 = document.getElementById("<%= hdnOldCerti2.ClientID %>").value;
+            if (certNewVal2) {
+                document.getElementById('browseCert2').style.display = 'none';
+                document.getElementById('viewCert2').style.display = '';
+                //document.getElementById('viewLinkCerti2').href = '../Uploads/UtilityBills/' + certNewVal2 + '.jpg';
+                document.getElementById('viewLinkCerti2').setAttribute("onclick", ViewHTML.replace("_REPLACEURL", '../Uploads/Attachments/' + certNewVal2 + '.jpg'));
+            } else {
+                document.getElementById('browseCert2').style.display = '';
+                document.getElementById('viewCert2').style.display = 'none';
+            }
+
+
+        }
+    </script>
+    <asp:ScriptManager ID="ScriptManager1" runat="server">
+    </asp:ScriptManager>
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <asp:HiddenField ID="hdnAddEdit" value ="Add" runat="server" />
+                        
+            <td colspan="2" class="CellLabel" height="20px" class="CellLabel">
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            Funds Manager :: <%= hdnAddEdit.Value %> Funds
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack" Height="24"
+                                             Width="24" OnClientClick="javascript:window.history.back(); return false;" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            
+        </tr>
+        <tr>
+            <td height="20px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+        <tr>
+            <asp:HiddenField ID="hdnEditFundId" Value="0" runat="server" />
+            <td class="CellHeading" width="40%">
+                <%= hdnAddEdit.Value %> Funds
+            </td>
+            <td class="ContextLinks" align="right">
+                <%--<a id="context" href= "#">[ Fund Estimations ]</a> <a id="context" href= "#">[ Add Fund ]</a>--%>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Select Donor :
+            </td>
+            <td class="CellData">
+                <asp:PlaceHolder ID="PlaceHolder1" runat="server">
+                    <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+                        <ContentTemplate>
+                            <asp:DropDownList ID="ddDonor" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddDonor_SelectedIndexChanged">
+                            </asp:DropDownList>
+                        </ContentTemplate>
+                        <Triggers>
+                            <asp:AsyncPostBackTrigger ControlID="ddDonor" EventName="SelectedIndexChanged" />
+                        </Triggers>
+                    </asp:UpdatePanel>
+                </asp:PlaceHolder>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Donor Details :
+            </td>
+            <td class="CellData">
+                <asp:PlaceHolder ID="PlaceHolder3" runat="server">
+                    <asp:UpdatePanel ID="UpdatePanel3" runat="server">
+                        <ContentTemplate>
+                            <b>First Name:</b> <asp:Label ID="lblFName" runat="server" Text=""></asp:Label> <br />
+                            <b>Last Name:</b> <asp:Label ID="lblLName" runat="server" Text=""></asp:Label><br />
+                            <b id="bPhone" runat="server">Phone #:</b> <asp:Label ID="lblPhone" runat="server" Text=""></asp:Label><br />
+                            <b id="bEmail" runat="server">Email:</b> <asp:Label ID="lblEmail" runat="server" Text=""></asp:Label><br />
+                            <b id="bBalance" runat="server">Balance:</b> <asp:Label ID="lblBalance" runat="server" Text="0"></asp:Label>
+                        </ContentTemplate>
+                        <Triggers>
+                            <asp:AsyncPostBackTrigger ControlID="ddDonor" EventName="SelectedIndexChanged" />
+                        </Triggers>
+                    </asp:UpdatePanel>
+                </asp:PlaceHolder>
+            </td>
+        </tr>
+       
+        <tr>
+            <td class="CellLabel">
+                Students of the Donor :
+            </td>
+            <td class="CellData">
+               
+                <asp:PlaceHolder ID="PlaceHolder2" runat="server">
+                    <asp:UpdatePanel ID="UpdatePanel2" runat="server">
+                        <ContentTemplate>
+                            <asp:Repeater ID="repeaterChildren" runat="server">
+                                <ItemTemplate>
+                                    <a href="DetailsStudent.aspx?StudentId=<%# DataBinder.Eval(Container.DataItem, "StudentId") %>" ><%# DataBinder.Eval(Container.DataItem, "StudentName") %></a><br/>
+                                </ItemTemplate>
+                            </asp:Repeater>
+                        </ContentTemplate>
+                        <Triggers>
+                            <asp:AsyncPostBackTrigger ControlID="ddDonor" EventName="SelectedIndexChanged" />
+                        </Triggers>
+                    </asp:UpdatePanel>
+                </asp:PlaceHolder>
+            </td>
+        </tr>
+       
+       
+        <tr>
+            <td class="CellLabel">
+                Donation Amount :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtAmount" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="txtAmount"
+                                            ErrorMessage="Please enter a donation amount."></asp:RequiredFieldValidator><asp:RangeValidator
+                                                                                                                            ID="RangeValidator1" runat="server" 
+                                                                                                                            ErrorMessage="Please enter a value greater then 0." 
+                                                                                                                            ControlToValidate="txtAmount" Display="Dynamic" MaximumValue="999999999999" 
+                                                                                                                            MinimumValue="1"></asp:RangeValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Attachment :
+            </td>
+            <td class="CellData">
+                <asp:HiddenField runat="server" ID="hdnOldCerti2" Value="" />
+                <asp:HiddenField runat="server"  ID="hdnNewCerti2" Value="" />
+                 
+                <span id="viewCert2"  ><a  href="javascript:void(0);"  id="viewLinkCerti2">View Attachment</a> | <a href="#" onclick=" RemoveAttachment(); return false; ">
+                                                                                                                      Remove Attachment</a> </span><span id="browseCert2">
+                                                                                                                                                        <input accept="image/*" type="file" id="certificateFile2" runat ="server"/>
+                                                                                                                                                    </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Send Email :
+            </td>
+            <td class="CellData">
+                <asp:CheckBox ID="sendEmail" Checked="false" runat="server"/> <i>[Note: An automated email will be sent to Donor's email address.]</i>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Email Address :
+            </td>
+            <td class="CellData">
+                <asp:PlaceHolder ID="PlaceHolder4" runat="server">
+                    <asp:UpdatePanel ID="UpdatePanel5" runat="server">
+                        <ContentTemplate>
+                            <asp:TextBox CssClass="Textbox" ID="donor_email_address" runat="server" Columns="50" />
+                        </ContentTemplate>
+                    </asp:UpdatePanel>
+                </asp:PlaceHolder>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Send SMS :
+            </td>
+            <td class="CellData">
+                <asp:CheckBox ID="sendSMS" Checked="false" runat="server"/> <i>[Note: Change the below SMS before you submit.]</i>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Cell # :
+            </td>
+            <td class="CellData">
+                <asp:PlaceHolder ID="PlaceHolder5" runat="server">
+                    <asp:UpdatePanel ID="UpdatePanel6" runat="server">
+                        <ContentTemplate>
+                            <asp:TextBox CssClass="Textbox" ID="donor_cell_no" runat="server" Columns="50" />
+                        </ContentTemplate>
+                    </asp:UpdatePanel>
+                </asp:PlaceHolder>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Message :
+            </td>
+            <td class="CellData">
+                <asp:UpdatePanel ID="UpdatePanel4" runat="server">
+                    <ContentTemplate>
+                        <asp:HiddenField ID="hdnUName" Value="0" runat="server" />
+                        <asp:HiddenField ID="hdnPhoneNum" Value="0" runat="server" />
+                Dear <i><%= hdnUName.Value%></i>,<br />
+                    </ContentTemplate>
+                </asp:UpdatePanel>
+                <asp:TextBox CssClass="Textbox" ID="txtSMS" Text="we have received your donation." runat="server" Columns="50" MaxLength="1024"
+                             Rows="4" TextMode="MultiLine" />
+                <br />Plz do not reply to this SMS.
+                <br />Regards,
+                <br />SAVE DC SMS Service
+                <br />http://save-dc.org
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Note :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtNote" runat="server" Columns="50" MaxLength="1024"
+                             Rows="4" TextMode="MultiLine" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td class="ButtonSpacer">
+                <asp:ImageButton runat="server" ID="btnUpdate" SkinID="sknImgBtnAddUser" OnClick="btnUpdate_Click" />
+            </td>
+        </tr>
+        <script language="javascript" type="text/javascript">
+            StartupScriptBills();
+        </script>
+    </table>
+
+</asp:Content>

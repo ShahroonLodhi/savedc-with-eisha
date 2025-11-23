@@ -1,0 +1,110 @@
+<%@ Page Language="C#" Theme="Default" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="DetailsFund.aspx.cs" Inherits="SaveDC.ControlPanel.DetailsFund" Title="Fund Details"%>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <script type="text/javascript" language="javascript"> </script>
+
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <td class="CellLabel"  height="20px" colspan="2">
+          
+                
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            Funds Manager :: Fund Details
+                           
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack" Height="24"
+                                             Width="24" OnClientClick="javascript:window.history.back(); return false;" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td height="20px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+        <tr>
+            <asp:HiddenField ID="hdnEditFundId" Value="0" runat="server" />
+            <td class="CellHeading" width="40%">
+                Fund Details
+            </td>
+            <td class="ContextLinks" align="right">
+                <%--<a id="context" href= "#">[ Fund Estimations ]</a> <a id="context" href= "#">[ Add Fund ]</a>--%>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Donor Name :
+            </td>
+            <td class="CellData">
+                <asp:Label ID="lblDonor" runat="server" Text=""></asp:Label>
+            </td>
+           
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Donor Details :
+            </td>
+            <td class="CellData">
+                <b>First Name:</b> <asp:Label ID="lblFName" runat="server" Text=""></asp:Label> <br />
+                <b>Last Name:</b> <asp:Label ID="lblLName" runat="server" Text=""></asp:Label><br />
+                <b>Phone #:</b> <asp:Label ID="lblPhone" runat="server" Text=""></asp:Label><br />
+                <b>Email:</b> <asp:Label ID="lblEmail" runat="server" Text=""></asp:Label>
+            </td>
+           
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Funded On :
+            </td>
+            <td class="CellData">
+                <asp:Label ID="lblFundedOn" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Funds Posted By :
+            </td>
+            <td class="CellData">
+                <asp:Label ID="lblPostedBy" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+    
+    
+        <tr>
+            <td class="CellLabel">
+                Donation Amount :
+            </td>
+            <td class="CellData">
+                <asp:Label ID="txtAmount" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Attachment :
+            </td>
+            <td class="CellData">
+                <a href="javascript:void(0)" runat ="server" id="ViewAttach">View Attachment</a>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Note :
+            </td>
+            <td class="CellData">
+                <asp:Label ID="txtNote" runat="server" Text=""></asp:Label>
+               
+            </td>
+        </tr>
+        
+    </table>
+
+</asp:Content>

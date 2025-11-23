@@ -1,0 +1,245 @@
+<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="Menu.ascx.cs" Inherits="SaveDC.ControlPanel.Menu" %>
+<table width="100%" border="0" cellspacing="1" cellpadding="1">
+    <%--<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>--%>
+ 
+    <tr>
+        <td>
+            <div id="navlist">
+                <asp:PlaceHolder ID="PlaceHolder1" runat="server">
+                    <li id="liApplication" runat="server">
+                        <table width="100%">
+                       
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/application.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink" runat ="server" id="application" href="ListApplications.aspx">New App. Manager</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                
+                    <li id="liUserManager" runat="server">
+                        <table width="100%">
+                       
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/user.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink" runat ="server" id="user" href="ListUsers.aspx">User Manager</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    <li id="liDonorManager" runat="server">
+                        <table width="100%">
+                       
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/donor.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink" runat ="server" id="donor" href="ListDonors.aspx">Donor Manager</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    <li id="liMembersArea" runat="server">
+                        <table width="100%">
+                       
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/donor.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink" runat ="server" id="member" href="ListMembers.aspx">Members Area</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    
+                    <li id="liSchoolManager" runat="server">
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/school.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink"  runat ="server" id="school"  href="ListSchools.aspx">School Manager</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    <li id="liStudentManager" runat="server">
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/student.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink"  runat ="server" id="student"  href="ListStudents.aspx">Student Manager</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    <li id="liFamilyManager" runat="server">
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/family.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink"   runat ="server" id="family"  href="ListFamily.aspx">Family Manager</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    <li id="liFundsManager" runat="server">
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/fund.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink"   runat ="server" id="fund"  href="ListFunds.aspx">Funds Manager</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    <li id="liExpenseManager" runat="server">
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/expense.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink"   runat ="server" id="expense"  href="ListMonthlyExpenses.aspx">Expense Manager</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    
+                    <li id="liSmsManager" runat="server">
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/sms.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink"   runat ="server" id="sms"  href="ListMarkettingSMS.aspx">SMS Manager</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    
+                    <li id="liBalance" runat="server">
+                        <table width="100%">
+                       
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/balance.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink" runat ="server" id="balance" href="ListBalance.aspx">Bank Balance</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    
+                    <li id="liReports" runat="server">
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/report.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink"   runat ="server" id="report"  href="GetDonationReport.aspx">Reports</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    <li id="liReports1" runat="server">
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/report.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink"   runat ="server" id="report1"  href="GetExpenseReport.aspx">Reports</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    <li id="liSettings" runat="server">
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/settings.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink"   runat ="server" id="setting"  href="AdminSettings.aspx">Settings</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    
+                    <li id="lidonorreport" runat="server">
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/report.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink"   runat ="server" id="donorreport"  href="DonorMonthlyExpReport.aspx">Reports</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    <li id="liNotes" runat="server">
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <img height="20px" width="20px" src="../images/expense.png" />
+                                </td>
+                                <td width="90%">
+                                    <a class="mainLink"   runat ="server" id="notes"  href="DonorsNotes.aspx">Notes</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                </asp:PlaceHolder>
+            
+              
+                
+                
+            </div>
+            
+            <asp:PlaceHolder ID="PlaceHolder2" runat="server">
+                <table width="100%">
+                    <tr>
+                        <td colspan="2">
+                            <h2>
+                                Shortcuts</h2>
+                        </td>
+                    </tr>
+                    <asp:Repeater ID="Repeater1" runat="server">
+                        <ItemTemplate>
+                            <tr>
+                                <td align="right" >
+                                    <img style="padding-left: 30px;" height="20px" width="20px" src="../images/shortcut.png" /></td>
+                                <td width="90%">
+                                    <a class="shortcut" href="<%# DataBinder.Eval(Container.DataItem, "ShortcutURL") %>">
+                                        <%# DataBinder.Eval(Container.DataItem, "ShortDisplayName") %></a>
+                                </td>
+                            </tr>
+                        </ItemTemplate>
+                    </asp:Repeater>
+                </table>
+            </asp:PlaceHolder>
+        </td>
+    </tr>
+	
+	
+</table>

@@ -1,0 +1,357 @@
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using SaveDC.ControlPanel.Src.Objects;
+
+namespace SaveDC.ControlPanel.Src.DB
+{
+    public class StudentDAO
+    {
+        private readonly Student student;
+
+        public StudentDAO()
+        {
+        }
+
+        public StudentDAO(Student oStudent)
+        {
+            student = oStudent;
+        }
+
+        public Int32 RecordCount { get; set; }
+
+
+        public Student[] GetStudents(int bSenior, int nPageNo, int nPageSize)
+        {
+            var dbmanager = new DBManager();
+            Student[] students = null;
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@FirstName", SqlDbType.NVarChar, 250,
+                                                                      student.FirstName),
+                                                dbmanager.makeInParam("@SchoolId", SqlDbType.Int, 0, student.SchoolId),
+                                                dbmanager.makeInParam("@DonorId", SqlDbType.Int, 0, student.DonorId),
+                                                dbmanager.makeInParam("@StatusId", SqlDbType.Int, 0, student.StatusId),
+                                                dbmanager.makeInParam("@FamilyName", SqlDbType.NVarChar, 250,
+                                                                      student.FamilyName),
+                                                dbmanager.makeInParam("@SchoolName", SqlDbType.NVarChar, 250,
+                                                                      student.SchoolName),
+                                                dbmanager.makeInParam("@Varified", SqlDbType.Bit, 0,
+                                                                      student.IsVarificationExists),
+                                                dbmanager.makeInParam("@Senior", SqlDbType.Int, 0, bSenior),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet data = dbmanager.GetDataSetProc("GetStudentsList", parameters);
+                if (data != null)
+                {
+                    RecordCount = Utils.Utils.fixNullInt(parameters[9].Value);
+                    if (data.Tables[0].Rows.Count > 0)
+                    {
+                        students = new Student[data.Tables[0].Rows.Count];
+
+                        for (int i = 0; i < data.Tables[0].Rows.Count; i++)
+                        {
+                            students[i] = new Student();
+                            DataRow row = data.Tables[0].Rows[i];
+                            students[i].StudentId = Utils.Utils.fixNullInt(row["StudentId"]);
+                            students[i].FirstName = Utils.Utils.fixNullString(row["FirstName"]);
+                            students[i].LastName = Utils.Utils.fixNullString(row["LastName"]);
+                            students[i].DateOfBirth = Utils.Utils.fixNullDate(row["DOB"]);
+                            students[i].EducationalLevel = Utils.Utils.fixNullString(row["EducationalLevel"]);
+                            students[i].Notes = Utils.Utils.fixNullString(row["Note"]);
+                            students[i].StatusId = Utils.Utils.fixNullInt(row["StatusId"]);
+                            students[i].SchoolId = Utils.Utils.fixNullInt(row["SchoolId"]);
+                            students[i].HistoryId = Utils.Utils.fixNullInt(row["HistoryId"]);
+                            students[i].FamilyId = Utils.Utils.fixNullInt(row["FamilyId"]);
+                            students[i].DonorId = Utils.Utils.fixNullInt(row["DonorId"]);
+                            students[i].ClassId = Utils.Utils.fixNullInt(row["ClassId"]);
+
+                            students[i].ClassName = Utils.Utils.fixNullString(row["ClassName"]);
+                            students[i].FamilyName = Utils.Utils.fixNullString(row["FamilyName"]);
+                            students[i].SchoolName = Utils.Utils.fixNullString(row["SchoolName"]);
+                            students[i].DonorName = Utils.Utils.fixNullString(row["DonorName"]);
+                            students[i].StatusName = Utils.Utils.fixNullString(row["StatusDesc"]);
+                            students[i].IsVarificationExists = Utils.Utils.fixNullBool(row["IsVarified"]);
+                        }
+                    }
+                }
+                return students;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+            finally
+            {
+                dbmanager = null;
+            }
+        }
+
+        public DataSet GetStudentsInDS(int bSenior, int nPageNo, int nPageSize)
+        {
+            DataSet ds = new DataSet();
+            var dbmanager = new DBManager();
+            Student[] students = null;
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@FirstName", SqlDbType.NVarChar, 250,
+                                                                      student.FirstName),
+                                                dbmanager.makeInParam("@SchoolId", SqlDbType.Int, 0, student.SchoolId),
+                                                dbmanager.makeInParam("@DonorId", SqlDbType.Int, 0, student.DonorId),
+                                                dbmanager.makeInParam("@StatusId", SqlDbType.Int, 0, student.StatusId),
+                                                dbmanager.makeInParam("@FamilyName", SqlDbType.NVarChar, 250,
+                                                                      student.FamilyName),
+                                                dbmanager.makeInParam("@SchoolName", SqlDbType.NVarChar, 250,
+                                                                      student.SchoolName),
+                                                dbmanager.makeInParam("@Varified", SqlDbType.Bit, 0,
+                                                                      student.IsVarificationExists),
+                                                dbmanager.makeInParam("@Senior", SqlDbType.Int, 0, bSenior),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                ds = dbmanager.GetDataSetProc("GetStudentsList", parameters);
+                if (ds != null)
+                {
+                    return ds;
+                }
+               
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+            return ds;
+
+        }
+
+        public Student LoadStudent(int studentID)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] sqlparameter = {
+                                                  dbmanager.makeInParam("@StudentID", SqlDbType.Int, 0, studentID)
+                                              };
+
+                SqlDataReader sqldatareader = dbmanager.GetDataReaderProc("LoadStudent", sqlparameter);
+                if (sqldatareader.Read())
+                {
+                    student.StudentId =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("StudentId")));
+                    student.FirstName =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("FirstName")));
+                    student.LastName =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("LastName")));
+                    student.DateOfBirth =
+                        Utils.Utils.fixNullDate(sqldatareader.GetValue(sqldatareader.GetOrdinal("DOB")));
+                    student.EducationalLevel =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("EducationalLevel")));
+                    student.Notes = Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("Note")));
+                    student.ImageGUID =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("ImageGUID")));
+
+                    student.StatusId =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("StatusId")));
+                    student.SchoolId =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("SchoolId")));
+                    student.HistoryId =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("HistoryId")));
+                    student.FamilyId =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("FamilyId")));
+                    student.DonorId = Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("DonorId")));
+                    student.ClassId = Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("ClassId")));
+
+                    student.Varification.IsVarified =
+                        Utils.Utils.fixNullBool(sqldatareader.GetValue(sqldatareader.GetOrdinal("IsVarified")));
+                    student.Varification.VarifiedBy =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("VarifiedBy")));
+                    student.Varification.VarificationDate =
+                        Utils.Utils.fixNullDate(sqldatareader.GetValue(sqldatareader.GetOrdinal("VarificationDate")));
+                    student.Varification.Remarks =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("Remarks")));
+
+
+                    sqldatareader.Close();
+                    return student;
+                }
+                sqldatareader.Close();
+
+                return null;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+        public int AddStudent()
+        {
+            var dbmanager = new DBManager();
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, student.StudentId)
+                                                ,
+                                                dbmanager.makeInParam("@FirstName", SqlDbType.NVarChar, 255,
+                                                                      student.FirstName),
+                                                dbmanager.makeInParam("@LastName", SqlDbType.NVarChar, 255,
+                                                                      student.LastName),
+                                                dbmanager.makeInParam("@DOB", SqlDbType.DateTime, 0, student.DateOfBirth)
+                                                ,
+                                                dbmanager.makeInParam("@EducationalLevel", SqlDbType.NVarChar, 255,
+                                                                      student.EducationalLevel),
+                                                dbmanager.makeInParam("@ImageGUID", SqlDbType.NVarChar, 50,
+                                                                      student.ImageGUID),
+                                                //dbmanager.makeInParam("@StatusId", System.Data.SqlDbType.Int, 255, student.StatusId),
+                                                dbmanager.makeInParam("@SchoolId", SqlDbType.Int, 255, student.SchoolId)
+                                                ,
+                                                dbmanager.makeInParam("@HistoryId", SqlDbType.Int, 255,
+                                                                      student.HistoryId),
+                                                dbmanager.makeInParam("@Note", SqlDbType.NVarChar, 255, student.Notes),
+                                                dbmanager.makeInParam("@FamilyId", SqlDbType.Int, 255, student.FamilyId)
+                                                ,
+                                                dbmanager.makeInParam("@DonorId", SqlDbType.Int, 255, student.DonorId),
+                                                dbmanager.makeInParam("@ClassId", SqlDbType.Int, 255, student.ClassId)
+                                            };
+
+                int nRet = dbmanager.RunProc("AddStudent", parameters);
+
+                return nRet;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return 0;
+            }
+            finally
+            {
+                dbmanager = null;
+            }
+        }
+
+        //public bool StudentExists()
+        //{
+        //    DBManager dbmanager = new DBManager();
+        //    try
+        //    {
+        //        //Update Member information to the Database
+        //        System.Data.SqlClient.SqlParameter[] parameters = { 
+        //            dbmanager.makeInParam("@StudentName", System.Data.SqlDbType.NVarChar, 50, student.StudentName),
+        //            dbmanager.makeInParam("@EmailAddress", System.Data.SqlDbType.NVarChar, 250, student.EmailAddress)
+        //        };
+
+        //        int nRet = dbmanager.RunProc("nmMemberExists", parameters);
+
+        //        if (nRet > 0)
+        //            return true;
+        //        else
+        //            return false;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Utils.Utils.LogErrorToFile(e);
+        //        return false;
+        //    }
+        //    finally
+        //    {
+        //        dbmanager = null;
+        //    }
+        //}
+
+        public bool DeleteStudent()
+        {
+            var dbmanager = new DBManager();
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, student.StudentId)
+                                            };
+
+                int nRet = dbmanager.RunProc("DeleteStudent", parameters);
+
+                if (nRet > 0)
+                    return true;
+                else
+                    return false;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+            finally
+            {
+                dbmanager = null;
+            }
+        }
+
+        internal bool IsVarified()
+        {
+            var dbmanager = new DBManager();
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, student.StudentId)
+                                            };
+
+                SqlDataReader reader = dbmanager.GetDataReaderProc("IsStudentVarified", parameters);
+
+                if (reader.HasRows)
+                    return true;
+                else
+                    return false;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return true; // show varified in case of xception
+            }
+            finally
+            {
+                dbmanager = null;
+            }
+        }
+
+        internal bool Varify()
+        {
+            var dbmanager = new DBManager();
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, student.StudentId)
+                                                ,
+                                                dbmanager.makeInParam("@VarifiedBy", SqlDbType.Int, 0,
+                                                                      student.Varification.VarifiedBy),
+                                                dbmanager.makeInParam("@Remarks", SqlDbType.VarChar, 255,
+                                                                      student.Varification.Remarks),
+                                                dbmanager.makeInParam("@IsVarified", SqlDbType.Bit, 0,
+                                                                      student.Varification.IsVarified),
+                                            };
+
+                int nRet = dbmanager.RunProc("VarifyStudent", parameters);
+
+                if (nRet > 0)
+                    return true;
+                else
+                    return false;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+            finally
+            {
+                dbmanager = null;
+            }
+        }
+    }
+}

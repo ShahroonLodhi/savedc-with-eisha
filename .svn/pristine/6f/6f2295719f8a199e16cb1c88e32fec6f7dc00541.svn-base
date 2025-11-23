@@ -1,0 +1,299 @@
+<%@ Page Language="C#" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="DetailsMonthlyExpense.aspx.cs" Inherits="SaveDC.ControlPanel.DetailsMonthlyExpense" Title="Monthly Expense Details"%>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <script type="text/javascript" language="javascript">
+
+        function roundNumber(num, dec) {
+            var result = Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec);
+            return result;
+        }
+
+        function CalcSum(stdId) {
+
+            var stdSum = 0;
+            var inputElem = document.getElementsByTagName("span");
+            if (inputElem) {
+                for (var i = 0; i < inputElem.length; i++) {
+                    //  alert(inputElem[i].name);
+                    if (inputElem[i] && inputElem[i].id.indexOf("_txtAmount") > -1) {
+                        if (isNaN(inputElem[i].innerHTML) || parseFloat(inputElem[i].innerHTML) < 0) {
+                            //alert("Please enter a valid non-negative value for amount.");
+                            return false;
+                        }
+
+                        stdSum += parseFloat(inputElem[i].innerHTML);
+                    }
+                }
+            }
+
+            document.getElementById("<%= txtGTotal.ClientID %>").innerHTML = roundNumber(stdSum, 2);
+//        var inputTotalElem = document.getElementsByTagName("span");
+//        
+//         if (inputTotalElem) {
+//             for (var i = 0; i < inputTotalElem.length; i++) {
+//                 alert(stdId);
+//                 if (inputTotalElem[i] && inputTotalElem[i].name.indexOf("txtTotal_" + stdId)) {
+//                     inputTotalElem[i].innerHTML = stdSum;
+//                     alert("hi");
+//                  } 
+//             } 
+//         }
+
+        }
+
+
+        function PrintForm() {
+            var expId = "<%= hdnExpenseID.Value %>";
+            //winname = window.open('PrintDetailsStudent.aspx?StudentId=' + studentId, 'StudentDetails', 'left=100,top=30,screenX=100,screenY=30, height=550,width=900,toolbar=no,directories=no,status=no,menubar=yes,modal=no,scrollbars=yes');
+
+            winname = window.open('PrintDetailsMonthlyExpense.aspx?ExpenseId=' + expId, "1328942502c");
+
+            winname.print();
+
+
+        }
+    </script>
+
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <td height="20px" class="CellLabel" id="tdNav" colspan="<%= hdnColSpan.Value %>">
+	
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            Expense Manager :: Expense Details
+                           
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack" Height="24"
+                                             Width="24" OnClientClick="javascript:window.history.back(); return false;" />
+                        </td>
+                    </tr>
+                </table>
+	
+            </td>
+        </tr>
+        <tr>
+            <td height="20px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="<%= hdnColSpan.Value %>">
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label></td>
+        </tr>
+       
+        <tr>
+            <asp:HiddenField ID="hdnColSpan" runat="server" />
+           
+            <asp:HiddenField ID="hdnExpenseID" Value ="0" runat="server" />
+            <td class="CellHeading" width="40%" colspan="2">Expense Details </td>
+            <td class="ContextLinks" align="right"  colspan="<%= hdnColSpan.Value %>"><asp:ImageButton ID="ImageButton2" AlternateText="Print" ToolTip="Print" runat="server"
+                                                                                                       SkinID="sknImgPrint" Height="24" Width="24" OnClientClick="PrintForm();" /></td>
+        </tr>
+	
+        <tr>
+            <td class="CellLabel" colspan="2">
+                File #  :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:Label ID="lblFileNum" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel" colspan="2">
+                Voucher # :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:Label ID="lblVoucherNum" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+       
+        <tr>
+            <td class="CellLabel" colspan="2">
+                For Month :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:Label ID="lblMonth" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel" colspan="2">
+                Expense Category :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:Label ID="lblExpenseType" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel" colspan="2">
+                Posted On :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:Label ID="lblPostedOn" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel" colspan="2">
+                Posted By :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:Label ID="lblPostedBy" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+       
+       
+        <asp:Panel ID="PlaceHolderSchool" runat="server">
+            <tr>
+                <td class="CellLabel" colspan="2">
+                    School Name :
+                </td>
+                <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                    <asp:Label ID="lblSchoolName" runat="server" Text=""></asp:Label>
+                </td>
+            </tr>
+            <tr>
+                <td class="SubHeading" style="height: 23px">
+                    Student Name
+                </td>
+                <td class="SubHeading" style="height: 23px">
+                    Student Class
+                </td>
+                <asp:Repeater ID="Repeater3" runat="server">
+                    <ItemTemplate>
+                        <td class="SubHeading" style="height: 23px">
+                            <%# DataBinder.Eval(Container.DataItem, "ExpenseName") %>
+                        </td>
+                    </ItemTemplate>
+                </asp:Repeater>
+                <%-- <td class="SubHeading" style="height: 23px">
+           Total&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+           </td> --%>
+            </tr>
+            <asp:Repeater ID="Repeater1" runat="server" OnItemDataBound="Repeater1_ItemDataBound">
+                <ItemTemplate>
+                    <tr>
+                        <td class="CellLabel">
+                            <asp:HiddenField ID="hdnStudentId" runat="server" Value='<%# DataBinder.Eval(Container.DataItem, "StudentId") %>' />
+                            <%# DataBinder.Eval(Container.DataItem, "FirstName") %>
+                            <%# DataBinder.Eval(Container.DataItem, "LastName") %>
+                        </td>
+                        <td class="CellLabel">
+                            <%# DataBinder.Eval(Container.DataItem, "ClassName") %>
+                        </td>
+                        <asp:Repeater ID="Repeater2" runat="server" OnItemDataBound="Repeater2_ItemDataBound">
+                            <ItemTemplate>
+                                <td class="CellData">
+                                    <asp:HiddenField ID="StudentId1" runat="server" Value='<%# DataBinder.Eval(Container.DataItem, "StudentId") %>' />
+                                    <asp:HiddenField ID="hdnExpenseId" runat="server" Value='<%# DataBinder.Eval(Container.DataItem, "ExpenseId") %>' />
+                                    <asp:Label ID='txtAmount' runat="server" Width="60" Text='<%# DataBinder.Eval(Container.DataItem, "Amount") %>' />
+                                </td>
+                            </ItemTemplate>
+                        </asp:Repeater>
+                        <%-- <td class="CellLabel">
+                           <asp:Label ID="txtTotal"  runat="server" Text="0.00"></asp:Label>
+                      </td>--%>
+                    </tr>
+                </ItemTemplate>
+                <FooterTemplate>
+                </FooterTemplate>
+            </asp:Repeater>
+            <tr>
+                <td class="CellLabel" colspan="2">
+                    Grand Total :
+                </td>
+                <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                    <b>
+                        <asp:Label ID="txtGTotal" runat="server" Text=""></asp:Label></b>
+                </td>
+            </tr>
+        </asp:Panel>
+        <asp:Panel ID="PlaceHolderOther" runat="server">
+            <tr>
+                <td class="CellLabel" colspan="2">
+                    Expense Payee :
+                </td>
+                <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                    <asp:Label ID="lblPayee" runat="server" Text=""></asp:Label>
+                </td>
+            </tr>
+            <tr>
+                <td class="CellLabel" colspan="2">
+                    Total Amount :
+                </td>
+                <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                    <asp:Label ID="lblAmount" runat="server" Text=""></asp:Label>
+                </td>
+            </tr>
+            <tr>
+                <td class="CellLabel" colspan="2">
+                    Details :
+                </td>
+                <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                    <asp:Label ID="lblDetail" runat="server" Text=""></asp:Label>
+                </td>
+            </tr>
+        </asp:Panel>
+       
+        <tr>
+            <td class="SubHeading" id="tdpayment" colspan="<%= hdnColSpan.Value %>" style="height: 23px">
+                Payment Details
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel" colspan="2">
+                Payment Mode :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:Label ID="txtPaymentMode" runat="server" Text="" />
+            </td>
+        </tr>
+        <asp:PlaceHolder ID="PlaceHolder1" runat="server">
+            <tr id="trCheque1">
+                <td class="CellLabel" colspan="2">
+                    Through Bank :
+                </td>
+                <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                    <asp:Label ID="txtBank" runat="server" Text="" />
+                </td>
+            </tr>
+            <tr id="trCheque2">
+                <td class="CellLabel" colspan="2">
+                    Beneficiary Name :
+                </td>
+                <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                    <asp:Label ID="txtAccNum" runat="server" Text="" />
+                </td>
+            </tr>
+            <tr id="trCheque3">
+                <td class="CellLabel" colspan="2">
+                    Cheque # :
+                </td>
+                <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                    <asp:Label ID="txtChkNum" runat="server" Text="" />
+                </td>
+            </tr>
+        </asp:PlaceHolder>
+        <tr>
+            <td class="CellLabel" colspan="2">
+                Note :
+            </td>
+            <td class="CellData" colspan="<%= hdnColSpan.Value %>">
+                <asp:Label ID="txtNote" runat="server" Text="" />
+            </td>
+        </tr>
+
+        <script language="javascript" type="text/javascript">
+            if ("<%= hdnColSpan.Value %>" != "1") {
+                CalcSum(0);
+
+                document.getElementById("tdpayment").colSpan = document.getElementById("tdpayment").colSpan + 1;
+                document.getElementById("tdNav").colSpan = document.getElementById("tdNav").colSpan + 1;
+            } else {
+                document.getElementById("tdpayment").colSpan = document.getElementById("tdpayment").colSpan + 2;
+                document.getElementById("tdNav").colSpan = document.getElementById("tdNav").colSpan + 2;
+            }
+
+        </script>
+
+    </table>
+</asp:Content>

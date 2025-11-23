@@ -1,0 +1,133 @@
+﻿using System.Web;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel.Src.Configurations
+{
+    public static class SaveDCSession
+    {
+        public static bool AutoLogin
+        {
+            get
+            {
+                bool nAutoLogin = false;
+                if (HttpContext.Current.Session["AutoLogin"] != null)
+                {
+                    bool.TryParse(HttpContext.Current.Session["AutoLogin"].ToString(), out nAutoLogin);
+                }
+                return nAutoLogin;
+            }
+            set { HttpContext.Current.Session["AutoLogin"] = value; }
+        }
+
+        public static int AutoUserId
+        {
+            get
+            {
+                int nAutoUserId = 0;
+                if (HttpContext.Current.Session["AutoUserId"] != null)
+                {
+                    int.TryParse(HttpContext.Current.Session["AutoUserId"].ToString(), out nAutoUserId);
+                }
+                return nAutoUserId;
+            }
+            set { HttpContext.Current.Session["AutoUserId"] = value; }
+        }
+
+        public static int UserId
+        {
+            get
+            {
+                int nUserId = 0;
+                if (HttpContext.Current.Session["UserId"] != null)
+                {
+                    int.TryParse(HttpContext.Current.Session["UserId"].ToString(), out nUserId);
+                }
+                return nUserId;
+            }
+            set { HttpContext.Current.Session["UserId"] = value; }
+        }
+
+        public static UserAccessLevels UserAccessLevel
+        {
+            get
+            {
+                if (HttpContext.Current.Session["level"] != null)
+                {
+                    return (UserAccessLevels) HttpContext.Current.Session["level"];
+                }
+                return UserAccessLevels.None;
+            }
+            set { HttpContext.Current.Session["level"] = value; }
+        }
+
+        public static int SchoolId
+        {
+            get
+            {
+                int nSchoolId = 0;
+                if (HttpContext.Current.Session["SchoolId"] != null)
+                {
+                    int.TryParse(HttpContext.Current.Session["SchoolId"].ToString(), out nSchoolId);
+                }
+                return nSchoolId;
+            }
+            set { HttpContext.Current.Session["SchoolId"] = value; }
+        }
+
+        public static int StudentId
+        {
+            get
+            {
+                int nStudentId = 0;
+                if (HttpContext.Current.Session["StudentId"] != null)
+                {
+                    int.TryParse(HttpContext.Current.Session["StudentId"].ToString(), out nStudentId);
+                }
+                return nStudentId;
+            }
+            set { HttpContext.Current.Session["StudentId"] = value; }
+        }
+
+        public static string UserName
+        {
+            get
+            {
+                string szUserName = "";
+                if (HttpContext.Current.Session["UserName"] != null)
+                {
+                    szUserName = HttpContext.Current.Session["UserName"].ToString();
+                }
+                return szUserName;
+            }
+            set { HttpContext.Current.Session["UserName"] = value; }
+        }
+
+        public static string UserRoleId
+        {
+            get
+            {
+                string szUserRoleId = "";
+                if (HttpContext.Current.Session["UserRoleId"] != null)
+                {
+                    szUserRoleId = HttpContext.Current.Session["UserRoleId"].ToString();
+                }
+                return szUserRoleId;
+            }
+            set { HttpContext.Current.Session["UserRoleId"] = value; }
+        }
+
+        public static string UserRoleName
+        {
+            get
+            {
+                string szUserRoleName = "";
+                if (HttpContext.Current.Session["UserRoleName"] != null)
+                {
+                    szUserRoleName = HttpContext.Current.Session["UserRoleName"].ToString();
+                }
+                return szUserRoleName;
+            }
+            set { HttpContext.Current.Session["UserRoleName"] = value; }
+        }
+    }
+}

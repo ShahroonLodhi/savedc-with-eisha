@@ -1,0 +1,617 @@
+<%@ Page Language="C#" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="AddFamily.aspx.cs" Inherits="SaveDC.ControlPanel.AddFamily" Title="Add Family"%>
+<%--<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>--%>
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <script type="text/javascript" language="javascript">
+        function RemoveBill1(which) {
+
+            document.getElementById('browseBill' + which).style.display = '';
+            document.getElementById('viewBill' + which).style.display = 'none';
+            document.getElementById("<%= hdnNewBill1.ClientID %>").value = '';
+        }
+
+        function RemoveBill2(which) {
+
+            document.getElementById('browseBill' + which).style.display = '';
+            document.getElementById('viewBill' + which).style.display = 'none';
+            document.getElementById("<%= hdnNewBill2.ClientID %>").value = '';
+        }
+
+        function RemoveCertificate1() {
+
+            document.getElementById('browseCert1').style.display = '';
+            document.getElementById('viewCert1').style.display = 'none';
+            document.getElementById("<%= hdnNewCerti1.ClientID %>").value = '';
+        }
+
+        function RemoveCertificate2() {
+
+            document.getElementById('browseCert2').style.display = '';
+            document.getElementById('viewCert2').style.display = 'none';
+            document.getElementById("<%= hdnNewCerti2.ClientID %>").value = '';
+        }
+
+
+        function StartupScriptBills() {
+
+            var ViewHTML = "window.open('_REPLACEURL?modalwin=1', 'View', 'left=100,top=30,screenX=100,screenY=30, height=550,width=840,toolbar=no,directories=no,status=no,menubar=no,modal=yes,scrollbars=yes');";
+
+            var bill1NewVal = document.getElementById("<%= hdnNewBill1.ClientID %>").value;
+            if (bill1NewVal) {
+                document.getElementById('browseBill1').style.display = 'none';
+                document.getElementById('viewBill1').style.display = '';
+                document.getElementById('viewlink1').setAttribute("onclick", ViewHTML.replace("_REPLACEURL", '../Uploads/UtilityBills/' + bill1NewVal + '.jpg'));
+            } else {
+                document.getElementById('browseBill1').style.display = '';
+                document.getElementById('viewBill1').style.display = 'none';
+            }
+
+            var bill1NewVal1 = document.getElementById("<%= hdnNewBill2.ClientID %>").value;
+            if (bill1NewVal1) {
+                document.getElementById('browseBill2').style.display = 'none';
+                document.getElementById('viewBill2').style.display = '';
+                //document.getElementById('viewlink2').href = '../Uploads/UtilityBills/' + bill1NewVal1 + '.jpg';
+                document.getElementById('viewlink2').setAttribute("onclick", ViewHTML.replace("_REPLACEURL", '../Uploads/UtilityBills/' + bill1NewVal1 + '.jpg'));
+            } else {
+                document.getElementById('browseBill2').style.display = '';
+                document.getElementById('viewBill2').style.display = 'none';
+            }
+
+
+            // certificates
+            var certNewVal1 = document.getElementById("<%= hdnOldCerti1.ClientID %>").value;
+            if (certNewVal1) {
+                document.getElementById('browseCert1').style.display = 'none';
+                document.getElementById('viewCert1').style.display = '';
+                //  document.getElementById('viewLinkCerti1').href = '../Uploads/UtilityBills/' + certNewVal1 + '.jpg';
+                document.getElementById('viewLinkCerti1').setAttribute("onclick", ViewHTML.replace("_REPLACEURL", '../Uploads/UtilityBills/' + certNewVal1 + '.jpg'));
+            } else {
+                document.getElementById('browseCert1').style.display = '';
+                document.getElementById('viewCert1').style.display = 'none';
+            }
+
+            // certificates
+            var certNewVal2 = document.getElementById("<%= hdnOldCerti2.ClientID %>").value;
+            if (certNewVal2) {
+                document.getElementById('browseCert2').style.display = 'none';
+                document.getElementById('viewCert2').style.display = '';
+                //document.getElementById('viewLinkCerti2').href = '../Uploads/UtilityBills/' + certNewVal2 + '.jpg';
+                document.getElementById('viewLinkCerti2').setAttribute("onclick", ViewHTML.replace("_REPLACEURL", '../Uploads/UtilityBills/' + certNewVal2 + '.jpg'));
+            } else {
+                document.getElementById('browseCert2').style.display = '';
+                document.getElementById('viewCert2').style.display = 'none';
+            }
+
+
+        }
+
+
+        function ShowHideRelation(val, savedVal) {
+
+            if (!savedVal || savedVal == '')
+                savedVal = 1;
+            if (val == '0') {
+
+                document.getElementById("<%= txtDivorcedPeriod.ClientID %>").value = savedVal;
+                document.getElementById('relation_row1').style.display = "none";
+                document.getElementById('relation_row2').style.display = "none";
+                document.getElementById('relation_row3').style.display = "none";
+
+//            ValidatorEnable(validatorId, false);
+            } else {
+                document.getElementById("<%= txtDivorcedPeriod.ClientID %>").value = savedVal;
+                document.getElementById('relation_row1').style.display = "";
+                document.getElementById('relation_row2').style.display = "";
+                document.getElementById('relation_row3').style.display = "";
+//            ValidatorEnable(validatorId, true);
+            }
+        }
+
+        function ShowHideMOtherAlive(val, savedVal) {
+
+            if (!savedVal || savedVal == '')
+                savedVal = 1;
+            if (val == '1') {
+
+                document.getElementById("<%= txtMotherAge.ClientID %>").value = savedVal;
+                document.getElementById('ismotheralive_row').style.display = "none";
+            } else {
+                document.getElementById("<%= txtMotherAge.ClientID %>").value = savedVal;
+                document.getElementById('ismotheralive_row').style.display = "";
+            }
+        }
+
+        function ShowHideFatherAlive(val, savedVal) {
+
+            if (!savedVal || savedVal == '')
+                savedVal = 1;
+            if (val == '1') {
+
+                document.getElementById("<%= txtFatherAge.ClientID %>").value = savedVal;
+                document.getElementById('isfatheralive_row').style.display = "none";
+            } else {
+                document.getElementById("<%= txtFatherAge.ClientID %>").value = savedVal;
+                document.getElementById('isfatheralive_row').style.display = "";
+            }
+        }
+
+    </script>
+    <%--<asp:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server"></asp:ToolkitScriptManager>--%>
+    <asp:ScriptManager ID="ScriptManager1" runat="server">
+    </asp:ScriptManager>
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <asp:HiddenField ID="hdnAddEdit" Value="Add" runat="server" />
+            <td colspan="2" class="CellLabel" height="20px" class="CellLabel">
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            Family Manager :: <%= hdnAddEdit.Value %> Family
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack" Height="24"
+                                             Width="24" OnClientClick="javascript:window.history.back(); return false;" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td height="20px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+        <tr>
+            <asp:HiddenField ID="hdnEditFamilyId" Value="0" runat="server" />
+            <td class="CellHeading" width="40%">
+                <%= hdnAddEdit.Value %> Family
+            </td>
+            <td class="ContextLinks" align="right">
+                <%--<a id="context" href="#">[ Student Profile ]</a> <a id="context" href="#">[ Student Family ]</a>--%>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="SubHeading" style="height: 23px">
+                Family Information
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Family Name :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtDisplayName" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="txtDisplayName"
+                                            ErrorMessage="Please enter a Family Name."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="SubHeading" style="height: 23px">
+                Parents Information
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Father Name :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtFatherName" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="txtFatherName"
+                                            ErrorMessage="Please enter a Father Name."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Mother Name :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtMotherName" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator5" runat="server" ControlToValidate="txtMotherName"
+                                            ErrorMessage="Please enter a Mother Name."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="CellLabel">
+                Is Father Alive? :
+            </td>
+            <td class="CellData">
+                <asp:RadioButtonList ID="rbIsFatherAlive" runat="server" CellPadding="1" CellSpacing="1"
+                                     RepeatDirection="Horizontal">
+                    <asp:ListItem Selected="True" onclick =" ShowHideFatherAlive('1', '0') " Value="1" class="RadioListItem">Yes</asp:ListItem>
+                    <asp:ListItem Value="0"  onclick =" ShowHideFatherAlive('0', '') " class="RadioListItem">No</asp:ListItem>
+                </asp:RadioButtonList>
+            </td>
+        </tr> 
+        <tr id="isfatheralive_row" style="display: none;">
+            <td class="CellLabel">
+                Father's Age :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtFatherAge" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator10" runat="server" ControlToValidate="txtFatherAge"
+                                            ErrorMessage="Please enter a Father's Age."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="CellLabel">
+                Is Mother Alive? :
+            </td>
+            <td class="CellData">
+                <asp:RadioButtonList ID="rbIsMotherAlive" runat="server" CellPadding="1" CellSpacing="1"
+                                     RepeatDirection="Horizontal">
+                    <asp:ListItem class="RadioListItem"  onclick =" ShowHideMOtherAlive('1', '0') " Selected="True" Value="1">Yes</asp:ListItem>
+                    <asp:ListItem class="RadioListItem"  onclick =" ShowHideMOtherAlive('0', '') " Value="0">No</asp:ListItem>
+                </asp:RadioButtonList>
+            </td>
+        </tr>
+
+        <tr id = "ismotheralive_row"  style="display: none;">
+            <td class="CellLabel">
+                Mother's Age :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtMotherAge" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator11" runat="server" ControlToValidate="txtMotherAge"
+                                            ErrorMessage="Please enter a Mother's Age."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Father's Occupation :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtFatherOccupation" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator12" runat="server" ControlToValidate="txtFatherOccupation"
+                                            ErrorMessage="Please enter a Father's Occupation."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Mother's Occupation :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtMotherOccupation" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator13" runat="server" ControlToValidate="txtMotherOccupation"
+                                            ErrorMessage="Please enter a Mother's Occupation."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Father's CNIC :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtFatherCNIC" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator9" runat="server" ControlToValidate="txtFatherCNIC"
+                                            ErrorMessage="Please enter a Father's CNIC."></asp:RequiredFieldValidator><br />(e.g. 35202-1234567-0)
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Mother's CNIC :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtMotherCNIC" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator14" runat="server" ControlToValidate="txtMotherCNIC"
+                                            ErrorMessage="Please enter a Father's CNIC."></asp:RequiredFieldValidator><br />(e.g. 35202-1234567-0)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="SubHeading" style="height: 23px">
+                Parents Relation
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Is Parents Divorced/Separated? :
+            </td>
+            <td class="CellData">
+                <asp:RadioButtonList ID="rbIsParentsDivorced" runat="server"
+                                     CellPadding="1" CellSpacing="1" RepeatDirection="Horizontal" >
+                    <asp:ListItem class="RadioListItem" onclick=" ShowHideRelation('1', '') " Value="1">Yes</asp:ListItem>
+                    <asp:ListItem class="RadioListItem"  onclick=" ShowHideRelation('0', '0') " Selected="True" Value="0">No</asp:ListItem>
+                </asp:RadioButtonList>
+                <%--     <asp:PlaceHolder ID="PlaceHolder1" runat="server">
+                    <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+                        <ContentTemplate>
+                            <asp:RadioButtonList AutoPostBack="true" ID="rbIsParentsDivorced" runat="server"
+                                CellPadding="1" CellSpacing="1" RepeatDirection="Horizontal" OnSelectedIndexChanged="rbIsParentsDivorced_SelectedIndexChanged">
+                                <asp:ListItem class="RadioListItem" Value="1">Yes</asp:ListItem>
+                                <asp:ListItem class="RadioListItem" Selected="True" Value="0">No</asp:ListItem>
+                            </asp:RadioButtonList>
+                        </ContentTemplate>
+                        <Triggers>
+                            <asp:AsyncPostBackTrigger ControlID="rbIsParentsDivorced" EventName="SelectedIndexChanged" />
+                        </Triggers>
+                    </asp:UpdatePanel>
+                </asp:PlaceHolder>--%>
+            </td>
+        </tr>
+        <tr id="relation_row1" style="display: none" >
+            <td class="CellLabel">
+                Divorced Period (<i>months</i>) :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtDivorcedPeriod" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator15" runat="server" ControlToValidate="txtDivorcedPeriod"
+                                            ErrorMessage="Please enter a Divorced Period."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr id="relation_row2" style="display: none">
+            <td class="CellLabel">
+                Who is Guardian now? :
+            </td>
+            <td class="CellData">
+                <asp:RadioButtonList ID="rbQardian" runat="server" CellPadding="1" CellSpacing="1"
+                                     RepeatDirection="Horizontal">
+                    <asp:ListItem class="RadioListItem" Selected="True" Value="1">Father</asp:ListItem>
+                    <asp:ListItem class="RadioListItem" Value="0">Mother</asp:ListItem>
+                </asp:RadioButtonList>
+            </td>
+        </tr>
+        <tr id="relation_row3" style="display: none" >
+            <td class="CellLabel">
+                Address of Father/Mother not leaving with :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtDAddress" runat="server" Columns="50" />
+            </td>
+        </tr>
+        <%-- <asp:PlaceHolder ID="PlaceHolder2" runat="server">
+            <asp:UpdatePanel ID="UpdatePanel2" runat="server">
+                <ContentTemplate>
+                  
+                </ContentTemplate>
+                <Triggers>
+                    <asp:AsyncPostBackTrigger ControlID="rbIsParentsDivorced" EventName="SelectedIndexChanged" />
+                </Triggers>
+            </asp:UpdatePanel>
+        </asp:PlaceHolder>--%>
+        <tr>
+            <td colspan="2" class="SubHeading" style="height: 23px">
+                Family Members Details
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Male Members :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtMaleMembers" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator16" runat="server" ControlToValidate="txtMaleMembers"
+                                            ErrorMessage="Please enter a count of Male Members of the family."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Female Members :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtFemleMembers" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator17" runat="server" ControlToValidate="txtFemleMembers"
+                                            ErrorMessage="Please enter a count of Female Members of the family."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Other Details (<i>if any</i>) :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtMemberDetails" runat="server" Columns="50"
+                             MaxLength="1024" Rows="4" TextMode="MultiLine" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="SubHeading" style="height: 23px">
+                Property/Financial Details
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Is Living in Own House? :
+            </td>
+            <td class="CellData">
+                <asp:RadioButtonList ID="rbIsOwnHouse" runat="server" CellPadding="1" CellSpacing="1"
+                                     RepeatDirection="Horizontal">
+                    <asp:ListItem class="RadioListItem" Selected="True" Value="1">Yes</asp:ListItem>
+                    <asp:ListItem class="RadioListItem" Value="0">No</asp:ListItem>
+                </asp:RadioButtonList>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                House Area (<i>marla</i>) :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtHouseArea" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator18" runat="server" ControlToValidate="txtHouseArea"
+                                            ErrorMessage="Please enter a House Area."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Rooms in House :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtRooms" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator19" runat="server" ControlToValidate="txtRooms"
+                                            ErrorMessage="Please enter a count for Rooms in House."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Living Period (<i>months</i>) :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtLivingPeriod" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator20" runat="server" ControlToValidate="txtLivingPeriod"
+                                            ErrorMessage="Please enter a Living Period in months."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Monthly Income (<i>PKR</i>) :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtIncome" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator21" runat="server" ControlToValidate="txtIncome"
+                                            ErrorMessage="Please enter a Monthly Income in PKR."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+       
+        <tr>
+            <td colspan="2" class="SubHeading" style="height: 23px">
+                Utility Bills Details
+            </td>
+        </tr>
+        <asp:PlaceHolder ID="PlaceHolder1" runat="server">
+            <tr>
+                <td class="CellLabel">
+                    Bill I :
+                </td>
+                <td class="CellData">
+                    <asp:HiddenField runat="server" ID="hdnOldBill1" Value="" />
+                    <asp:HiddenField runat="server" ID="hdnNewBill1" Value="" />
+                    <span id="viewBill1" ><a href="javascript:void(0);"  id="viewlink1">View Bill</a> | <a
+                                                                                                            href="#" onclick=" RemoveBill1('1'); return false; ">Remove Bill</a> </span>
+                    <span id="browseBill1">
+                        <input accept="image/*" type="file" id="familybill1" runat ="server"/>
+                        <%--<asp:AsyncFileUpload ID="AsyncFileUpload1" runat="server" OnUploadedComplete="ProcessUpload1"
+                                ThrobberID="spanUploading" />
+                            <span id="spanUploading" runat="server">Uploading...</span>--%> </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="CellLabel">
+                    Bill II :
+                </td>
+                <td class="CellData">
+                    <asp:HiddenField runat="server" ID="hdnOldBill2" Value="" />
+                    <asp:HiddenField runat="server"  ID="hdnNewBill2" Value="" />
+                 
+                    <span id="viewBill2"  ><a  href="javascript:void(0);"  id="viewlink2">View Bill</a> | <a href="#" onclick=" RemoveBill2('2'); return false; ">
+                                                                                                              Remove Bill</a> </span><span id="browseBill2">
+                                                                                                                                         <input accept="image/*" type="file" id="familybill2" runat ="server"/>
+                                                                                                                                         <%--<asp:AsyncFileUpload ID="AsyncFileUpload2" runat="server" OnUploadedComplete="ProcessUpload2"
+                                ThrobberID="spanUploading2" />
+                            <span id="spanUploading2" runat="server">Uploading...</span>--%> 
+                                                                                                                                     </span>
+                </td>
+            </tr>
+        </asp:PlaceHolder>
+        <tr>
+            <td colspan="2" class="SubHeading" style="height: 23px">
+                Family Certificates
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Death Certificate :
+            </td>
+            <td class="CellData">
+                <asp:HiddenField runat="server" ID="hdnOldCerti1" Value="" />
+                <asp:HiddenField runat="server" ID="hdnNewCerti1" Value="" />
+                <span id="viewCert1" ><a  href="javascript:void(0);"  id="viewLinkCerti1">View Certificate</a> | <a
+                                                                                                                     href="#" onclick=" RemoveCertificate1(); return false; ">Remove Certificate</a> </span>
+                <span id="browseCert1">
+                    <input accept="image/*" type="file" id="certificateFile1" runat ="server"/>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Divorce Certificate :
+            </td>
+            <td class="CellData">
+                <asp:HiddenField runat="server" ID="hdnOldCerti2" Value="" />
+                <asp:HiddenField runat="server"  ID="hdnNewCerti2" Value="" />
+                 
+                <span id="viewCert2"  ><a  href="javascript:void(0);"  id="viewLinkCerti2">View Certificate</a> | <a href="#" onclick=" RemoveCertificate2(); return false; ">
+                                                                                                                      Remove Certificate</a> </span><span id="browseCert2">
+                                                                                                                                                        <input accept="image/*" type="file" id="certificateFile2" runat ="server"/>
+                                                                                                                                                    </span>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="2" class="SubHeading" style="height: 23px">
+                Contact Details
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Permanent Address :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtPermanentAddress" runat="server" Columns="50"
+                             MaxLength="1024" Rows="4" TextMode="MultiLine" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator22" runat="server" ControlToValidate="txtPermanentAddress"
+                                            ErrorMessage="Please enter a Permanent Address."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Current Address :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtCurrentAddress" runat="server" Columns="50"
+                             MaxLength="1024" Rows="4" TextMode="MultiLine" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator23" runat="server" ControlToValidate="txtCurrentAddress"
+                                            ErrorMessage="Please enter a Current Address."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Landline Number :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtLandline" runat="server" Columns="50"  />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator24" runat="server" ControlToValidate="txtLandline"
+                                            ErrorMessage="Please enter a Landline Number."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Cell Number :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtCell" runat="server" Columns="50"  />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator25" runat="server" ControlToValidate="txtCell"
+                                            ErrorMessage="Please enter a Cell Number."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="SubHeading" style="height: 23px">
+                Other Details
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Note :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtNote" runat="server" Columns="50" MaxLength="1024"
+                             Rows="4" TextMode="MultiLine" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td class="ButtonSpacer">
+                <asp:ImageButton runat="server" ID="btnUpdate" SkinID="sknImgBtnAddUser" OnClick="btnUpdate_Click" />
+            </td>
+        </tr>
+        <script language="javascript" type="text/javascript">
+            ShowHideRelation('<%= rbIsParentsDivorced.SelectedValue %>', '<%= txtDivorcedPeriod.Text %>');
+            ShowHideFatherAlive("<%= rbIsFatherAlive.SelectedValue %>", '<%= txtFatherAge.Text %>');
+            ShowHideMOtherAlive("<%= rbIsMotherAlive.SelectedValue %>", '<%= txtMotherAge.Text %>');
+            StartupScriptBills();
+        </script>
+    </table>
+
+</asp:Content>

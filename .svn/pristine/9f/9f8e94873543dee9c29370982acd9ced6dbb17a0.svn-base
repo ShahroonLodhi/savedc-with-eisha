@@ -1,0 +1,193 @@
+using System;
+using System.Web;
+using System.Data;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class ListMonthlyExpenses : Page
+    {
+        #region Delegates
+
+        public delegate void delPopulateData(int nCurrentPage);
+
+        #endregion
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // page validation
+                var oValidator = new Validator();
+                oValidator.ValidateRequest(Request);
+                oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                                  new[]
+                                                      {
+                                                          UserAccessLevels.SuperAdmin, UserAccessLevels.Admin,
+                                                          UserAccessLevels.Operator
+                                                      });
+                oValidator = null;
+
+                if (SaveDCSession.UserName.ToLower() == "irfan" ||
+                    SaveDCSession.UserName.ToLower() == "shamsa" ||
+                    SaveDCSession.UserName.ToLower() == "sadaf")
+                    HttpContext.Current.Response.Redirect("Login.aspx?status=5011300");
+
+                // dont allow operator to edit.
+                if (SaveDCSession.UserAccessLevel == UserAccessLevels.Operator)
+                {
+                    btnDelExpense.Visible = false;
+                    btnEditExpense.Visible = false;
+                }
+                else if (SaveDCSession.UserName.ToLower() == "azhar" || SaveDCSession.UserName.ToLower() == "nadeem")
+                {
+                    btnDelExpense.Visible = false;
+                    btnEditExpense.Visible = false;
+                }
+
+                if (SaveDCSession.UserName.ToLower() == "azhar" || SaveDCSession.UserName.ToLower() == "muzaffar")
+                {
+                    btnEditExpense.Visible = true;
+                }
+
+                LoadExpenses(1);
+                RenderError(Request.QueryString["status"]);
+            }
+            delPopulateData delPopulate = LoadExpenses;
+            pagerApps.UpdatePageIndex = delPopulate;
+        }
+
+        private void LoadExpenses(int nCurrentPage)
+        {
+            string szSrchPayeeName = "", szPostedOnDate = "";
+            if (!string.IsNullOrEmpty(Request.QueryString["MonthName"]))
+            {
+                szSrchPayeeName = Request.QueryString["MonthName"];
+                txtMonthName.Text = szSrchPayeeName;
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["PostedOnDate"]))
+            {
+                szPostedOnDate = Request.QueryString["PostedOnDate"];
+                txtPostedOn.Text = szPostedOnDate;
+            }
+
+
+            int nSchoolId = SaveDCSession.SchoolId;
+
+            var oCommon = new Common();
+
+            // lblSchool.Text = oCommon.GetSchoolNameById(nSchoolId);
+
+            DateTime fromDate, toDate;
+            fromDate = DateTime.MinValue;
+            toDate = DateTime.MaxValue;
+
+            Int32 nTotalRecord = 0;
+
+            DataSet oSqlDataSet = oCommon.LoadAllExpenses(szSrchPayeeName, szPostedOnDate, fromDate, toDate,
+                                                          nCurrentPage, pagerApps.RecordsPerPage, out nTotalRecord);
+
+            //===============================================================
+            pagerApps.TotalRecords = nTotalRecord;
+            //===============================================================
+
+            dgExpenses.DataSource = oSqlDataSet;
+            dgExpenses.DataBind();
+
+            // hide/show grid if no rec found
+            if (oSqlDataSet == null || oSqlDataSet.Tables[0].Rows.Count == 0)
+            {
+                tbDataFound.Visible = false;
+                tbNoDataFound.Visible = true;
+                // set the total
+                lblTotal.Text = 0.ToString();
+            }
+            else
+            {
+                tbDataFound.Visible = true;
+                tbNoDataFound.Visible = false;
+                // set the total
+                lblTotal.Text = oSqlDataSet.Tables[0].Rows.Count.ToString();
+            }
+        }
+
+        private void RenderError(string szErrorCode)
+        {
+            if (string.IsNullOrEmpty(szErrorCode))
+            {
+                lblError.Text = "";
+                return;
+            }
+
+            string szErrorDesc = Utils.GetMessageText(szErrorCode);
+            if (!szErrorCode.EndsWith("1"))
+                lblError.CssClass = "FailureMessage";
+            else
+                lblError.CssClass = "SuccessMessage";
+
+            lblError.Text = szErrorDesc;
+        }
+
+        protected void dgExpenses_Databound(object sender, DataGridItemEventArgs e)
+        {
+        }
+
+        protected void btnEditExpense_Click(object sender, EventArgs e)
+        {
+            #region User Right Validation.
+
+            // only admin and super admin are allowed to execute this part.
+            new Validator().CheckUserRightsOnEditDelete(Request);
+
+            #endregion
+
+            string szExpense = hdnExpenseId.Value;
+            Response.Redirect("AddMonthlyExpense.aspx?ExpenseId=" + szExpense);
+        }
+
+        protected void btnDetail_Click(object sender, EventArgs e)
+        {
+            string szExpense = hdnExpenseId.Value;
+            Response.Redirect("DetailsMonthlyExpense.aspx?ExpenseId=" + szExpense);
+        }
+
+        protected void btnDelExpense_Click1(object sender, EventArgs e)
+        {
+            #region User Right Validation.
+
+            // only admin and super admin are allowed to execute this part.
+            new Validator().CheckUserRightsOnEditDelete(Request);
+
+            #endregion
+
+            string szMonth = hdnExpenseId.Value;
+
+            string szStatus = "5021030";
+            var oCommon = new Common();
+            int nStatus = oCommon.DeleteExpense(Utils.fixNullInt(szMonth));
+            if (nStatus > 0)
+            {
+                szStatus = "5021031";
+            }
+
+            Response.Redirect("ListMonthlyExpenses.aspx?status=" + szStatus);
+        }
+
+
+        protected void searchbtn_Click(object sender, ImageClickEventArgs e)
+        {
+            string szSrchMonthName = "", szPostedOnDate = "";
+            if (!string.IsNullOrEmpty(txtMonthName.Text))
+                szSrchMonthName = txtMonthName.Text;
+            if (!string.IsNullOrEmpty(txtPostedOn.Text))
+                szPostedOnDate = txtPostedOn.Text;
+
+
+            Response.Redirect("ListMonthlyExpenses.aspx?MonthName=" + szSrchMonthName + "&PostedOnDate=" +
+                              szPostedOnDate);
+        }
+    }
+}

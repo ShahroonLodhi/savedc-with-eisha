@@ -1,0 +1,246 @@
+<%@ Page Language="C#" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="ListMonthlyExpenses.aspx.cs" Inherits="SaveDC.ControlPanel.ListMonthlyExpenses" Title="List Monthly Expenses"%>
+<%@ Register Src="Controls/AdvDataPager.ascx" TagName="DataPager" TagPrefix="uc1" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <script type="text/javascript" language="javascript">
+
+        function ValidateAction(action) {
+            if (action == 'DELETE') {
+                if (confirm("Are you sure, you want to delete this expense?"))
+                    return true;
+                else
+                    return false;
+            }
+        }
+
+        function SelectOne(rdo, gridName) {
+            /* Getting an array of all the "INPUT" controls on the form.*/
+            all = document.getElementsByTagName("input");
+            for (i = 0; i < all.length; i++) {
+                if (all[i].type == "radio")/*Checking if it is a radio button*/ {
+                    var count = all[i].id.indexOf(gridName);
+                    if (count != -1) {
+                        all[i].checked = false;
+                    }
+                }
+            }
+            rdo.checked = true; /* Finally making the clicked radio button CHECKED */
+            document.getElementById('<%= hdnExpenseId.ClientID %>').value = rdo.value;
+            //alert(document.getElementById("ctl00_ContentPlaceHolder1_hdnExpenseID").value);
+        }
+
+        function SelectFirst(gridName) {
+            /* Getting an array of all the "INPUT" controls on the form.*/
+            all = document.getElementsByTagName("input");
+            for (i = 0; i < all.length; i++) {
+                if (all[i].type == "radio")/*Checking if it is a radio button*/ {
+                    var count = all[i].id.indexOf("rowbtn");
+                    if (count != -1) {
+                        {
+                            SelectOne(all[i], gridName);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+//     SelectFirst('dgExpenses');
+</script>
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <td height="20px" class="CellLabel" colspan="2">
+         
+            
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            Expense Manager :: List Expenses
+                           
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack" Height="24"
+                                             Width="24" OnClientClick="javascript:window.history.back(); return false;" />
+                        </td>
+                    </tr>
+                </table>
+                
+            </td>
+        </tr>
+        <tr>
+            <td height="20px" colspan="2">This is Expense Manager. Here all of your expenses are listed with their brief details like Expense Payee, Payment Mode, Bank from where the amount has been issued and Posted On. 
+                Whenever you'll do any expense like school dues or some event management; you just have to add it from here and system will then manage it itself.
+                If you want to have a detail view of the expense then select the appropriate expense and click on Expense Details button.<br /><br />
+                You can also filter specific expense in the listing through Payee Name or date Posted On.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="1" class="CellLabel">
+                <table id="Table1" runat="server" width="100%">
+                    <form name="frmsearch" method="post" id="frmsearch">
+                        <tr>
+                            <td width="40%">
+                                Expense Payee:
+                            </td>
+                            <td valign="middle">
+                                <asp:TextBox CssClass="Textbox" ID="txtMonthName" runat="server" />
+                            </td>
+                            <td width="70%" align="left">
+                                <asp:ImageButton ID="searchbtn" runat="server" ImageUrl="search.jpg" Height="40"
+                                                 Width="40" OnClick="searchbtn_Click" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="40%">
+                                Posted On:
+                            </td>
+                            <td valign="middle">
+                                <asp:TextBox CssClass="Textbox" ID="txtPostedOn" runat="server" />
+                            </td>
+                            <td width="70%" align="left">
+                                <%--       <asp:ImageButton ID="ImageButton2" runat="server" ImageUrl="search.jpg" Height="40"
+                            Width="40" OnClick="searchbtn_Click" />--%>
+                            </td>
+                        </tr>
+                    </form>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" height="10px" align="right">
+                [ <a href="AddMonthlyExpense.aspx">Add Expense</a> ]
+            </td>
+        </tr>
+        <tr>
+            <td class="CellHeading" width="60%">
+                Manage Expenses
+            </td>
+            <td class="ContextLinks" align="right">
+                Total Expenses:
+                <asp:Label ID="lblTotal" runat="server" Text="0"></asp:Label>&nbsp;
+                <%--<a id="context" href= "ListExpenses.aspx">[ List Expenses ]</a> <a id="context" href= "AddExpense.aspx">[ Add Expense ]</a>--%>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel" colspan="2">
+                <asp:HiddenField runat="server" ID="hdnExpenseId" Value="" />
+                <table width="100%" border="0" id="tbDataFound" runat="server">
+                    <tr>
+                        <td width="85%"  valign="top">
+                            <asp:DataGrid ID="dgExpenses" runat="server" AutoGenerateColumns="False" Width="100%"
+                                          SkinID="StanderdGrid" OnItemDataBound="dgExpenses_Databound">
+                                <Columns>
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <asp:RadioButton onclick="SelectOne(this,'dgExpenses')" ID="rowbtn" name="rowbtn"
+                                                             runat="server" Value='<%# DataBinder.Eval(Container.DataItem, "ExpenseId") %>' />
+                                        </ItemTemplate>
+                                        <ItemStyle Width="3%" />
+                                    </asp:TemplateColumn>
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            Expense Payee
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "ExpensePayee") %>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="30%" />
+                                    </asp:TemplateColumn>
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            E.Amount
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "ExpenseAmount") %>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="7%" />
+                                    </asp:TemplateColumn>
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            P.Mode
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "PayMode") %>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="6%" />
+                                    </asp:TemplateColumn>
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            Bank
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "BankName") %>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="27%" />
+                                    </asp:TemplateColumn>
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            E.Month
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "ExpenseMonthFormatted")%>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="7%" />
+                                    </asp:TemplateColumn>
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            Posted On
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "ActionDateFormatted") %>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="8%" />
+                                    </asp:TemplateColumn>
+                                </Columns>
+                                <HeaderStyle BackColor="#6699CC" Font-Bold="False" Font-Italic="False" Font-Overline="False"
+                                             Font-Strikeout="False" Font-Underline="False" />
+                            </asp:DataGrid>
+                            <%-- <br />--%>
+                            <uc1:DataPager ID="pagerApps" runat="server" PageIndex="1" RecordsPerPage="100" TotalRecords="0" />
+                        </td>
+                        <td valign="top">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <asp:Button ID="btnDetail" runat="server" Width="100%" Text="Expense Details" OnClick="btnDetail_Click" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <asp:Button ID="btnEditExpense" runat="server" Width="100%" Text="Edit Expense" OnClick="btnEditExpense_Click" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <asp:Button ID="btnDelExpense" runat="server" Width="100%" Text="Delete Expense"
+                                                    OnClientClick="return ValidateAction('DELETE')" OnClick="btnDelExpense_Click1" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+                <script type="text/javascript" language="javascript">
+                    SelectFirst('dgExpenses');
+
+                </script>
+
+                <table id="tbNoDataFound" runat="server" width="100%" visible="false">
+                    <tr>
+                        <td>
+                            No Expense Found.
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</asp:Content>

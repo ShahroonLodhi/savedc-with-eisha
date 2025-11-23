@@ -1,0 +1,104 @@
+using System;
+using System.Web.UI;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class SendEmailToUser : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // page validation
+                var oValidator = new Validator();
+                oValidator.ValidateRequest(Request);
+                oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                                  new[]
+                                                      {
+                                                          UserAccessLevels.SuperAdmin, UserAccessLevels.Admin
+                                                      });
+
+
+                int nDonorId = Utils.fixNullInt(Request.QueryString["UserId"]);
+
+                if (nDonorId != 0)
+                {
+                    var user = new User();
+                    user.UserID = nDonorId;
+                    var userManager = new UserManager(user);
+                    user = userManager.Load();
+
+                    hdnDonorName.Value = user.UserName;
+                    hdnDonorId.Value = user.UserID.ToString();
+                    txtEmailAddress.Text = user.EmailAddress;
+                }
+                else
+                {
+                    hdnDonorName.Value = "Donor";
+                    txtEmailAddress.Text = "Send Email to all Donors";
+                    txtEmailAddress.ReadOnly = true;
+                }
+            }
+        }
+
+        protected void btnUpdate_Click(object sender, ImageClickEventArgs e)
+        {
+            #region User Right Validation.
+
+            // only admin and super admin are allowed to execute this part.
+            new Validator().CheckUserRightsOnEditDelete(Request);
+
+            #endregion
+
+            int donorId = Utils.fixNullInt(hdnDonorId.Value);
+
+            if (donorId != 0)
+            {
+                var user = new User();
+                user.UserID = donorId;
+                var userManager = new UserManager(user);
+                user = userManager.Load();
+
+                string sReturn = Utils.fixNullString(Request.QueryString["return"]);
+                bool bReturn = !Convert.ToBoolean(string.Compare(sReturn, "reports", true));
+
+                if (EmailSender.SendEmailEx(donorId, new EmailEx
+                {
+                    DonorName = Utils.fixNullString(user.UserName),
+                    DonorEmail = Utils.fixNullString(txtEmailAddress.Text),
+                    CC = Utils.fixNullString(txtCC.Text),
+                    Subject = Utils.fixNullString(txtSubject.Text),
+                    Body = txtMessage.Text
+                }, true))
+                    if (bReturn)
+                        Response.Redirect("GetDonationReport.aspx?status=5101001"); //  email sent successfully.
+                    else
+                        Response.Redirect("ListUsers.aspx?status=5101001"); //  email sent successfully.
+                else
+                    if (bReturn)
+                        Response.Redirect("GetDonationReport.aspx?status=5101000"); //  email not sent.
+                    else
+                        Response.Redirect("ListUsers.aspx?status=5101000"); //  email not sent.
+            }
+            else
+            {
+                if (EmailSender.SendEmailEx(donorId, new EmailEx
+                {
+                    DonorName = "User",
+                    DonorEmail = "accounts@save-dc.org",
+                    CC = Utils.fixNullString(txtCC.Text),
+                    BCC = true,
+                    Subject = Utils.fixNullString(txtSubject.Text),
+                    Body = txtMessage.Text
+                }, true))
+                    Response.Redirect("ListUsers.aspx?status=5101001"); //  email sent successfully.
+                else
+                    Response.Redirect("ListUsers.aspx?status=5101000"); //  email not sent.
+            }
+        }
+    }
+}

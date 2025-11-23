@@ -1,0 +1,134 @@
+using System;
+using System.Data;
+using SaveDC.ControlPanel.Src.DB;
+using SaveDC.ControlPanel.Src.Objects;
+
+namespace SaveDC.ControlPanel.Src.Managers
+{
+    public class StudentManager
+    {
+        #region Declarations
+
+        private readonly Student student;
+
+        #endregion
+
+        public StudentManager(Student student)
+        {
+            this.student = student;
+        }
+
+        public Int32 RecordCount { get; set; }
+        public int RecordID { get; set; }
+
+        public Student[] GetStudents(int bSenior)
+        {
+            var stdDao = new StudentDAO(student);
+            Student[] stdList = stdDao.GetStudents(bSenior, 0, 0);
+            RecordCount = 0;
+            return stdList;
+        }
+
+        public DataSet GetStudentsInDS(int bSenior)
+        {
+            var stdDao = new StudentDAO(student);
+            DataSet ds= stdDao.GetStudentsInDS(bSenior, 0, 0);
+            return ds;
+        }
+
+        
+
+        public Student[] GetStudents(int bSenior, int nPageNo, int nPageSize)
+        {
+            var stdDao = new StudentDAO(student);
+            Student[] stdList = stdDao.GetStudents(bSenior, nPageNo, nPageSize);
+            RecordCount = stdDao.RecordCount;
+            return stdList;
+        }
+
+        public Student Load()
+        {
+            try
+            {
+                return new StudentDAO(student).LoadStudent(student.StudentId);
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+        public int Save()
+        {
+            try
+            {
+                var studentDAO = new StudentDAO(student);
+                return studentDAO.AddStudent();
+            }
+            catch (Exception e)
+            {
+                RecordID = 0;
+                Utils.Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        public bool IsVarified()
+        {
+            try
+            {
+                return new StudentDAO(student).IsVarified();
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+        }
+
+
+        //public bool Update()
+        //{
+        //    try
+        //    {
+        //        StudentDAO studentDAO = new StudentDAO(student);
+        //        return studentDAO.UpdateStudent();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        RecordID = 0;
+        //        Utils.Utils.LogErrorToFile(e);
+        //        return false;
+        //    }
+        //}
+
+        public bool Delete()
+        {
+            try
+            {
+                var studentDAO = new StudentDAO(student);
+                return studentDAO.DeleteStudent();
+            }
+            catch (Exception e)
+            {
+                RecordID = 0;
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+        }
+
+        public bool Varify()
+        {
+            try
+            {
+                return new StudentDAO(student).Varify();
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+        }
+    }
+}

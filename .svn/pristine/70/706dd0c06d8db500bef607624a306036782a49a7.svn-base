@@ -1,0 +1,75 @@
+using System;
+using SaveDC.ControlPanel.Src.DB;
+using SaveDC.ControlPanel.Src.Objects;
+
+namespace SaveDC.ControlPanel.Src.Managers
+{
+    public class FundManager
+    {
+        private readonly Fund fund;
+
+        public FundManager(Fund fund)
+        {
+            this.fund = fund;
+        }
+
+        public Int32 RecordCount { get; set; }
+
+        public Fund[] GetFunds(int nPageNo, int nPageSize)
+        {
+            var fundsMan = new FundDAO(fund);
+            Fund[] list = fundsMan.GetFunds(nPageNo, nPageSize);
+            RecordCount = fundsMan.RecordCount;
+            return list;
+        }
+
+        public Balance[] GetBalances(int nPageNo, int nPageSize)
+        {
+            var fundsMan = new FundDAO(fund);
+            Balance[] list = fundsMan.GetBalances(nPageNo, nPageSize);
+            RecordCount = fundsMan.RecordCount;
+            return list;
+        }
+
+        public Fund Load()
+        {
+            try
+            {
+                return new FundDAO(fund).LoadFund(fund.FundID);
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+        public int Save()
+        {
+            try
+            {
+                var fundDAO = new FundDAO(fund);
+                return fundDAO.AddFund();
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        public bool Delete()
+        {
+            try
+            {
+                var fundDAO = new FundDAO(fund);
+                return fundDAO.DeleteFund();
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+        }
+    }
+}

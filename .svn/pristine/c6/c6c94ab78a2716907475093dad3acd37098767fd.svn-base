@@ -1,0 +1,81 @@
+using System;
+using System.Data;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class GetSchoolDonationReport : Page
+    {
+        #region Delegates
+
+        public delegate void delPopulateData(int nCurrentPage);
+
+        #endregion
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // page validation
+                var oValidator = new Validator();
+                oValidator.ValidateRequest(Request);
+                oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                                  new[] {UserAccessLevels.SuperAdmin, UserAccessLevels.Admin});
+                oValidator = null;
+
+                GetReport(1);
+            }
+            delPopulateData delPopulate = GetReport;
+            pagerApps.UpdatePageIndex = delPopulate;
+        }
+
+        private void GetReport(int nCurrentPage)
+        {
+            Int32 nTotalRecord = 0;
+
+            string szActionDate = Utils.fixNullString(Request.QueryString["ActionDate"]);
+
+            var oCommon = new Common();
+            DataSet report = oCommon.GetSchoolDonationReport(nCurrentPage, pagerApps.RecordsPerPage, szActionDate,
+                                                            out nTotalRecord);
+
+            //===============================================================
+            pagerApps.TotalRecords = nTotalRecord;
+            //===============================================================
+
+            dgSchools.DataSource = report;
+            dgSchools.DataBind();
+
+            if (report == null || report.Tables == null || report.Tables[0].Rows.Count <= 0)
+            {
+                // set the total
+                lblTotal.Text = 0.ToString();
+                tbDataFound.Visible = false;
+                tbNoDataFound.Visible = true;
+            }
+            else
+            {
+                lblTotal.Text = report.Tables[0].Rows.Count.ToString();
+                tbDataFound.Visible = true;
+                tbNoDataFound.Visible = false;
+            }
+        }
+
+
+        protected void dgSchools_Databound(object sender, DataGridItemEventArgs e)
+        {
+        }
+
+        protected void searchbtn_Click(object sender, ImageClickEventArgs e)
+        {
+            string szSrchDate = "";
+            if (!string.IsNullOrEmpty(txtActionDate.Text))
+                szSrchDate = txtActionDate.Text;
+
+            Response.Redirect("GetSchoolDonationReport.aspx?ActionDate=" + szSrchDate);
+        }
+    }
+}

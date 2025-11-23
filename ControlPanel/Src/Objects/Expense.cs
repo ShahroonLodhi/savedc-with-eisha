@@ -1,0 +1,30 @@
+﻿using System;
+
+namespace SaveDC.ControlPanel.Src.Objects
+{
+    public class Expense
+    {
+        public int ExpenseId { get; set; }
+        public int SchoolId { get; set; }
+        public int PostedBy { get; set; }
+        public string PostedByName { get; set; }
+        public DateTime Month { get; set; }
+
+        public DateTime ActionDate { get; set; }
+        public string ExpenseType { get; set; }
+        public string ExpenseName { get; set; }
+        public string ExpensePayee { get; set; }
+        public decimal ExpenseAmount { get; set; }
+        public string ExpenseDetail { get; set; }
+
+        public int PaymentMode { get; set; }
+        public int BankId { get; set; }
+        public string BankName { get; set; }
+        public string BenefiName { get; set; }
+        public string ChequeNum { get; set; }
+        public string PaymentNote { get; set; }
+
+        public string FileNum { get; set; }
+        public string VoucherNum { get; set; }
+    }
+}

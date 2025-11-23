@@ -1,0 +1,64 @@
+<%@ Page Language="C#" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="AdminSettings.aspx.cs" Inherits="SaveDC.ControlPanel.AdminSettings" Title="Admin Settings"%>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <script type="text/javascript" language="javascript"> </script>
+
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <td height="20px" colspan="2"  class="CellLabel" >
+	
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            Settings
+                           
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack" Height="24"
+                                             Width="24" OnClientClick="javascript:window.history.back(); return false;" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td height="20px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <asp:Label ID="lblError" runat="server" Text="Label"></asp:Label></td>
+        </tr>
+       
+        <tr>
+            <asp:HiddenField ID="hdnEditSchoolId" Value ="0" runat="server" />
+            <td class="CellHeading" width="40%">Settings</td>
+            <td class="ContextLinks" align="right"></td>
+        </tr>
+	
+        <tr> 
+            <td class="CellLabel">Minimum Approval <i color="gray">(required to approve a student)</i>: </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtApprovals" runat="server" Columns="50"/>
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="txtApprovals"
+                                            ErrorMessage="Please enter a valid number."></asp:RequiredFieldValidator><asp:RegularExpressionValidator
+                                                                                                                         ID="RegularExpressionValidator1" runat="server" ValidationExpression="[1-9]" 
+                                                                                                                         Display="Dynamic"  ErrorMessage="Please enter a valid number between 1 and 9." ControlToValidate="txtApprovals"></asp:RegularExpressionValidator></td>
+        </tr> 
+        <tr> 
+            <td class="CellLabel">Minimum Rejections <i color="gray">(required to reject a student)</i>: </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtRejections" runat="server" Columns="50"/>
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="txtRejections"
+                                            ErrorMessage="Please enter a valid number."></asp:RequiredFieldValidator><asp:RegularExpressionValidator
+                                                                                                                         ID="RegularExpressionValidator2" runat="server" ValidationExpression="[1-9]" 
+                                                                                                                         Display="Dynamic"  ErrorMessage="Please enter a valid number between 1 and 9." ControlToValidate="txtRejections"></asp:RegularExpressionValidator></td>
+        </tr>  
+        <tr>
+            <td>&nbsp;</td>
+            <td class="ButtonSpacer"><asp:ImageButton runat="server" ID="btnUpdate" SkinID="sknImgBtnAddUser"  OnClick="btnUpdate_Click"/></td>
+        </tr>
+               
+    </table>
+
+</asp:Content>

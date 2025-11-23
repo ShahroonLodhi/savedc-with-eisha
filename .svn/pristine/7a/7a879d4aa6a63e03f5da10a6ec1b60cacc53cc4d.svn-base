@@ -1,0 +1,128 @@
+using System;
+using System.Web.UI;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class Menu : UserControl
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (SaveDCSession.UserAccessLevel == UserAccessLevels.None)
+            {
+                Response.Redirect("Login.aspx");
+            }
+
+            if (SaveDCSession.UserAccessLevel != UserAccessLevels.SuperAdmin)
+            {
+                liUserManager.Visible = false;
+                liDonorManager.Visible = false;
+                liSettings.Visible = false;
+                liReports.Visible = false;
+                liReports1.Visible = true;
+            }
+            else
+            {
+                liReports.Visible = true;
+                liReports1.Visible = false;
+            }
+            if (SaveDCSession.UserAccessLevel == UserAccessLevels.Admin)
+            {
+                //liUserManager.Visible = true;
+                liSettings.Visible = true;
+            }
+            if (SaveDCSession.UserAccessLevel == UserAccessLevels.Donor)
+            {
+                //student.InnerHtml = "My Students";
+                //fund.InnerHtml = "My Funds";
+                liSchoolManager.Visible = false;
+                liFamilyManager.Visible = false;
+                liReports.Visible = false;
+                liReports1.Visible = false;
+                PlaceHolder2.Visible = false;
+                liExpenseManager.Visible = false;
+                liSmsManager.Visible = false;
+                liApplication.Visible = false;
+            }
+            else
+            {
+                liNotes.Visible = false;
+                lidonorreport.Visible = false;
+                Repeater1.DataSource = new Common().GetShourtcutLinks();
+                Repeater1.DataBind();
+            }
+
+            if (SaveDCSession.UserAccessLevel == UserAccessLevels.Operator)
+            {
+                liSmsManager.Visible = false;
+                liReports.Visible = false;
+                liReports1.Visible = false;
+            }
+
+
+            string currentURL = Request.Url.ToString().ToLower();
+            bool isdonor = currentURL.Contains("role=donor");
+            if (currentURL.IndexOf('?') > -1)
+                currentURL = currentURL.Remove(currentURL.IndexOf('?'));
+
+            if (currentURL.Contains("application"))
+            {
+                application.Attributes.Add("style", "font-weight:bold");
+            }
+            else if (currentURL.Contains("markettingsms"))
+            {
+                sms.Attributes.Add("style", "font-weight:bold");
+            }
+            else if (currentURL.Contains("donormonthly"))
+            {
+                donorreport.Attributes.Add("style", "font-weight:bold");
+            }
+            else if (currentURL.Contains("getschoolexpensereport") || currentURL.Contains("getschoolexpensereportdetail") ||
+                     currentURL.Contains("expensereport") || currentURL.Contains("donationreport") ||
+                     currentURL.Contains("getsmsreport"))
+            {
+                report.Attributes.Add("style", "font-weight:bold");
+            }
+            else if (currentURL.Contains("listdonors") || currentURL.Contains("addremarksfordonor") || currentURL.Contains("addnotesfordonor") || currentURL.Contains("sendsmstodonor") || currentURL.Contains("sendemailtodonor") ||
+                     currentURL.Contains("listdonorsms") || currentURL.Contains("listdonoremails") || isdonor)
+            {
+                donor.Attributes.Add("style", "font-weight:bold");
+            }
+            else if (currentURL.Contains("monthly"))
+            {
+                expense.Attributes.Add("style", "font-weight:bold");
+            }
+            else if (currentURL.Contains("school"))
+            {
+                school.Attributes.Add("style", "font-weight:bold");
+            }
+            else if (currentURL.Contains("student") || currentURL.Contains("progress") ||
+                     currentURL.Contains("donor") ||
+                     currentURL.Contains("varify"))
+            {
+                student.Attributes.Add("style", "font-weight:bold");
+            }
+            else if (currentURL.Contains("user"))
+            {
+                user.Attributes.Add("style", "font-weight:bold");
+            }
+            else if (currentURL.Contains("famil"))
+            {
+                family.Attributes.Add("style", "font-weight:bold");
+            }
+            else if (currentURL.Contains("famil"))
+            {
+                family.Attributes.Add("style", "font-weight:bold");
+            }
+            else if (currentURL.Contains("fund"))
+            {
+                fund.Attributes.Add("style", "font-weight:bold");
+            }
+            else if (currentURL.Contains("setting"))
+            {
+                setting.Attributes.Add("style", "font-weight:bold");
+            }
+        }
+    }
+}

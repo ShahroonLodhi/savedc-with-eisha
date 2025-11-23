@@ -1,0 +1,242 @@
+<%@ Page Language="C#" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true" CodeBehind="CPHome.aspx.cs" Inherits="SaveDC.ControlPanel.CPHome" Title="SaveDC :: Control Panel :: Home" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr >
+            <td height="20" colspan ="2"/>
+        </tr>
+        <tr>
+            <td colspan ="2" width="70%" >
+                <b>Welcome! </b> <br />
+                Financial Software is the solution to automate SAVE office. The purpose of this software is to speed up the organization's processes and to minimize the human intervention. All the organization processes are automated now including donations, expenditures, students’ records, donors’ records, schools’ records etc. The software will also help you to retrieve detailed reports on donations and expenditures and will also help in better auditing of the organization.<br /><br />
+                Per month per child expense is <font size="+1" color="#ff6600"><b>Rs.2000/=</b></font> which include School Fee, Conveyance, Books, Copies, Stationary, Annual Funds, Uniform, Shoes, Health and Sports and Office Administration. This per month per child expense is re-calculated every six months to accomudate all the expenses. So there could be slight variation in this per month per child expense every six month.
+            </td>
+        </tr>
+        <tr >
+            <td height="10" colspan ="2"/>
+        </tr>
+
+        <tr>
+            <td width="80%"  valign="top">
+                <table width="100%">
+                    <tr>
+                        <td colspan="2" class="CellHeading">
+                            Panel Summary
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="CellLabel" width="40%">
+                            Total Students
+                        </td>
+                        <td class = "CellData">
+                            <asp:Label ID="lblTotalStd" runat="server" Text="0"></asp:Label>
+                        </td>
+                    </tr>
+                    <asp:PlaceHolder ID="PlaceHolder1" runat="server">
+          
+                        <tr>
+                            <td class="CellLabel" width="40%">
+                                Total Families
+                            </td>
+                            <td class = "CellData">
+                                <asp:Label ID="lblTotalFamilies" runat="server" Text="0"></asp:Label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="CellLabel" width="40%">
+                                Total Schools
+                            </td>
+                            <td class = "CellData">
+                                <asp:Label ID="lblTotalSchools" runat="server" Text="0"></asp:Label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="CellLabel" width="40%">
+                                Total Donors
+                            </td>
+                            <td class = "CellData">
+                                <asp:Label ID="lblTotalDonors" runat="server" Text="0"></asp:Label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="CellLabel" width="40%">
+                                Total Admins
+                            </td>
+                            <td class = "CellData">
+                                <asp:Label ID="lblTotalAdmins" runat="server" Text="0"></asp:Label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="CellLabel" width="40%">
+                                Total Operators
+                            </td>
+                            <td class = "CellData">
+                                <asp:Label ID="lblTotalOperatorss" runat="server" Text="0"></asp:Label>
+                            </td>
+                        </tr>
+                    </asp:PlaceHolder>
+                </table>
+            </td>
+            <td width="20%" valign="top">
+                <table width="100%" id="tblFundSumary" runat = "server">
+                    <tr>
+                        <td  class="CellHeading">
+                            Funds Summary
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left" class="CellLabel">
+                            Total Donations
+                        </td>
+                    </tr>
+                    <tr align="right">
+                        <td  align="right"  class="CellDataLarge">
+                            <font size="6">
+                                <asp:Label ID="lblDonations" runat="server" Text=""></asp:Label></font>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left" class="CellLabel">
+                            Total Expenses
+                        </td>
+                    </tr>
+                    <tr>
+                        <td  align="right"  class="CellDataLarge">
+                            <font size="6">
+                                <asp:Label ID="lblExpenses" runat="server" Text=""></asp:Label></font>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left" class="CellLabel">
+                            Balance
+                        </td>
+                    </tr>
+                    <tr>
+                        <td  align="right"  class="CellDataLarge">
+                            <font size="6">
+                                <asp:Label ID="lblBalance" runat="server" Text=""></asp:Label></font>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr> 
+ 
+        <tr id="trStudentSummary" runat="server">
+            <td width="80%"  valign="top">
+                <table width="100%">
+                    <tr>
+                        <td colspan="2" class="CellHeading">
+                            Students Summary
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="CellLabel" width="40%">
+                            New Students
+                        </td>
+                        <td class = "CellData">
+                            <asp:Label ID="lblStdNew" runat="server" Text="0"></asp:Label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="CellLabel" width="40%">
+                            Pending Students
+                        </td>
+                        <td class = "CellData">
+                            <asp:Label ID="lblStdPending" runat="server" Text="0"></asp:Label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="CellLabel" width="40%">
+                            Approved Students
+                        </td>
+                        <td class = "CellData">
+                            <asp:Label ID="lblStdApproved" runat="server" Text="0"></asp:Label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="CellLabel" width="40%">
+                            Sponsored Students
+                        </td>
+                        <td class = "CellData">
+                            <asp:Label ID="lblStdSponsored" runat="server" Text="0"></asp:Label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="CellLabel" width="40%">
+                            Rejected Students
+                        </td>
+                        <td class = "CellData">
+                            <asp:Label ID="lblStdRejected" runat="server" Text="0"></asp:Label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="CellLabel" width="40%">
+                            Discontinued Students
+                        </td>
+                        <td class = "CellData">
+                            <asp:Label ID="lblStdDiscontinued" runat="server" Text="0"></asp:Label>
+                        </td>
+                    </tr>
+                    <%--<tr>
+                <td class="CellLabel" width="40%">
+                    Total Students
+                </td>
+                <td class = "CellData">
+                    <asp:Label ID="Label5" runat="server" Text="0"></asp:Label>
+                </td>
+            </tr>--%>
+          
+                </table>
+    
+   
+            </td>
+            <td width="20%" valign="top">
+                <table width="100%" id="tblFundSumaryLastMonth" runat = "server">
+                    <tr>
+                        <td  class="CellHeading">
+                            Funds Summary <br />
+                            <font size="2">(Last 30 days)</font>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left" class="CellLabel">
+                            Total Donations
+                        </td>
+                    </tr>
+                    <tr align="right">
+                        <td  align="right"  class="CellDataLarge">
+                            <font size="6">
+                                <asp:Label ID="lblTotalDonationsLastMonth" runat="server" Text=""></asp:Label></font>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left" class="CellLabel">
+                            Total Expenses
+                        </td>
+                    </tr>
+                    <tr>
+                        <td  align="right"  class="CellDataLarge">
+                            <font size="6">
+                                <asp:Label ID="lblExpensesLastMonth" runat="server" Text=""></asp:Label></font>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left" class="CellLabel">
+                            Balance
+                        </td>
+                    </tr>
+                    <tr>
+                        <td  align="right"  class="CellDataLarge">
+                            <font size="6">
+                                <asp:Label ID="lblBalanceLastMonth" runat="server" Text=""></asp:Label></font>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>    
+ 
+ 
+    </table>
+
+
+</asp:Content>

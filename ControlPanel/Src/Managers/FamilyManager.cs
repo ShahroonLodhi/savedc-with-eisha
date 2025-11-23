@@ -1,0 +1,106 @@
+using System;
+using System.Data;
+using SaveDC.ControlPanel.Src.DB;
+using SaveDC.ControlPanel.Src.Objects;
+
+namespace SaveDC.ControlPanel.Src.Managers
+{
+    public class FamilyManager
+    {
+        #region Declarations
+
+        private readonly Family family; //;= new Resume(); 
+        private int nUpdatedRecordID;
+
+        #endregion
+
+        public FamilyManager(Family family)
+        {
+            this.family = family;
+        }
+
+        public Int32 RecordCount { get; set; }
+
+        public Family[] GetFamilies()
+        {
+            var famDao = new FamilyDAO(family);
+            Family[] famList = famDao.GetFamilies(0, 0);
+
+            RecordCount = famDao.RecordCount;
+            return famList;
+        }
+
+        public DataSet GetFamiliesInDs()
+        {
+            var famDao = new FamilyDAO(family);
+            DataSet famList = famDao.GetFamiliesInDS(0, 0);
+            return famList;
+        }
+
+        
+
+        public Family[] GetFamilies(int nPageNo, int nPageSize)
+        {
+            var famDao = new FamilyDAO(family);
+            Family[] famList = famDao.GetFamilies(nPageNo, nPageSize);
+
+            RecordCount = famDao.RecordCount;
+            return famList;
+        }
+
+        public Family Load()
+        {
+            try
+            {
+                return new FamilyDAO(family).LoadFamily(family.FamilyId);
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+        public int Save()
+        {
+            try
+            {
+                var familyDAO = new FamilyDAO(family);
+                family.FamilyId = familyDAO.AddFamily();
+                return family.FamilyId;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        public bool Exists()
+        {
+            try
+            {
+                return new FamilyDAO(family).FamilyExists();
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+        }
+
+        public bool Delete()
+        {
+            try
+            {
+                var familyDAO = new FamilyDAO(family);
+                return familyDAO.DeleteFamily();
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+        }
+    }
+}

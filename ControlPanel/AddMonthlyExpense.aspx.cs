@@ -1,0 +1,414 @@
+using System;
+using System.Data;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.DB;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class AddMonthlyExpense : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // page validation
+                var oValidator = new Validator();
+                oValidator.ValidateRequest(Request);
+                oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                                  new[]
+                                                      {
+                                                          UserAccessLevels.SuperAdmin, UserAccessLevels.Admin,
+                                                          UserAccessLevels.Operator
+                                                      });
+                oValidator = null;
+
+                var oCommon = new Common();
+                // get Banks
+                ddBanks.DataSource = oCommon.GetBanks();
+                ddBanks.DataValueField = "BankId"; // ???
+                ddBanks.DataTextField = "BankName";
+                ddBanks.DataBind();
+                // get all schools
+                var oschoolManager = new SchoolManager(new School());
+                School[] schools = oschoolManager.GetSchools();
+                ddSchools.DataSource = schools;
+                ddSchools.DataValueField = "SchoolId";
+                ddSchools.DataTextField = "SchoolName";
+                ddSchools.DataBind();
+
+                EmployeeName.DataSource = oCommon.GetEmployees();
+                EmployeeName.DataValueField = "EmployeeId";
+                EmployeeName.DataTextField = "EmployeeName";
+                EmployeeName.DataBind();
+
+                UtilityBill.DataSource = oCommon.GetUtilities();
+                UtilityBill.DataValueField = "UtilityId";
+                UtilityBill.DataTextField = "UtilityName";
+                UtilityBill.DataBind();
+
+                rbExpType.DataSource = oCommon.GetExpenseTypes();
+                rbExpType.DataValueField = "ExpenseId";
+                rbExpType.DataTextField = "ExpenseName";
+                rbExpType.DataBind();
+
+                rbExpType.SelectedValue = "1";
+
+                //Getting the Years dynamically from db
+                DataSet ds = oCommon.GetCalandarYear(1980, DateTime.Now.Year);
+                if (ds!=null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    ddYear.DataSource = ds.Tables[0];
+                    ddYear.DataValueField = "date_year";
+                    ddYear.DataTextField = "date_year";
+                    ddYear.DataBind();
+                }
+
+
+                // load edit user details.
+                int nSchoolId = Utils.fixNullInt(Request.QueryString["SchoolId"]);
+                if (nSchoolId <= 0)
+                {
+                    if (schools != null && schools.Length > 0)
+                    {
+                        nSchoolId = schools[0].SchoolID;
+                    }
+                    else
+                    {
+                        // if not school found then show other only
+                        PlaceHolderSchool.Visible = false;
+                        rbExpType.Enabled = false;
+                    }
+                }
+
+                int ExpenseId = Utils.fixNullInt(Request.QueryString["ExpenseId"]);
+                if (ExpenseId > 0)
+                {
+                    hdnAddEdit.Value = "Edit";
+                    Expense expenseDetails = oCommon.GetExpenseDetails(ExpenseId);
+
+                    txtFileNum.Text = expenseDetails.FileNum;
+                    txtVoucherNum.Text = expenseDetails.VoucherNum;
+
+                    hdnExpenseID.Value = expenseDetails.ExpenseId.ToString();
+                    rbExpType.SelectedValue = (expenseDetails.ExpenseType == "0") ? "2" : expenseDetails.ExpenseType;
+                    rbExpType.Enabled = false;
+
+                    ddMonths.SelectedValue = expenseDetails.Month.Month.ToString();
+                    ddYear.SelectedValue = expenseDetails.Month.Year.ToString();
+
+                    if (expenseDetails.ExpenseType == "1")
+                    {
+                        PlaceHolderOther.Visible = false;
+                        PlaceHolderSchool.Visible = true;
+
+                        //ddMonths.Enabled = false;
+                        //ddYear.Enabled = false;
+
+                        nSchoolId = expenseDetails.SchoolId;
+                    }
+                    else if (expenseDetails.ExpenseType == "20")
+                    {
+                        PlaceHolderOther.Visible = true;
+                        PlaceHolderSchool.Visible = false;
+
+                        (PlaceHolderOther.FindControl("eName")).Visible = true;
+                        (PlaceHolderOther.FindControl("uBills")).Visible = false;
+                        (PlaceHolderOther.FindControl("ePayee")).Visible = false;
+                    }
+                    else if (expenseDetails.ExpenseType == "7")
+                    {
+                        PlaceHolderOther.Visible = true;
+                        PlaceHolderSchool.Visible = false;
+
+                        (PlaceHolderOther.FindControl("eName")).Visible = false;
+                        (PlaceHolderOther.FindControl("uBills")).Visible = true;
+                        (PlaceHolderOther.FindControl("ePayee")).Visible = false;
+                    }
+                    else
+                    {
+                        PlaceHolderOther.Visible = true;
+                        PlaceHolderSchool.Visible = false;
+
+                        (PlaceHolderOther.FindControl("eName")).Visible = false;
+                        (PlaceHolderOther.FindControl("uBills")).Visible = false;
+                        (PlaceHolderOther.FindControl("ePayee")).Visible = true;
+
+                        txtPayee.Text = expenseDetails.ExpensePayee;
+                        txtAmount.Text = expenseDetails.ExpenseAmount.ToString();
+                        txtExpenseDetail.Text = expenseDetails.ExpenseDetail;
+
+                        nSchoolId = 0;
+                    }
+
+                    rbPaymentMode.SelectedValue = expenseDetails.PaymentMode.ToString();
+                    ddBanks.SelectedValue = expenseDetails.BankId.ToString();
+                    txtAccNum.Text = expenseDetails.BenefiName;
+                    txtChkNum.Text = expenseDetails.ChequeNum;
+                    txtNote.Text = expenseDetails.PaymentNote;
+                }
+
+
+                if (nSchoolId > 0)
+                {
+                    PlaceHolderOther.Visible = false;
+                    ddSchools.SelectedValue = nSchoolId.ToString();
+
+                    if (ExpenseId <= 0)
+                    {
+                        ddMonths.SelectedValue = DateTime.Now.Month.ToString();
+                        ddYear.SelectedValue = DateTime.Now.Year.ToString();
+                    }
+                    else
+                    {
+                        ddSchools.Enabled = false;
+                    }
+
+                    // get all school students
+                    Repeater1.DataSource = oCommon.SchoolExpenseStudents(ExpenseId, nSchoolId);
+
+                    Repeater1.DataBind();
+
+                    // get all expense categories.
+                    DataSet oSqlData = oCommon.LoadMonthlyExpenseCats();
+                    Repeater3.DataSource = oSqlData;
+                    Repeater3.DataBind();
+
+                    if (oSqlData != null)
+                    {
+                        hdnColSpan.Value = (oSqlData.Tables[0].Rows.Count + 1).ToString();
+                    }
+                }
+                else
+                {
+                    hdnColSpan.Value = "1";
+                }
+
+                //   // lblSchool.Text = oCommon.GetSchoolNameById(nSchoolId);
+
+                RenderError(Request.QueryString["status"]);
+            }
+        }
+
+        protected void btnUpdate_Click(object sender, ImageClickEventArgs e)
+        {
+            string expenseType = rbExpType.SelectedValue;
+            int EditExpenseId = Utils.fixNullInt(hdnExpenseID.Value);
+
+            bool bIsEdit = EditExpenseId > 0;
+            int nStatus = 0;
+
+            var expense = new Expense();
+            expense.ExpenseId = EditExpenseId;
+            expense.ExpenseType = expenseType;
+            expense.PostedBy = SaveDCSession.UserId;
+            expense.FileNum = txtFileNum.Text;
+            expense.VoucherNum = txtVoucherNum.Text;
+
+            var nEditMonth = new DateTime(int.Parse(ddYear.SelectedValue), int.Parse(ddMonths.SelectedValue), 1);
+            expense.Month = nEditMonth;
+
+            if (expenseType == "1")
+            {
+                int nSchoolId = Utils.fixNullInt(ddSchools.SelectedValue);
+                // get the edit user id.
+
+                expense.ExpensePayee = ddSchools.SelectedItem.Text;
+                expense.SchoolId = nSchoolId;
+
+                expense.ExpenseAmount = GetTotalAmount();
+            }
+            else if (expenseType == "20")
+            {
+                expense.ExpensePayee = EmployeeName.SelectedItem.Text;
+                expense.ExpenseAmount = Utils.fixNullDecimal(txtAmount.Text);
+            }
+            else if (expenseType == "7")
+            {
+                expense.ExpensePayee = UtilityBill.SelectedItem.Text;
+                expense.ExpenseAmount = Utils.fixNullDecimal(txtAmount.Text);
+            }
+            else
+            {
+                expense.ExpensePayee = txtPayee.Text;
+                expense.ExpenseAmount = Utils.fixNullDecimal(txtAmount.Text);
+            }
+
+            expense.ExpenseDetail = txtExpenseDetail.Text;
+            expense.PaymentMode = Utils.fixNullInt(rbPaymentMode.SelectedValue);
+            expense.BankId = Utils.fixNullInt(ddBanks.SelectedValue);
+            expense.BenefiName = txtAccNum.Text;
+            expense.ChequeNum = txtChkNum.Text;
+            expense.PaymentNote = txtNote.Text;
+
+            var oCommon = new Common();
+            EditExpenseId = oCommon.AddExpense(expense);
+            if (EditExpenseId > 0)
+            {
+                nStatus = 1;
+                if (expenseType == "1")
+                {
+                    foreach (RepeaterItem schoolStudentItem in Repeater1.Items)
+                    {
+                        int studentId = int.Parse(((HiddenField) schoolStudentItem.FindControl("hdnStudentId")).Value);
+                        int nAddExpId = EditExpenseId;
+
+                        var childrepeatter = (Repeater) schoolStudentItem.FindControl("Repeater2");
+
+                        foreach (RepeaterItem expCategory in childrepeatter.Items)
+                        {
+                            int expCatId = int.Parse(((HiddenField) expCategory.FindControl("hdnExpenseId")).Value);
+                            decimal amount = Utils.fixNullDecimal(((TextBox) expCategory.FindControl("txtAmount")).Text);
+
+                            nStatus = oCommon.AddSchoolExpenseDetail(nAddExpId, expCatId, amount, studentId);
+                        }
+                    }
+                }
+            }
+            if (nStatus > 0)
+            {
+                if (bIsEdit)
+                    Response.Redirect("ListMonthlyExpenses.aspx?status=5021021"); //  
+                else
+                    Response.Redirect("ListMonthlyExpenses.aspx?status=5021011");
+            }
+            else
+            {
+                Response.Redirect("AddMonthlyExpense.aspx?status=5021010&ExpenseId=" + EditExpenseId.ToString());
+            }
+        }
+
+        private decimal GetTotalAmount()
+        {
+            decimal total = 0;
+            try
+            {
+                foreach (RepeaterItem schoolStudentItem in Repeater1.Items)
+                {
+                    var childrepeatter = (Repeater) schoolStudentItem.FindControl("Repeater2");
+
+                    foreach (RepeaterItem expCategory in childrepeatter.Items)
+                    {
+                        decimal amount = Utils.fixNullDecimal(((TextBox) expCategory.FindControl("txtAmount")).Text);
+                        total += amount;
+                    }
+                }
+            }
+            catch
+            {
+            }
+            return total;
+        }
+
+
+        private void RenderError(string szErrorCode)
+        {
+            if (string.IsNullOrEmpty(szErrorCode))
+            {
+                lblError.Text = "";
+                return;
+            }
+
+            string szErrorDesc = Utils.GetMessageText(szErrorCode);
+            if (!szErrorCode.EndsWith("1"))
+                lblError.CssClass = "FailureMessage";
+            else
+                lblError.CssClass = "SuccessMessage";
+
+            lblError.Text = szErrorDesc;
+        }
+
+        protected void Repeater1_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            try
+            {
+                if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+                {
+                    string studentId = ((HiddenField) e.Item.FindControl("hdnStudentId")).Value;
+
+                    var childrepeatter = (Repeater) e.Item.FindControl("Repeater2");
+
+                    var oCommon = new Common();
+                    DataSet oSqlData = oCommon.LoadSchoolExpenseDetails(studentId, Utils.fixNullInt(hdnExpenseID.Value));
+
+                    childrepeatter.DataSource = oSqlData;
+                    childrepeatter.DataBind();
+
+                    //Label txtboxAmount = (Label)e.Item.FindControl("txtTotal");
+                    //txtboxAmount.Attributes.Add("name", "txtTotal" + "_" + studentId );
+                    //RadioButtonList radioButtonVoteItem = (RadioButtonList)e.Item.FindControl("chkRemarks");
+                    //string selectedRemarks = ((HiddenField)e.Item.FindControl("hdnPrevRemarks")).Value;
+                    //radioButtonVoteItem.SelectedValue = selectedRemarks;
+                }
+            }
+            catch (Exception exception)
+            {
+            }
+        }
+
+        protected void Repeater2_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            try
+            {
+                if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+                {
+                    string studentId = ((HiddenField) e.Item.FindControl("StudentId1")).Value;
+                    string expId = ((HiddenField) e.Item.FindControl("hdnExpenseId")).Value;
+                    var txtboxAmount = (TextBox) e.Item.FindControl("txtAmount");
+
+                    txtboxAmount.Attributes.Add("onblur", "CalcSum('" + studentId + "');");
+                    //txtboxAmount.Attributes.Add("name", "txtAmount" + "_" + studentId + "_" + expId );
+                }
+            }
+            catch (Exception exception)
+            {
+            }
+        }
+
+        protected void rbExpType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (rbExpType.SelectedValue == "1")
+            {
+                PlaceHolderSchool.Visible = true;
+                PlaceHolderOther.Visible = false;
+            }
+            else if (rbExpType.SelectedValue == "20")
+            {
+                PlaceHolderOther.Visible = true;
+                PlaceHolderSchool.Visible = false;
+
+                (PlaceHolderOther.FindControl("eName")).Visible = true;
+                (PlaceHolderOther.FindControl("uBills")).Visible = false;
+                (PlaceHolderOther.FindControl("ePayee")).Visible = false;
+            }
+            else if (rbExpType.SelectedValue == "7")
+            {
+                PlaceHolderOther.Visible = true;
+                PlaceHolderSchool.Visible = false;
+
+                (PlaceHolderOther.FindControl("eName")).Visible = false;
+                (PlaceHolderOther.FindControl("uBills")).Visible = true;
+                (PlaceHolderOther.FindControl("ePayee")).Visible = false;
+            }
+            else
+            {
+                PlaceHolderSchool.Visible = false;
+                PlaceHolderOther.Visible = true;
+
+                (PlaceHolderOther.FindControl("eName")).Visible = false;
+                (PlaceHolderOther.FindControl("uBills")).Visible = false;
+                (PlaceHolderOther.FindControl("ePayee")).Visible = true;
+            }
+        }
+
+        protected void ddSchools_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedSchool = ddSchools.SelectedValue;
+            Response.Redirect("AddMonthlyExpense.aspx?SchoolId=" + selectedSchool + "&ExpenseId=" + hdnExpenseID.Value);
+        }
+    }
+}

@@ -1,0 +1,96 @@
+using System;
+using System.Web.UI;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class SendSMSToSchool : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // page validation
+                var oValidator = new Validator();
+                oValidator.ValidateRequest(Request);
+                oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                                  new[]
+                                                      {
+                                                          UserAccessLevels.SuperAdmin, UserAccessLevels.Admin,
+                                                          UserAccessLevels.Operator
+                                                      });
+
+
+                int nSchoolId = Utils.fixNullInt(Request.QueryString["SchoolId"]);
+
+                var school = new School();
+                school.SchoolID = nSchoolId;
+                var schoolManager = new SchoolManager(school);
+                school = schoolManager.Load();
+
+                hdnSchoolName.Value = school.SchoolName;
+                hdnPrincipalName.Value = school.PrincipalName;
+                hdnSchoolId.Value = school.SchoolID.ToString();
+                txtPhoneNum.Text = school.PhoneNumber;
+            }
+        }
+
+        protected void btnUpdate_Click(object sender, ImageClickEventArgs e)
+        {
+            #region User Right Validation.
+
+            // only admin and super admin are allowed to execute this part.
+            new Validator().CheckUserRightsOnEditDelete(Request);
+
+            #endregion
+
+            string errorCode = "";
+            int SchoolId = Utils.fixNullInt(hdnSchoolId.Value);
+
+            var school = new School();
+            school.SchoolID = SchoolId;
+            var schoolManager = new SchoolManager(school);
+            school = schoolManager.Load();
+
+            var commom = new Common();
+            int statusCode = commom.SendSMSAndLogInDatabase(SchoolId, school.PrincipalName + "," + txtPhoneNum.Text,
+                                                            txtMessage.Text, "SCH");
+
+            if (statusCode > 0)
+            {
+                // success.
+                errorCode = "5091001";
+            }
+            else if (statusCode == -1)
+            {
+                // auth failure
+                errorCode = "5091003";
+            }
+            else if (statusCode == -2)
+            {
+                // invalid xml
+                errorCode = "5091004";
+            }
+            else if (statusCode == -3)
+            {
+                // in-suficient balance.
+                errorCode = "5091002";
+            }
+            else if (statusCode == -4)
+            {
+                // invalid or no recipient
+                errorCode = "5091005";
+            }
+            else
+            {
+                // unknow error while sending sms.
+                errorCode = "5091000";
+            }
+
+            Response.Redirect("ListSchools.aspx?status=" + errorCode); //  fund updated successfully.
+        }
+    }
+}

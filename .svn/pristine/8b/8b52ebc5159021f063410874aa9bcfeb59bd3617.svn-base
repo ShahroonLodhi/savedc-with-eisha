@@ -1,0 +1,68 @@
+using System;
+using System.Web.UI;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class AddNotesForDonor : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // page validation
+                var oValidator = new Validator();
+                oValidator.ValidateRequest(Request);
+                oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                                  new[]
+                                                      {
+                                                          UserAccessLevels.SuperAdmin, UserAccessLevels.Admin
+                                                      });
+
+
+                int nDonorId = Utils.fixNullInt(Request.QueryString["DonorId"]);
+
+                if (nDonorId == 0) // add note for all donors
+                {
+                    hdnDonorName.Value = "all Donors";
+                    hdnDonorId.Value = "0";
+                }
+                else // add note for specific donor
+                {
+                    var user = new User();
+                    user.UserID = nDonorId;
+                    var userManager = new UserManager(user);
+                    user = userManager.Load();
+
+                    hdnDonorName.Value = user.UserName;
+                    hdnDonorId.Value = user.UserID.ToString();
+                }
+            }
+        }
+
+        protected void btnUpdate_Click(object sender, ImageClickEventArgs e)
+        {
+            #region User Right Validation.
+
+            // only admin and super admin are allowed to execute this part.
+            new Validator().CheckUserRightsOnEditDelete(Request);
+
+            #endregion
+
+            int donorId = Utils.fixNullInt(hdnDonorId.Value);
+
+            var user = new User();
+            user.UserID = donorId;
+            user.RemarksPostedBy = SaveDCSession.UserId;
+            var userManager = new UserManager(user);
+
+            if (userManager.AddNote(txtMessage.Text))
+                Response.Redirect("ListDonors.aspx?status=5011321");
+            else
+                Response.Redirect("ListDonors.aspx?status=5011320");
+        }
+    }
+}

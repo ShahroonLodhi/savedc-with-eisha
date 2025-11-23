@@ -1,0 +1,172 @@
+using System;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class ListUsers : Page
+    {
+        #region Delegates
+
+        public delegate void delPopulateData(int nCurrentPage);
+
+        #endregion
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            // page validation
+            var oValidator = new Validator();
+            oValidator.ValidateRequest(Request);
+            oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                              new[] {UserAccessLevels.SuperAdmin, UserAccessLevels.Admin});
+            oValidator = null;
+
+            if (!Page.IsPostBack)
+            {
+                LoadUsers(1);
+                RenderError(Request.QueryString["status"]);
+            }
+            delPopulateData delPopulate = LoadUsers;
+            pagerApps.UpdatePageIndex = delPopulate;
+        }
+
+        private void LoadUsers(int currentPageIndex)
+        {
+            string szSrchUserName = "";
+            if (!string.IsNullOrEmpty(Request.QueryString["UserName"]))
+            {
+                szSrchUserName = Request.QueryString["UserName"];
+                txtUserName.Text = szSrchUserName;
+            }
+
+            var oUser = new User();
+            var oUserManager = new UserManager(oUser);
+            oUser.UserName = szSrchUserName;
+
+            User[] users = oUserManager.GetUsers(currentPageIndex, pagerApps.RecordsPerPage);
+
+            //===============================================================
+            pagerApps.TotalRecords = Convert.ToInt32(oUserManager.RecordCount);
+            //===============================================================
+
+            dgUsers.DataSource = users;
+            dgUsers.DataBind();
+
+            if (users == null || users.Length <= 0)
+            {
+                // set the total
+                lblTotal.Text = 0.ToString();
+                tbNoDataFound.Visible = true;
+                tbDataFound.Visible = false;
+            }
+            else
+            {
+                lblTotal.Text = users.Length.ToString();
+                tbDataFound.Visible = true;
+                tbNoDataFound.Visible = false;
+            }
+        }
+
+        private void RenderError(string szErrorCode)
+        {
+            if (string.IsNullOrEmpty(szErrorCode))
+            {
+                lblError.Text = "";
+                return;
+            }
+
+            string szErrorDesc = Utils.GetMessageText(szErrorCode);
+            if (!szErrorCode.EndsWith("1"))
+                lblError.CssClass = "FailureMessage";
+            else
+                lblError.CssClass = "SuccessMessage";
+
+            lblError.Text = szErrorDesc;
+        }
+
+        protected void btnSendEmail_Click(object sender, EventArgs e)
+        {
+            #region User Right Validation.
+
+            // only admin and super admin are allowed to execute this part.
+            new Validator().CheckUserRightsOnEditDelete(Request);
+
+            #endregion
+
+            string szCurUserId = hdnUserID.Value;
+            Response.Redirect("SendEmailToUser.aspx?UserId=" + szCurUserId);
+        }
+
+        protected void searchbtn_Click(object sender, ImageClickEventArgs e)
+        {
+            string szSrchUserName = "";
+            if (!string.IsNullOrEmpty(txtUserName.Text))
+                szSrchUserName = txtUserName.Text;
+
+            Response.Redirect("ListUsers.aspx?UserName=" + szSrchUserName);
+        }
+
+        protected void btnSendSMS_Click(object sender, EventArgs e)
+        {
+            #region User Right Validation.
+
+            // only admin and super admin are allowed to execute this part.
+            new Validator().CheckUserRightsOnEditDelete(Request);
+
+            #endregion
+
+            string szCurUserId = hdnUserID.Value;
+            Response.Redirect("SendSMSToUser.aspx?UserId=" + szCurUserId);
+        }
+
+        protected void btnSMSHistory_Click(object sender, EventArgs e)
+        {
+            #region User Right Validation.
+
+            // only admin and super admin are allowed to execute this part.
+            new Validator().CheckUserRightsOnEditDelete(Request);
+
+            #endregion
+
+            string szCurUserId = hdnUserID.Value;
+            Response.Redirect("ListUserSMS.aspx?UserId=" + szCurUserId);
+        }
+
+        protected void dgUsers_Databound(object sender, DataGridItemEventArgs e)
+        {
+        }
+
+        protected void btnDetail_Click(object sender, EventArgs e)
+        {
+            string szCurUserId = hdnUserID.Value;
+            Response.Redirect("DetailUsers.aspx?UserId=" + szCurUserId);
+        }
+
+        protected void btnDelUser_Click(object sender, EventArgs e)
+        {
+            string szCurUserId = hdnUserID.Value;
+
+            var oUser = new User();
+            oUser.UserID = int.Parse(szCurUserId);
+
+            string szStatus = "5011270";
+            var oUserManager = new UserManager(oUser);
+            if (oUserManager.Delete())
+            {
+                szStatus = "5011271";
+            }
+
+            Response.Redirect("ListUsers.aspx?status=" + szStatus);
+        }
+
+        protected void btnEditUser_Click(object sender, EventArgs e)
+        {
+            string szCurUserId = hdnUserID.Value;
+            Response.Redirect("AddUsers.aspx?UserId=" + szCurUserId);
+        }
+    }
+}

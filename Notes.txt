@@ -1,0 +1,43 @@
+﻿
+yyyy mm dd
+2012 02 05
+
+DB Changes:
+
+[GetStudentsList]
+
+[AddStudent]
+
+tblStudents: Fields ImageGUID added.
+
+family table modified. two BillGUID fields added.
+
+[AddFamily]
+
+[GetBanks]
+TblBanks added
+
+fields added in tblStudentsMonthlyExpenses; donotId, paymentid
+tblExpensePaymentDetails added.
+
+[AddSchoolMonthlyExpense]
+
+AddExpensePaymentDetails
+
+[GetExpensePaymentDetails]
+
+[DeleteSchoolMonthlyExpense]
+
+[LoadSchoolMonthlyExpense]
+
+[GetDonationsReport]
+
+[GetPanelSummary]
+
+[GetProgressReportMonth]
+[AddStudentProgressReport]
+
+tblStudentProgressReport columns added
+
+
+[LoadStudentProgressReports] [AddStudentProgressReport] [GetProgressReportMonth] [AddStudentProgressReport] [AssignDonor]

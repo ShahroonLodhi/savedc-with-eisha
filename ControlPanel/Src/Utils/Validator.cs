@@ -1,0 +1,70 @@
+﻿using System.Web;
+using SaveDC.ControlPanel.Src.Configurations;
+
+namespace SaveDC.ControlPanel.Src.Utils
+{
+    public enum UserAccessLevels
+    {
+        SuperAdmin,
+        Admin,
+        Operator,
+        Donor,
+        None
+    }
+
+    public class Validator
+    {
+        public void ValidateUserPageAccess(UserAccessLevels loginedUserLevel, UserAccessLevels[] validPageLevels)
+        {
+            foreach (UserAccessLevels accessLevel in validPageLevels)
+            {
+                if (accessLevel == loginedUserLevel)
+                    return;
+            }
+
+            HttpContext.Current.Response.Redirect("Login.aspx?status=5011300");
+        }
+
+        public void ValidateRequest(HttpRequest request)
+        {
+            foreach (string key in request.Form.Keys)
+            {
+                if (!IsRequestNotContainsSQL(request[key]))
+                {
+                    HttpContext.Current.Response.Redirect("Login.aspx?status=5011290");
+                }
+            }
+            foreach (string key in request.QueryString.Keys)
+            {
+                if (!IsRequestNotContainsSQL(request[key]))
+                {
+                    HttpContext.Current.Response.Redirect("Login.aspx?status=5011290");
+                }
+            }
+        }
+
+
+        public void CheckUserRightsOnEditDelete(HttpRequest request)
+        {
+            var oValidator = new Validator();
+            oValidator.ValidateRequest(request);
+            oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                              new[] {UserAccessLevels.SuperAdmin, UserAccessLevels.Admin, UserAccessLevels.Operator});
+            oValidator = null;
+        }
+
+        private bool IsRequestNotContainsSQL(string strWords)
+        {
+            var invalidChars = new[] {"drop ", ";", "--", "'", "insert into", "delete from"};
+            int a = invalidChars.Length;
+            for (int i = 0; i < invalidChars.Length; i++)
+            {
+                if (strWords.IndexOf(invalidChars[i]) != -1)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+}

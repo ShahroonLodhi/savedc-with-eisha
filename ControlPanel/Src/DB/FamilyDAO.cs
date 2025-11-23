@@ -1,0 +1,395 @@
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using SaveDC.ControlPanel.Src.Objects;
+
+namespace SaveDC.ControlPanel.Src.DB
+{
+    public class FamilyDAO
+    {
+        private readonly Family family;
+
+        public FamilyDAO()
+        {
+        }
+
+        public FamilyDAO(string SearchText, string SearchMode)
+        {
+        }
+
+        public FamilyDAO(Family oFamily)
+        {
+            family = oFamily;
+        }
+
+        public Int32 RecordCount { get; set; }
+
+        public Family[] GetFamilies(int nPageNo, int nPageSize)
+        {
+            var dbmanager = new DBManager();
+            Family[] familys = null;
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@FamilyName", SqlDbType.NVarChar, 250,
+                                                                      family.DisplayName),
+                                                dbmanager.makeInParam("@FatherName", SqlDbType.NVarChar, 250,
+                                                                      family.FatherName),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet data = dbmanager.GetDataSetProc("GetFamiliesList", parameters);
+                if (data != null)
+                {
+                    RecordCount = Utils.Utils.fixNullInt(parameters[4].Value);
+                    if (data.Tables[0].Rows.Count > 0)
+                    {
+                        familys = new Family[data.Tables[0].Rows.Count];
+
+                        for (int i = 0; i < data.Tables[0].Rows.Count; i++)
+                        {
+                            familys[i] = new Family();
+                            DataRow row = data.Tables[0].Rows[i];
+                            familys[i].FamilyId = Utils.Utils.fixNullInt(row["FamilyId"]);
+                            familys[i].DisplayName = Utils.Utils.fixNullString(row["DisplayName"]);
+
+                            // parents detail.
+                            familys[i].FatherName = Utils.Utils.fixNullString(row["FatherName"]);
+                            familys[i].MotherName = Utils.Utils.fixNullString(row["MotherName"]);
+                            familys[i].IsFatherAlive = Utils.Utils.fixNullBool(row["IsFatherAlive"]);
+                            familys[i].IsMotherAlive = Utils.Utils.fixNullBool(row["IsMotherAlive"]);
+                            familys[i].FatherAge = Utils.Utils.fixNullInt(row["FatherAge"]);
+                            familys[i].MotherAge = Utils.Utils.fixNullInt(row["MotherAge"]);
+                            familys[i].FatherOccu = Utils.Utils.fixNullString(row["FatherOccu"]);
+                            familys[i].MotherOccu = Utils.Utils.fixNullString(row["MotherOccu"]);
+                            familys[i].IsDivorced = Utils.Utils.fixNullBool(row["IsDivorced"]);
+                            familys[i].DivorcedPeriod = Utils.Utils.fixNullInt(row["DivorcedPeriod"]);
+                            familys[i].FatherLocation = Utils.Utils.fixNullString(row["FatherLocation"]);
+                            familys[i].Gardian = Utils.Utils.fixNullInt(row["Gardian"]);
+                            // 0 for father and 1 for mother.
+                            familys[i].FatherCNIC = Utils.Utils.fixNullString(row["FatherCNIC"]);
+                            familys[i].MotherCNIC = Utils.Utils.fixNullString(row["MotherCNIC"]);
+
+                            // contact details.
+                            familys[i].CurResAddress = Utils.Utils.fixNullString(row["CurResAddress"]);
+                            familys[i].PermResAddress = Utils.Utils.fixNullString(row["PermResAddress"]);
+                            familys[i].LandlineNumber = Utils.Utils.fixNullString(row["LandlineNumber"]);
+                            familys[i].CellNumber = Utils.Utils.fixNullString(row["CellNumber"]);
+
+                            // family member details.
+                            familys[i].MaleMembers = Utils.Utils.fixNullInt(row["MaleMembers"]);
+                            familys[i].FemaleMembers = Utils.Utils.fixNullInt(row["FemaleMembers"]);
+                            familys[i].MemberDetail = Utils.Utils.fixNullString(row["MemberDetail"]);
+
+                            // living detail.                            
+                            familys[i].HouseArea = Utils.Utils.fixNullInt(row["HouseArea"]); // in sqr foots
+                            familys[i].HouseRooms = Utils.Utils.fixNullInt(row["HouseRooms"]);
+                            familys[i].IsHouseOwner = Utils.Utils.fixNullBool(row["IsHouseOwner"]);
+                            familys[i].LivingPeriod = Utils.Utils.fixNullInt(row["LivingPeriod"]); // in  months/year
+                            familys[i].FamilyIncome = Utils.Utils.fixNullInt(row["FamilyIncome"]); // in Ks.
+
+                            // other
+                            familys[i].Note = Utils.Utils.fixNullString(row["Note"]);
+
+                            // children
+                            familys[i].TotalChildren = Utils.Utils.fixNullInt(row["TotalChilds"]);
+                        }
+                    }
+                }
+                return familys;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+            finally
+            {
+                dbmanager = null;
+            }
+        }
+
+        public DataSet GetFamiliesInDS(int nPageNo, int nPageSize)
+        {
+            DataSet ds = new DataSet();
+            var dbmanager = new DBManager();
+            Family[] familys = null;
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@FamilyName", SqlDbType.NVarChar, 250,
+                                                                      family.DisplayName),
+                                                dbmanager.makeInParam("@FatherName", SqlDbType.NVarChar, 250,
+                                                                      family.FatherName),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                ds = dbmanager.GetDataSetProc("GetFamiliesListForExcelReport", parameters);
+                if (ds != null)
+                {
+                    return ds;
+                }
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+            return ds;
+        }
+
+        public Family LoadFamily(int familyID)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] sqlparameter = {
+                                                  dbmanager.makeInParam("@FamilyID", SqlDbType.Int, 0, familyID)
+                                              };
+
+                SqlDataReader sqldatareader = dbmanager.GetDataReaderProc("LoadFamily", sqlparameter);
+                if (sqldatareader.Read())
+                {
+                    family.FamilyId = familyID;
+                    family.DisplayName =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("DisplayName")));
+
+                    // parents detail.
+                    family.FatherName =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("FatherName")));
+                    family.MotherName =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("MotherName")));
+                    family.IsFatherAlive =
+                        Utils.Utils.fixNullBool(sqldatareader.GetValue(sqldatareader.GetOrdinal("IsFatherAlive")));
+                    family.IsMotherAlive =
+                        Utils.Utils.fixNullBool(sqldatareader.GetValue(sqldatareader.GetOrdinal("IsMotherAlive")));
+                    family.FatherAge =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("FatherAge")));
+                    family.MotherAge =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("MotherAge")));
+                    family.FatherOccu =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("FatherOccu")));
+                    family.MotherOccu =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("MotherOccu")));
+                    family.IsDivorced =
+                        Utils.Utils.fixNullBool(sqldatareader.GetValue(sqldatareader.GetOrdinal("IsDivorced")));
+                    family.DivorcedPeriod =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("DivorcedPeriod")));
+                    family.FatherLocation =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("FatherLocation")));
+                    family.Gardian = Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("Gardian")));
+                    // 0 for father and 1 for mother.
+                    family.FatherCNIC =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("FatherCNIC")));
+                    family.MotherCNIC =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("MotherCNIC")));
+
+                    // contact details.
+                    family.CurResAddress =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("CurResAddress")));
+                    family.PermResAddress =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("PermResAddress")));
+                    family.LandlineNumber =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("LandlineNumber")));
+                    family.CellNumber =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("CellNumber")));
+
+                    // family member details.
+                    family.MaleMembers =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("MaleMembers")));
+                    family.FemaleMembers =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("FemaleMembers")));
+                    family.MemberDetail =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("MemberDetail")));
+
+                    // living detail.                            
+                    family.HouseArea =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("HouseArea")));
+                    // in sqr foots
+                    family.HouseRooms =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("HouseRooms")));
+                    family.IsHouseOwner =
+                        Utils.Utils.fixNullBool(sqldatareader.GetValue(sqldatareader.GetOrdinal("IsHouseOwner")));
+                    family.LivingPeriod =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("LivingPeriod")));
+                    // in  months/year
+                    family.FamilyIncome =
+                        Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("FamilyIncome")));
+                    // in Ks.
+
+                    // other
+                    family.Note = Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("Note")));
+
+                    family.Bill1GUID =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("Bill1GUID")));
+                    family.Bill2GUID =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("Bill2GUID")));
+
+                    family.Cert1GUID =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("Cert1GUID")));
+                    family.Cert2GUID =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("Cert2GUID")));
+
+                    sqldatareader.Close();
+
+                    return family;
+                }
+                sqldatareader.Close();
+
+                return null;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+        public int AddFamily()
+        {
+            var dbmanager = new DBManager();
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@FamilyId", SqlDbType.Int, 0, family.FamilyId),
+                                                dbmanager.makeInParam("@DisplayName", SqlDbType.NVarChar, 255,
+                                                                      family.DisplayName),
+                                                // parents detail.
+                                                dbmanager.makeInParam("@FatherName", SqlDbType.NVarChar, 255,
+                                                                      family.FatherName),
+                                                dbmanager.makeInParam("@MotherName", SqlDbType.NVarChar, 255,
+                                                                      family.MotherName),
+                                                dbmanager.makeInParam("@IsFatherAlive", SqlDbType.Bit, 0,
+                                                                      family.IsFatherAlive),
+                                                dbmanager.makeInParam("@IsMotherAlive", SqlDbType.Bit, 0,
+                                                                      family.IsMotherAlive),
+                                                dbmanager.makeInParam("@FatherAge", SqlDbType.Int, 0, family.FatherAge),
+                                                dbmanager.makeInParam("@MotherAge", SqlDbType.Int, 0, family.MotherAge),
+                                                dbmanager.makeInParam("@FatherOccu", SqlDbType.NVarChar, 255,
+                                                                      family.FatherOccu),
+                                                dbmanager.makeInParam("@MotherOccu", SqlDbType.NVarChar, 255,
+                                                                      family.MotherOccu),
+                                                dbmanager.makeInParam("@IsDivorced", SqlDbType.Bit, 0, family.IsDivorced)
+                                                ,
+                                                dbmanager.makeInParam("@DivorcedPeriod", SqlDbType.Int, 0,
+                                                                      family.DivorcedPeriod),
+                                                dbmanager.makeInParam("@FatherLocation", SqlDbType.NVarChar, 255,
+                                                                      family.FatherLocation),
+                                                dbmanager.makeInParam("@Gardian", SqlDbType.Int, 0, family.Gardian),
+                                                // 0 for father and 1 for mother.
+                                                dbmanager.makeInParam("@FatherCNIC", SqlDbType.NVarChar, 50,
+                                                                      family.FatherCNIC),
+                                                dbmanager.makeInParam("@MotherCNIC", SqlDbType.NVarChar, 50,
+                                                                      family.MotherCNIC),
+                                                // contact details.
+                                                dbmanager.makeInParam("@CurResAddress", SqlDbType.NVarChar, 255,
+                                                                      family.CurResAddress),
+                                                dbmanager.makeInParam("@PermResAddress", SqlDbType.NVarChar, 255,
+                                                                      family.PermResAddress),
+                                                dbmanager.makeInParam("@LandlineNumber", SqlDbType.NVarChar, 255,
+                                                                      family.LandlineNumber),
+                                                dbmanager.makeInParam("@CellNumber", SqlDbType.NVarChar, 255,
+                                                                      family.CellNumber),
+                                                // member details.
+                                                dbmanager.makeInParam("@MaleMembers", SqlDbType.Int, 0,
+                                                                      family.MaleMembers),
+                                                dbmanager.makeInParam("@FemaleMembers", SqlDbType.Int, 0,
+                                                                      family.FemaleMembers),
+                                                dbmanager.makeInParam("@MemberDetail", SqlDbType.NVarChar, 255,
+                                                                      family.MemberDetail),
+                                                // living detail.                            
+                                                dbmanager.makeInParam("@HouseArea", SqlDbType.Int, 0, family.HouseArea),
+                                                dbmanager.makeInParam("@HouseRooms", SqlDbType.Int, 0, family.HouseRooms)
+                                                ,
+                                                dbmanager.makeInParam("@IsHouseOwner", SqlDbType.Bit, 0,
+                                                                      family.IsHouseOwner),
+                                                dbmanager.makeInParam("@LivingPeriod", SqlDbType.Int, 0,
+                                                                      family.LivingPeriod),
+                                                dbmanager.makeInParam("@FamilyIncome", SqlDbType.Int, 0,
+                                                                      family.FamilyIncome),
+                                                // other
+                                                dbmanager.makeInParam("@Note", SqlDbType.NVarChar, 512, family.Note),
+                                                dbmanager.makeInParam("@Bill1GUID", SqlDbType.NVarChar, 50,
+                                                                      family.Bill1GUID),
+                                                dbmanager.makeInParam("@Bill2GUID", SqlDbType.NVarChar, 50,
+                                                                      family.Bill2GUID),
+                                                dbmanager.makeInParam("@Cert1GUID", SqlDbType.NVarChar, 50,
+                                                                      family.Cert1GUID),
+                                                dbmanager.makeInParam("@Cert2GUID", SqlDbType.NVarChar, 50,
+                                                                      family.Cert2GUID)
+                                            };
+
+
+                int nRet = dbmanager.RunProc("AddFamily", parameters);
+
+                return nRet;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return 0;
+            }
+            finally
+            {
+                dbmanager = null;
+            }
+        }
+
+        public bool DeleteFamily()
+        {
+            var dbmanager = new DBManager();
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@FamilyId", SqlDbType.Int, 0, family.FamilyId)
+                                            };
+
+                int nRet = dbmanager.RunProc("DeleteFamily", parameters);
+
+                if (nRet > 0)
+                    return true;
+                else
+                    return false;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+            finally
+            {
+                dbmanager = null;
+            }
+        }
+
+        internal bool FamilyExists()
+        {
+            return true;
+            //DBManager dbmanager = new DBManager();
+            //try
+            //{
+            //    System.Data.SqlClient.SqlParameter[] parameters = { 
+            //        dbmanager.makeInParam("@FamilyId", System.Data.SqlDbType.Int, 0, family.FamilyID)
+            //    };
+
+            //    int nRet = dbmanager.RunProc("FamilyExist", parameters);
+
+            //    if (nRet > 0)
+            //        return true;
+            //    else
+            //        return false;
+            //}
+            //catch (Exception e)
+            //{
+            //    Utils.Utils.LogErrorToFile(e);
+            //    return false;
+            //}
+            //finally
+            //{
+            //    dbmanager = null;
+            //}
+        }
+    }
+}

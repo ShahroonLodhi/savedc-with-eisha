@@ -1,0 +1,178 @@
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using SaveDC.ControlPanel.Src.Objects;
+
+namespace SaveDC.ControlPanel.Src.DB
+{
+    public class FundDAO
+    {
+        private readonly Fund fund;
+
+        public FundDAO()
+        {
+        }
+
+        public FundDAO(Fund oFund)
+        {
+            fund = oFund;
+        }
+
+        public Int32 RecordCount { get; set; }
+
+        public Fund[] GetFunds(int nPageNo, int nPageSize)
+        {
+            var dbmanager = new DBManager();
+            Fund[] funds = null;
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@DonorId", SqlDbType.Int, 0, fund.DonorID),
+                                                dbmanager.makeInParam("@DonorName", SqlDbType.NVarChar, 250,
+                                                                      fund.DonorName),
+                                                dbmanager.makeInParam("@FundAmount", SqlDbType.Decimal, 0,
+                                                                      fund.FundAmount),
+                                                dbmanager.makeInParam("@FundedOnDateString", SqlDbType.NVarChar, 50,
+                                                                      fund.FundedOnDateString),
+                                                dbmanager.makeInParam("@FundDateFrom", SqlDbType.Date, 0, fund.FundDate)
+                                                ,
+                                                dbmanager.makeInParam("@FundDateTo", SqlDbType.Date, 0, fund.FundDate),
+                                                dbmanager.makeInParam("@FundPostedBy", SqlDbType.Int, 0,
+                                                                      fund.FundPostedBy),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet data = dbmanager.GetDataSetProc("GetFundsList", parameters);
+                if (data != null)
+                {
+                    RecordCount = Utils.Utils.fixNullInt(parameters[9].Value);
+                    if (data.Tables[0].Rows.Count > 0)
+                    {
+                        funds = new Fund[data.Tables[0].Rows.Count];
+
+                        for (int i = 0; i < data.Tables[0].Rows.Count; i++)
+                        {
+                            funds[i] = new Fund();
+                            DataRow row = data.Tables[0].Rows[i];
+                            funds[i].FundID = Utils.Utils.fixNullInt(row["FundId"]);
+                            funds[i].DonorName = Utils.Utils.fixNullString(row["DonorName"]);
+                            funds[i].DonorID = Utils.Utils.fixNullInt(row["DonorId"]);
+                            funds[i].FundAmount = Utils.Utils.fixNullDecimal(row["TotalAmount"]);
+                            funds[i].FundDate = Utils.Utils.fixNullDate(row["DatePaid"]);
+                            funds[i].Note = Utils.Utils.fixNullString(row["Notes"]);
+                            funds[i].FundPostedName = Utils.Utils.fixNullString(row["FundPostedName"]);
+                        }
+                    }
+                }
+                return funds;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+            finally
+            {
+                dbmanager = null;
+            }
+        }
+
+        public Fund LoadFund(int fundID)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] sqlparameter = {
+                                                  dbmanager.makeInParam("@FundID", SqlDbType.Int, 0, fundID)
+                                              };
+
+                SqlDataReader sqldatareader = dbmanager.GetDataReaderProc("LoadFund", sqlparameter);
+                if (sqldatareader.Read())
+                {
+                    fund.FundID = fundID;
+                    fund.DonorName =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("DonorName")));
+                    fund.DonorID = Utils.Utils.fixNullInt(sqldatareader.GetValue(sqldatareader.GetOrdinal("DonorId")));
+                    fund.FundAmount =
+                        Utils.Utils.fixNullDecimal(sqldatareader.GetValue(sqldatareader.GetOrdinal("TotalAmount")));
+                    fund.FundDate = Utils.Utils.fixNullDate(sqldatareader.GetValue(sqldatareader.GetOrdinal("DatePaid")));
+                    fund.Note = Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("Notes")));
+                    fund.FundPostedName =
+                        Utils.Utils.fixNullString(sqldatareader.GetValue(sqldatareader.GetOrdinal("FundPostedName")));
+
+
+                    sqldatareader.Close();
+
+                    return fund;
+                }
+                sqldatareader.Close();
+
+                return null;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+        public int AddFund()
+        {
+            var dbmanager = new DBManager();
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@FundId", SqlDbType.Int, 0, fund.FundID),
+                                                dbmanager.makeInParam("@DonorId", SqlDbType.Int, 0, fund.DonorID),
+                                                dbmanager.makeInParam("@FundPostedBy", SqlDbType.Int, 0,
+                                                                      fund.FundPostedBy),
+                                                dbmanager.makeInParam("@TotalAmount", SqlDbType.Decimal, 0,
+                                                                      fund.FundAmount),
+                                                //dbmanager.makeInParam("@DatePaid", System.Data.SqlDbType.Date , 0, fund.FundDate),
+                                                dbmanager.makeInParam("@Notes", SqlDbType.NVarChar, 255, fund.Note)
+                                            };
+
+                int nRet = dbmanager.RunProc("AddFund", parameters);
+
+                return nRet;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return 0;
+            }
+            finally
+            {
+                dbmanager = null;
+            }
+        }
+
+        public bool DeleteFund()
+        {
+            var dbmanager = new DBManager();
+            try
+            {
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@FundId", SqlDbType.Int, 0, fund.FundID)
+                                            };
+
+                int nRet = dbmanager.RunProc("DeleteFund", parameters);
+
+                if (nRet > 0)
+                    return true;
+                else
+                    return false;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+            finally
+            {
+                dbmanager = null;
+            }
+        }
+    }
+}

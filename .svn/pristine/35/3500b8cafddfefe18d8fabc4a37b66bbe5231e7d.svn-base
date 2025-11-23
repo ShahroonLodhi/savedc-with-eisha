@@ -1,0 +1,48 @@
+﻿using System;
+using System.Net;
+using System.Net.Mail;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Objects;
+
+namespace SaveDC.ControlPanel.Src.Utils
+{
+    public class EmailSender
+    {
+        public static bool SendEmail(Email email)
+        {
+            try
+            {
+                var fromAddress = new MailAddress(EmailConfiguration.FromAddress);
+                var toAddress = new MailAddress(email.DonorEmail);
+                string month = DateTime.Now.ToString("MMM, yyyy");
+
+                string body = string.Format(EmailConfiguration.MailBody, email.FirstName + " " + email.LastName,
+                                            email.Amount, month);
+
+                var smtp = new SmtpClient
+                               {
+                                   Host = EmailConfiguration.SMTPHost,
+                                   Port = 587,
+                                   EnableSsl = true,
+                                   DeliveryMethod = SmtpDeliveryMethod.Network,
+                                   Credentials = new NetworkCredential(fromAddress.Address, EmailConfiguration.FromPwd),
+                                   Timeout = 20000
+                               };
+                using (var message = new MailMessage(fromAddress, toAddress)
+                                         {
+                                             Subject = EmailConfiguration.MailSubject,
+                                             Body = body
+                                         })
+                {
+                    smtp.Send(message);
+                }
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return false;
+            }
+            return true;
+        }
+    }
+}

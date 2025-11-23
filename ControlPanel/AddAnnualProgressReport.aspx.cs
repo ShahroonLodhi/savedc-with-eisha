@@ -1,0 +1,210 @@
+using System;
+using System.Data;
+using System.IO;
+using System.Web;
+using System.Web.UI;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class AddAnnualProgressReport : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            // page validation
+            var oValidator = new Validator();
+            oValidator.ValidateRequest(Request);
+            oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                              new[]
+                                                  {
+                                                      UserAccessLevels.SuperAdmin, UserAccessLevels.Admin,
+                                                      UserAccessLevels.Operator
+                                                  });
+
+            if (!Page.IsPostBack)
+            {
+                var oCommon = new Common();
+                //Getting the Years dynamically from db
+                DataSet ds = oCommon.GetCalandarYear(1980, DateTime.Now.Year);
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    ddYear.DataSource = ds.Tables[0];
+                    ddYear.DataValueField = "date_year";
+                    ddYear.DataTextField = "date_year";
+                    ddYear.DataBind();
+                }
+
+                // load edit user details.
+                
+                int nReportId = Utils.fixNullInt(Request.QueryString["ReportId"]);
+                if (SaveDCSession.UserAccessLevel == UserAccessLevels.Operator)
+                {
+                    nReportId = 0;
+                }
+
+                string SchoolName = "";
+                if (nReportId > 0)
+                {
+                    int nYear = 0;
+                    string szNote = "", ImageGUID = "", szAddedBy = "";
+                    oCommon.GetAnnualProgressReportDetail(nReportId, ref nYear, ref szNote, ref ImageGUID,
+                                                          ref szAddedBy, ref SchoolName);
+                    ddYear.SelectedValue = nYear.ToString();
+                    hdnAddEdit.Value = "Edit";
+                    txtRemarks.Text = szNote;
+                    string szServerPath = Server.MapPath(SaveDCConstants.ReportUploadPath) + ImageGUID + ".jpg";
+                    if (File.Exists(szServerPath))
+                    {
+                        hdnOldReport.Value = ImageGUID;
+                        hdnNewReport.Value = ImageGUID;
+                    }
+                }
+                else
+                {
+                    ddYear.SelectedValue = DateTime.Now.Year.ToString();
+                }
+
+                int nStudentId = SaveDCSession.StudentId;
+
+                var oStudent = new Student();
+                oStudent.StudentId = nStudentId;
+                var oStudentManager = new StudentManager(oStudent);
+                oStudent = oStudentManager.Load();
+                lblStdName.Text = oStudent.FirstName + " " + oStudent.LastName;
+
+                if (oStudent.SchoolId > 0 && string.IsNullOrEmpty(SchoolName))
+                {
+                    var oSchool = new School();
+                    oSchool.SchoolID = oStudent.SchoolId;
+                    var oSchoolManager = new SchoolManager(oSchool);
+                    oSchool = oSchoolManager.Load();
+                    lblSchoolName.Text = oSchool.SchoolName;
+                }
+                else
+                {
+                    lblSchoolName.Text = SchoolName;
+                }
+
+
+                hdnEditReportId.Value = nReportId.ToString();
+                RenderError(Request.QueryString["status"]);
+            }
+        }
+
+        private string UploadFileAndReturnName()
+        {
+            try
+            {
+                HttpPostedFile hpf = reportUpload.PostedFile;
+                if (hpf.ContentLength > 0)
+                {
+                    if (IsValidImageFile(Path.GetFileName(hpf.FileName)))
+                    {
+                        string szFileGUID = Guid.NewGuid().ToString();
+                        hpf.SaveAs(Server.MapPath(SaveDCConstants.ReportUploadPath) + szFileGUID + ".jpg");
+                        return szFileGUID;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return "";
+        }
+
+        protected void btnUpdate_Click(object sender, ImageClickEventArgs e)
+        {
+            // ajax did not work on the sever so to minimize code changes assigning new file name to hdn control.
+            string szFileName = UploadFileAndReturnName();
+            if (!string.IsNullOrEmpty(szFileName))
+            {
+                hdnNewReport.Value = szFileName;
+            }
+
+            int nStudentId = SaveDCSession.StudentId;
+            // get the edit user id.
+            int nEditReportId = 0;
+            int.TryParse(hdnEditReportId.Value, out nEditReportId);
+            bool bIsEdit = nEditReportId > 0;
+
+            string szNote = txtRemarks.Text;
+            string szReportGUID = hdnNewReport.Value;
+
+            var oCommon = new Common();
+            int nStatus =
+                nEditReportId =
+                oCommon.AddStudentAnnualProgressReport(nEditReportId, nStudentId,
+                                                       int.Parse(ddYear.SelectedValue), szNote, szReportGUID,
+                                                       SaveDCSession.UserId);
+            if (nStatus > 0)
+            {
+                // delete older files.
+                try
+                {
+                    if (!string.IsNullOrEmpty(hdnOldReport.Value) && hdnOldReport.Value != hdnNewReport.Value)
+                    {
+                        string szServerPath = Server.MapPath(SaveDCConstants.ReportUploadPath) + hdnOldReport.Value +
+                                              ".jpg";
+                        if (File.Exists(szServerPath))
+                        {
+                            File.Delete(szServerPath);
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
+            // save student info
+
+            if (nStatus > 0)
+            {
+                if (bIsEdit)
+                    Response.Redirect("ListAnnualProgressReports.aspx?status=5031021"); //  
+                else
+                    Response.Redirect("ListAnnualProgressReports.aspx?status=5031011");
+            }
+            else
+            {
+                Response.Redirect("AddAnnualProgressReport.aspx?status=5031010&ReportId=" + nEditReportId.ToString());
+            }
+        }
+
+        private void RenderError(string szErrorCode)
+        {
+            if (string.IsNullOrEmpty(szErrorCode))
+            {
+                lblError.Text = "";
+                return;
+            }
+
+            string szErrorDesc = Utils.GetMessageText(szErrorCode);
+            if (!szErrorCode.EndsWith("1"))
+                lblError.CssClass = "FailureMessage";
+            else
+                lblError.CssClass = "SuccessMessage";
+
+            lblError.Text = szErrorDesc;
+        }
+
+
+        private bool IsValidImageFile(string szFileName)
+        {
+            szFileName = szFileName.ToLower();
+            if (szFileName.EndsWith(".gif"))
+                return true;
+            if (szFileName.EndsWith(".jpg"))
+                return true;
+            if (szFileName.EndsWith(".jpeg"))
+                return true;
+            if (szFileName.EndsWith(".tiff"))
+                return true;
+            if (szFileName.EndsWith(".png"))
+                return true;
+            return false;
+        }
+    }
+}

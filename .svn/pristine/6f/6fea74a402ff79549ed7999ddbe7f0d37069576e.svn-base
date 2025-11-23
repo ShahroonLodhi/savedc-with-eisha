@@ -1,0 +1,220 @@
+using System;
+using System.Data.SqlClient;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class AddFund : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // page validation
+                var oValidator = new Validator();
+                oValidator.ValidateRequest(Request);
+                oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                                  new[]
+                                                      {
+                                                          UserAccessLevels.SuperAdmin, UserAccessLevels.Admin,
+                                                          UserAccessLevels.Operator
+                                                      });
+                oValidator = null;
+
+                var oUser = new User();
+                oUser.UserRoleID = 4;
+                var oUserManager = new UserManager(oUser);
+                User[] oUserList = oUserManager.GetUsers();
+
+                if (oUserList == null || oUserList.Length == 0)
+                {
+                    ddDonor.Items.Clear();
+                    var noUserItem = new ListItem();
+                    noUserItem.Text = "No Donor Found.";
+                    noUserItem.Value = "0";
+                    ddDonor.Items.Add(noUserItem);
+                    // ddDonor.Visible = false;
+                }
+                else
+                {
+                    //ddDonor.Visible = true;
+                    ddDonor.DataSource = oUserList;
+                    ddDonor.DataValueField = "UserId"; // ???
+                    ddDonor.DataTextField = "UserName";
+                    ddDonor.DataBind();
+                }
+
+                // dont allow operator to edit.
+                if (SaveDCSession.UserAccessLevel != UserAccessLevels.Operator)
+                {
+                    int nEditFundId = Utils.fixNullInt(Request.QueryString["FundId"]);
+                    // load edit fund details.
+                    if (nEditFundId > 0)
+                    {
+                        var oFund = new Fund();
+                        oFund.FundID = nEditFundId;
+                        var oFundManager = new FundManager(oFund);
+                        oFund = oFundManager.Load();
+
+                        txtAmount.Text = oFund.FundAmount.ToString();
+                        ddDonor.SelectedValue = oFund.DonorID.ToString();
+                        txtNote.Text = oFund.Note;
+
+                        hdnEditFundId.Value = nEditFundId.ToString();
+                        hdnAddEdit.Value = "Edit";
+                    }
+                }
+
+                FillDonorDetails();
+
+                RenderError(Request.QueryString["status"]);
+            }
+        }
+
+        protected void btnUpdate_Click(object sender, ImageClickEventArgs e)
+        {
+            var oFund = new Fund();
+            oFund.FundAmount = Utils.fixNullDecimal(txtAmount.Text);
+            oFund.DonorID = Utils.fixNullInt(ddDonor.SelectedValue);
+            oFund.Note = txtNote.Text;
+            oFund.FundPostedBy = SaveDCSession.UserId;
+            int nEditFundId = 0;
+            int.TryParse(hdnEditFundId.Value, out nEditFundId);
+            oFund.FundID = nEditFundId;
+            var oFundManager = new FundManager(oFund);
+            int nStatus = oFundManager.Save();
+            if (nStatus > 0)
+            {
+                // send sms to donor on add funds
+                if (sendSMS.Checked == true)
+                {
+                    //string errorCode = "";
+                    int donorId = Utils.fixNullInt(ddDonor.SelectedValue);
+
+                    var commom = new Common();
+                    int statusCode = commom.SendSMSAndLogInDatabase(donorId, hdnUName.Value + "," + hdnPhoneNum.Value,
+                                                                    txtSMS.Text, "DON");
+
+                    /*if (statusCode > 0)
+                    {
+                        // success.
+                        errorCode = "5091001";
+                    }
+                    else if (statusCode == -1)
+                    {
+                        // auth failure
+                        errorCode = "5091003";
+                    }
+                    else if (statusCode == -2)
+                    {
+                        // invalid xml
+                        errorCode = "5091004";
+                    }
+                    else if (statusCode == -3)
+                    {
+                        // in-suficient balance.
+                        errorCode = "5091002";
+                    }
+                    else if (statusCode == -4)
+                    {
+                        // invalid or no recipient
+                        errorCode = "5091005";
+                    }
+                    else
+                    {
+                        // unknow error while sending sms.
+                        errorCode = "5091000";
+                    }
+
+                    Response.Redirect("ListDonors.aspx?status=" + errorCode);*/
+                }
+
+                if (nEditFundId > 0)
+                    Response.Redirect("ListFunds.aspx?status=5071011"); //  fund updated successfully.
+                else
+                    Response.Redirect("ListFunds.aspx?status=5071001");
+            }
+            else
+            {
+                Response.Redirect("AddFund.aspx?status=5071000");
+            }
+        }
+
+        private void RenderError(string szErrorCode)
+        {
+            if (string.IsNullOrEmpty(szErrorCode))
+            {
+                lblError.Text = "";
+                return;
+            }
+
+            string szErrorDesc = Utils.GetMessageText(szErrorCode);
+            if (!szErrorCode.EndsWith("1"))
+                lblError.CssClass = "FailureMessage";
+            else
+                lblError.CssClass = "SuccessMessage";
+
+            lblError.Text = szErrorDesc;
+        }
+
+        protected void ddDonor_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            FillDonorDetails();
+        }
+
+        private void FillDonorDetails()
+        {
+            try
+            {
+                var oUser = new User();
+                int nDonorId = Utils.fixNullInt(ddDonor.SelectedValue);
+                if (nDonorId > 0)
+                {
+                    repeaterChildren.DataSource = new Common().GetDonorStudents(nDonorId);
+                    repeaterChildren.DataBind();
+
+                    oUser.UserID = nDonorId;
+                    oUser.UserRoleID = 4;
+                    var oUserManager1 = new UserManager(oUser);
+                    oUser = oUserManager1.Load();
+
+                    hdnUName.Value = oUser.UserName;
+                    hdnPhoneNum.Value = oUser.PhoneNumber;
+
+                    lblFName.Text = oUser.FirstName;
+                    lblLName.Text = oUser.LastName;
+                    if (SaveDCSession.UserAccessLevel == UserAccessLevels.SuperAdmin)
+                    {
+                        lblEmail.Text = oUser.EmailAddress;
+                        lblPhone.Text = oUser.PhoneNumber;
+                    }
+
+                    var oCommon = new Common();
+                    SqlDataReader reader = oCommon.GetPanelSummary(nDonorId);
+                    if (reader != null && reader.Read())
+                    {
+                        try
+                        {
+                            decimal donations = Utils.fixNullDecimal(reader["TotalDonations"]);
+                            decimal expenses = Utils.fixNullDecimal(reader["TotalExpenses"]);
+
+                            decimal balance = donations - expenses;
+                            lblBalance.Text = balance.ToString();
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+    }
+}

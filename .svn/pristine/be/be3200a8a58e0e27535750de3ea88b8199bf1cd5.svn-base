@@ -1,0 +1,96 @@
+<%@ Page Language="C#" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="DetailUsers.aspx.cs" Inherits="SaveDC.ControlPanel.DetailUsers" Title="User Details"%>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <td height="20px"  class="CellLabel"  colspan="2">
+               
+               
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            <%= hdnRole.Value %> Manager :: <%= hdnRole.Value %> Details
+                           
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack" Height="24"
+                                             Width="24" OnClientClick="javascript:window.history.back(); return false;" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td height="20px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellHeading" width="40%">
+                <%= hdnRole.Value %> Details
+            </td>
+            <td class="ContextLinks" align="right">
+            </td>
+        </tr>
+	
+        <tr>
+            <td colspan="2" class="SubHeading" style="height: 23px">Login Information</td>
+        </tr>
+        <asp:HiddenField ID="hdnRole" runat="server" />
+        <tr> 
+            <td class="CellLabel">Login/Display Name : </td>
+            <td class="CellData">
+                <asp:Label ID="txtUserName" runat="server" Text=""/>
+            </td>
+        </tr> 
+	
+	 
+        <tr>
+            <td colspan="2" class="SubHeading" style="height: 23px">Profile Information</td>
+        </tr>
+	
+        <tr id="trRoles" runat="server"> 
+            <td class="CellLabel">User Role : </td>
+            <td class="CellData">  <asp:Label ID="txtUserRoles" runat="server" Text=""/>
+            </td>
+        </tr> 
+        <tr> 
+            <td class="CellLabel">First Name : </td>
+            <td class="CellData"><asp:Label ID="txtFName" runat="server" Text=""/></td>
+        </tr> 
+        <tr> 
+            <td class="CellLabel">Last Name : </td>
+            <td class="CellData"><asp:Label ID="txtLName" runat="server" Text=""/></td>
+        </tr> 
+        <tr> 
+            <td class="CellLabel">Email Adress : </td>
+            <td class="CellData"><asp:Label ID="txtEmail" runat="server" Text=""/></td>
+        </tr>
+        <tr> 
+            <td class="CellLabel">Phone # : </td>
+            <td class="CellData"><asp:Label ID="txtPhone" runat="server" Text=""/></td>
+        </tr> 
+        <tr> 
+            <td class="CellLabel">Address : </td>
+            <td class="CellData"><asp:Label ID="lblAddress" runat="server" Text=""/></td>
+        </tr> 
+        <tr> 
+            <td class="CellLabel">Country : </td>
+            <td class="CellData"><asp:Label ID="lblCountry" runat="server" Text=""/></td>
+        </tr> 
+	
+        <tr> 
+            <td class="CellLabel">Note : </td>
+            <td class="CellData"><asp:Label ID="txtNote" runat="server" Text=""/>
+            </td>
+        </tr>  
+	
+               
+    </table>
+
+</asp:Content>

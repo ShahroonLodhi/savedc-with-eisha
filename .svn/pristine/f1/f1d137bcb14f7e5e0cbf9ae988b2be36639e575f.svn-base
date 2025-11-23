@@ -1,0 +1,73 @@
+﻿using System;
+using System.Configuration;
+using System.IO;
+
+namespace SaveDC.ControlPanel.Src.Configurations
+{
+    public static class EmailConfiguration
+    {
+        private static readonly string _smtpHost;
+        private static readonly string _fromAdress;
+        private static readonly string _fromPwd;
+        private static readonly string _subject;
+        private static readonly string _mailbody;
+
+        static EmailConfiguration()
+        {
+            try
+            {
+                _smtpHost = ReadConfigKey("MailSMTPHost");
+                _fromAdress = ReadConfigKey("MailFromAddress");
+                _fromPwd = ReadConfigKey("MailFromPwd");
+                _subject = ReadConfigKey("MailSubject");
+                _mailbody = File.ReadAllText(ReadConfigKey("MailBodyPath"));
+            }
+            catch
+            {
+            }
+        }
+
+        public static string SMTPHost
+        {
+            get { return _smtpHost; }
+        }
+
+        public static string FromAddress
+        {
+            get { return _fromAdress; }
+        }
+
+        public static string FromPwd
+        {
+            get { return _fromPwd; }
+        }
+
+        public static string MailSubject
+        {
+            get { return _subject; }
+        }
+
+        public static string MailBody
+        {
+            get { return _mailbody; }
+        }
+
+        public static string ReadConfigKey(string szKey)
+        {
+            try
+            {
+                string szKeyValue = "";
+                if (ConfigurationManager.AppSettings[szKey] == null || ConfigurationManager.AppSettings[szKey] == "")
+                    szKeyValue = null;
+                else
+                    szKeyValue = Convert.ToString(ConfigurationManager.AppSettings[szKey]);
+
+                return szKeyValue;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+    }
+}

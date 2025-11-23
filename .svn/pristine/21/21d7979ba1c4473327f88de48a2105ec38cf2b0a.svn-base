@@ -1,0 +1,101 @@
+<%@ Page Language="C#" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="AddAttachment.aspx.cs" Inherits="SaveDC.ControlPanel.AddAttachment" Title="Add Attachment"%>
+<%--<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc1" %>--%>
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <script type="text/javascript" language="javascript">
+        function RemoveReport(which) {
+
+            document.getElementById('browseReport').style.display = '';
+            document.getElementById('viewReport').style.display = 'none';
+            document.getElementById("<%= hdnNewReport.ClientID %>").value = '';
+        }
+
+        function StartupScriptReports() {
+
+            var ViewHTML = "window.open('_REPLACEURL?modalwin=1', 'View', 'left=100,top=30,screenX=100,screenY=30, height=550,width=840,toolbar=no,directories=no,status=no,menubar=no,modal=yes,scrollbars=yes');";
+
+            var ReportNewVal = document.getElementById("<%= hdnNewReport.ClientID %>").value;
+            if (ReportNewVal) {
+                document.getElementById('browseReport').style.display = 'none';
+                document.getElementById('viewReport').style.display = '';
+                // document.getElementById('viewlink1').href = '../Uploads/ProgressReports/' + ReportNewVal + '.jpg';
+
+                document.getElementById('viewlink1').setAttribute("onclick", ViewHTML.replace("_REPLACEURL", '../Uploads/Attachments/' + ReportNewVal + '.jpg'));
+            } else {
+                document.getElementById('browseReport').style.display = '';
+                document.getElementById('viewReport').style.display = 'none';
+            }
+        }
+    </script>
+    <asp:ScriptManager ID="ScriptManager1" runat="server">
+    </asp:ScriptManager>
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <asp:HiddenField ID="hdnAddEdit" value ="Add" runat="server" />
+            <td height="20px" class="CellLabel"  colspan="3">
+                Student Manager :: List Students :: <%= hdnAddEdit.Value %> Attachment
+            </td>
+        </tr>
+        <tr>
+            <td height="20px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label></td>
+        </tr>
+       
+        <tr>
+            <asp:HiddenField ID="hdnEditReportId" Value ="0" runat="server" />
+            <td class="CellHeading" width="40%"><%= hdnAddEdit.Value %> Attachment for <asp:Label ID="lblStdName" runat="server"  style="font-style: italic"  Text="Label"></asp:Label></td>
+            <td class="ContextLinks" align="right"  colspan="2"></td>
+        </tr>
+        <tr>
+            <td class="SubHeading" colspan ="4" style="height: 23px">
+                Attachment Submitted by Admin  
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Scanned Attachment :
+            </td>
+            <td class="CellData" colspan="2">
+                <asp:PlaceHolder ID="PlaceHolder1" runat="server">
+                
+                    <asp:HiddenField runat="server" ID="hdnOldReport" Value="" />
+                    <asp:HiddenField runat="server" ID="hdnNewReport" Value="" />
+                    <span id="viewReport" ><a href="javascript:void(0);"  id="viewlink1">View Attachment</a> | <a
+                                                                                                               href="#" onclick=" RemoveReport(); return false; ">Remove Attachment</a> </span>
+                        
+                    <span id="browseReport">
+                        <input  type="file" accept="image/*" id="reportUpload" runat ="server"/>
+                      
+                        <br />(select any image like jpg, gif, png etc...)
+                    </span>
+                
+                </asp:PlaceHolder>
+            </td>
+        </tr>
+	 
+        <tr>
+            <td class="SubHeading" colspan ="4" style="height: 23px">
+                Attachment Remarks
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Remarks:
+            </td>
+            <td class="CellData" colspan="2">
+                <asp:TextBox CssClass="Textbox" ID="txtRemarks" runat="server" Columns="50"
+                             MaxLength="1024" Rows="3" TextMode="MultiLine" />
+            </td></tr>
+	 
+        <tr><td><script language="javascript" type="text/javascript">
+                    StartupScriptReports();
+                </script>&nbsp;</td>
+            <td  colspan="2" class="ButtonSpacer"><asp:ImageButton runat="server" ID="btnUpdate" SkinID="sknImgBtnAddUser"  OnClick="btnUpdate_Click"/></td>
+        </tr>
+               
+    </table>
+
+</asp:Content>

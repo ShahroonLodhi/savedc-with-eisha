@@ -1,0 +1,169 @@
+using System;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.DB;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel.Src.Managers
+{
+    public class UserManager
+    {
+        private User user;
+
+        public UserManager(User user)
+        {
+            this.user = user;
+        }
+
+        public Int32 RecordCount { get; set; }
+
+        public User[] GetUsers(int nPageNo, int nPageSize)
+        {
+            var userdao = new UserDAO(user);
+            User[] users = userdao.GetUsers(nPageNo, nPageSize);
+            RecordCount = userdao.RecordCount;
+            return users;
+        }
+
+        public User[] GetUsers()
+        {
+            RecordCount = 0;
+            var userdao = new UserDAO(user);
+            return userdao.GetUsers(0, 0);
+        }
+
+
+        public User Load()
+        {
+            try
+            {
+                user = new UserDAO(user).LoadUser(user.UserID);
+                return user;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+        public int Save()
+        {
+            try
+            {
+                var userDAO = new UserDAO(user);
+                return userDAO.AddUser();
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        public bool Exists()
+        {
+            try
+            {
+                return new UserDAO(user).UserExists();
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+        }
+
+        public bool Login()
+        {
+            try
+            {
+                var userDto = new UserDAO(user);
+                bool status = userDto.LoginUser();
+                if (status)
+                {
+                    user = userDto.Load();
+                }
+                return status;
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+        }
+
+        public bool Update()
+        {
+            try
+            {
+                var userDAO = new UserDAO(user);
+                return userDAO.UpdateUser();
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+        }
+
+        public bool AddRemarks(string remarks)
+        {
+            try
+            {
+                var userDAO = new UserDAO(user);
+                return userDAO.AddRemarks(remarks);
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+        }
+
+        public bool AddNote(string notes)
+        {
+            try
+            {
+                var userDAO = new UserDAO(user);
+                return userDAO.AddNote(notes);
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+        }
+
+        public void LoadSession()
+        {
+            SaveDCSession.UserId = user.UserID;
+            SaveDCSession.UserName = user.UserName;
+            SaveDCSession.UserRoleId = user.UserRoleID.ToString();
+            SaveDCSession.UserRoleName = user.UserRoleName;
+
+            if (user.UserRoleName.ToLower() == "superadmin")
+                SaveDCSession.UserAccessLevel = UserAccessLevels.SuperAdmin;
+            else if (user.UserRoleName.ToLower() == "admin")
+                SaveDCSession.UserAccessLevel = UserAccessLevels.Admin;
+            else if (user.UserRoleName.ToLower() == "operator")
+                SaveDCSession.UserAccessLevel = UserAccessLevels.Operator;
+            else if (user.UserRoleName.ToLower() == "donor")
+                SaveDCSession.UserAccessLevel = UserAccessLevels.Donor;
+        }
+
+        public bool Delete()
+        {
+            try
+            {
+                var userDAO = new UserDAO(user);
+                return userDAO.DeleteUser();
+            }
+            catch (Exception e)
+            {
+                Utils.Utils.LogErrorToFile(e);
+                return false;
+            }
+        }
+    }
+}

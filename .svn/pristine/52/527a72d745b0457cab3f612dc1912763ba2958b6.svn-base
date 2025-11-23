@@ -1,0 +1,762 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D3A40CEB-92A9-4EA8-A3C5-9C11D6893277}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SaveDC</RootNamespace>
+    <AssemblyName>SaveDC</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Extensions.Design, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ControlPanel\Login.aspx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ControlPanel\AddFamily.aspx.cs">
+      <DependentUpon>AddFamily.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\AddFamily.aspx.designer.cs">
+      <DependentUpon>AddFamily.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\AddFund.aspx.cs">
+      <DependentUpon>AddFund.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\AddFund.aspx.designer.cs">
+      <DependentUpon>AddFund.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\AddMonthlyExpense.aspx.cs">
+      <DependentUpon>AddMonthlyExpense.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\AddMonthlyExpense.aspx.designer.cs">
+      <DependentUpon>AddMonthlyExpense.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\AddNotesForDonor.aspx.cs">
+      <DependentUpon>AddNotesForDonor.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\AddNotesForDonor.aspx.designer.cs">
+      <DependentUpon>AddNotesForDonor.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\AddProgressReport.aspx.cs">
+      <DependentUpon>AddProgressReport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\AddProgressReport.aspx.designer.cs">
+      <DependentUpon>AddProgressReport.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\AddRemarksForDonor.aspx.cs">
+      <DependentUpon>AddRemarksForDonor.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\AddRemarksForDonor.aspx.designer.cs">
+      <DependentUpon>AddRemarksForDonor.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\AddSchool.aspx.cs">
+      <DependentUpon>AddSchool.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\AddSchool.aspx.designer.cs">
+      <DependentUpon>AddSchool.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\AddStudent.aspx.cs">
+      <DependentUpon>AddStudent.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\AddStudent.aspx.designer.cs">
+      <DependentUpon>AddStudent.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\AddStudentEstimation.aspx.cs">
+      <DependentUpon>AddStudentEstimation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\AddStudentEstimation.aspx.designer.cs">
+      <DependentUpon>AddStudentEstimation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\AddUsers.aspx.cs">
+      <DependentUpon>AddUsers.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\AddUsers.aspx.designer.cs">
+      <DependentUpon>AddUsers.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\AdminSettings.aspx.cs">
+      <DependentUpon>AdminSettings.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\AdminSettings.aspx.designer.cs">
+      <DependentUpon>AdminSettings.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\AssignDonor.aspx.cs">
+      <DependentUpon>AssignDonor.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\AssignDonor.aspx.designer.cs">
+      <DependentUpon>AssignDonor.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\Controls\AdvDataPager.ascx.cs">
+      <DependentUpon>AdvDataPager.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Controls\AdvDataPager.ascx.designer.cs">
+      <DependentUpon>AdvDataPager.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\AddAnnualProgressReport.aspx.cs">
+      <DependentUpon>AddAnnualProgressReport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\AddAnnualProgressReport.aspx.designer.cs">
+      <DependentUpon>AddAnnualProgressReport.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\AddApplication.aspx.cs">
+      <DependentUpon>AddApplication.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\AddApplication.aspx.designer.cs">
+      <DependentUpon>AddApplication.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\DonorsNotes.aspx.cs">
+      <DependentUpon>DonorsNotes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\DonorsNotes.aspx.designer.cs">
+      <DependentUpon>DonorsNotes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\GetSchoolDonationReport.aspx.cs">
+      <DependentUpon>GetSchoolDonationReport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\GetSchoolDonationReport.aspx.designer.cs">
+      <DependentUpon>GetSchoolDonationReport.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\GetSchoolDonationReportDetail.aspx.cs">
+      <DependentUpon>GetSchoolDonationReportDetail.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\GetSchoolDonationReportDetail.aspx.designer.cs">
+      <DependentUpon>GetSchoolDonationReportDetail.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListUserSms.aspx.cs">
+      <DependentUpon>ListUserSms.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListUserSms.aspx.designer.cs">
+      <DependentUpon>ListUserSms.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\PrintDetailsApplication.aspx.cs">
+      <DependentUpon>PrintDetailsApplication.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\PrintDetailsApplication.aspx.designer.cs">
+      <DependentUpon>PrintDetailsApplication.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsApplication.aspx.cs">
+      <DependentUpon>DetailsApplication.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsApplication.aspx.designer.cs">
+      <DependentUpon>DetailsApplication.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsStudent.aspx.cs">
+      <DependentUpon>DetailsStudent.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsStudent.aspx.designer.cs">
+      <DependentUpon>DetailsStudent.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListApplications.aspx.cs">
+      <DependentUpon>ListApplications.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListApplications.aspx.designer.cs">
+      <DependentUpon>ListApplications.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\GetExpenseReport.aspx.cs">
+      <DependentUpon>GetExpenseReport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\GetExpenseReport.aspx.designer.cs">
+      <DependentUpon>GetExpenseReport.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\GetSchoolExpenseReportDetail.aspx.cs">
+      <DependentUpon>GetSchoolExpenseReportDetail.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\GetSchoolExpenseReportDetail.aspx.designer.cs">
+      <DependentUpon>GetSchoolExpenseReportDetail.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\GetSchoolExpenseReport.aspx.cs">
+      <DependentUpon>GetSchoolExpenseReport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\GetSchoolExpenseReport.aspx.designer.cs">
+      <DependentUpon>GetSchoolExpenseReport.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsAnnualProgressReport.aspx.cs">
+      <DependentUpon>DetailsAnnualProgressReport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsAnnualProgressReport.aspx.designer.cs">
+      <DependentUpon>DetailsAnnualProgressReport.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsProgressReport.aspx.cs">
+      <DependentUpon>DetailsProgressReport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsProgressReport.aspx.designer.cs">
+      <DependentUpon>DetailsProgressReport.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\GetSMSReport.aspx.cs">
+      <DependentUpon>GetSMSReport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\GetSMSReport.aspx.designer.cs">
+      <DependentUpon>GetSMSReport.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListAnnualProgressReports.aspx.cs">
+      <DependentUpon>ListAnnualProgressReports.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListAnnualProgressReports.aspx.designer.cs">
+      <DependentUpon>ListAnnualProgressReports.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListProgressReports.aspx.cs">
+      <DependentUpon>ListProgressReports.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListProgressReports.aspx.designer.cs">
+      <DependentUpon>ListProgressReports.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListStudents.aspx.cs">
+      <DependentUpon>ListStudents.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListStudents.aspx.designer.cs">
+      <DependentUpon>ListStudents.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\PrintDetailsStudent.aspx.cs">
+      <DependentUpon>PrintDetailsStudent.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\PrintDetailsStudent.aspx.designer.cs">
+      <DependentUpon>PrintDetailsStudent.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\SendEmailToDonor.aspx.cs">
+      <DependentUpon>SendEmailToDonor.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\SendEmailToDonor.aspx.designer.cs">
+      <DependentUpon>SendEmailToDonor.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\SendMarkettingSMS.aspx.cs">
+      <DependentUpon>SendMarkettingSMS.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\SendMarkettingSMS.aspx.designer.cs">
+      <DependentUpon>SendMarkettingSMS.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListDonorSms.aspx.cs">
+      <DependentUpon>ListDonorSms.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListDonorSms.aspx.designer.cs">
+      <DependentUpon>ListDonorSms.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListMarkettingSMS.aspx.cs">
+      <DependentUpon>ListMarkettingSMS.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListMarkettingSMS.aspx.designer.cs">
+      <DependentUpon>ListMarkettingSMS.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListSchoolSms.aspx.cs">
+      <DependentUpon>ListSchoolSms.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListSchoolSms.aspx.designer.cs">
+      <DependentUpon>ListSchoolSms.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListSchools.aspx.cs">
+      <DependentUpon>ListSchools.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListSchools.aspx.designer.cs">
+      <DependentUpon>ListSchools.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListDonors.aspx.cs">
+      <DependentUpon>ListDonors.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListDonors.aspx.designer.cs">
+      <DependentUpon>ListDonors.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsSchool.aspx.cs">
+      <DependentUpon>DetailsSchool.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsSchool.aspx.designer.cs">
+      <DependentUpon>DetailsSchool.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListUsers.aspx.cs">
+      <DependentUpon>ListUsers.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListUsers.aspx.designer.cs">
+      <DependentUpon>ListUsers.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\PrintDetailsSchool.aspx.cs">
+      <DependentUpon>PrintDetailsSchool.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\PrintDetailsSchool.aspx.designer.cs">
+      <DependentUpon>PrintDetailsSchool.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsMonthlyExpense.aspx.cs">
+      <DependentUpon>DetailsMonthlyExpense.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsMonthlyExpense.aspx.designer.cs">
+      <DependentUpon>DetailsMonthlyExpense.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\PrintDetailsMonthlyExpense.aspx.cs">
+      <DependentUpon>PrintDetailsMonthlyExpense.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\PrintDetailsMonthlyExpense.aspx.designer.cs">
+      <DependentUpon>PrintDetailsMonthlyExpense.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\DonorMonthlyExpReport.aspx.cs">
+      <DependentUpon>DonorMonthlyExpReport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\DonorMonthlyExpReport.aspx.designer.cs">
+      <DependentUpon>DonorMonthlyExpReport.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\GetDonationReport.aspx.cs">
+      <DependentUpon>GetDonationReport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\GetDonationReport.aspx.designer.cs">
+      <DependentUpon>GetDonationReport.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsFund.aspx.cs">
+      <DependentUpon>DetailsFund.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsFund.aspx.designer.cs">
+      <DependentUpon>DetailsFund.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsFamily.aspx.cs">
+      <DependentUpon>DetailsFamily.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsFamily.aspx.designer.cs">
+      <DependentUpon>DetailsFamily.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsStudentEstimation.aspx.cs">
+      <DependentUpon>DetailsStudentEstimation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\DetailsStudentEstimation.aspx.designer.cs">
+      <DependentUpon>DetailsStudentEstimation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\DetailUsers.aspx.cs">
+      <DependentUpon>DetailUsers.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\DetailUsers.aspx.designer.cs">
+      <DependentUpon>DetailUsers.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListMonthlyExpenses.aspx.cs">
+      <DependentUpon>ListMonthlyExpenses.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListMonthlyExpenses.aspx.designer.cs">
+      <DependentUpon>ListMonthlyExpenses.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListStudentEstimations.aspx.cs">
+      <DependentUpon>ListStudentEstimations.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListStudentEstimations.aspx.designer.cs">
+      <DependentUpon>ListStudentEstimations.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\SendSMSToDonor.aspx.cs">
+      <DependentUpon>SendSMSToDonor.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\SendSMSToDonor.aspx.designer.cs">
+      <DependentUpon>SendSMSToDonor.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\SendSMSToSchool.aspx.cs">
+      <DependentUpon>SendSMSToSchool.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\SendSMSToSchool.aspx.designer.cs">
+      <DependentUpon>SendSMSToSchool.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\SendSMSToUser.aspx.cs">
+      <DependentUpon>SendSMSToUser.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\SendSMSToUser.aspx.designer.cs">
+      <DependentUpon>SendSMSToUser.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Configurations\EmailConfiguration.cs" />
+    <Compile Include="ControlPanel\Src\DB\ApprovalsDAO.cs" />
+    <Compile Include="ControlPanel\Src\Managers\ApprovalsManager.cs" />
+    <Compile Include="ControlPanel\Src\Objects\Approvals.cs" />
+    <Compile Include="ControlPanel\Src\Objects\Application.cs" />
+    <Compile Include="ControlPanel\Src\Objects\Email.cs" />
+    <Compile Include="ControlPanel\Src\Objects\Expense.cs" />
+    <Compile Include="ControlPanel\Src\Utils\EmailSender.cs" />
+    <Compile Include="ControlPanel\Src\Utils\SaveDCConstants.cs" />
+    <Compile Include="ControlPanel\Src\Utils\SMSSender.cs" />
+    <Compile Include="ControlPanel\Src\Utils\Validator.cs" />
+    <Compile Include="ControlPanel\VarifyStudent.aspx.cs">
+      <DependentUpon>VarifyStudent.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\VarifyStudent.aspx.designer.cs">
+      <DependentUpon>VarifyStudent.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListFunds.aspx.cs">
+      <DependentUpon>ListFunds.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListFunds.aspx.designer.cs">
+      <DependentUpon>ListFunds.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\ListFamily.aspx.cs">
+      <DependentUpon>ListFamily.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\ListFamily.aspx.designer.cs">
+      <DependentUpon>ListFamily.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\Dummy.Master.cs">
+      <DependentUpon>Dummy.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Dummy.Master.designer.cs">
+      <DependentUpon>Dummy.Master</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\Menu.ascx.cs">
+      <DependentUpon>Menu.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Menu.ascx.designer.cs">
+      <DependentUpon>Menu.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\CPHome.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>CPHome.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\CPHome.aspx.designer.cs">
+      <DependentUpon>CPHome.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\CPMaster.Master.cs">
+      <DependentUpon>CPMaster.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\CPMaster.Master.designer.cs">
+      <DependentUpon>CPMaster.Master</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\Login.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\Login.aspx.designer.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Configurations\ApplicationConfiguration.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Configurations\Configuration.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Configurations\DBConfiguration.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Configurations\SaveDCSession.cs" />
+    <Compile Include="ControlPanel\Src\DB\ClassDAO.cs" />
+    <Compile Include="ControlPanel\Src\DB\FundDAO.cs" />
+    <Compile Include="ControlPanel\Src\DB\FamilyDAO.cs" />
+    <Compile Include="ControlPanel\Src\DB\HistoryDAO.cs" />
+    <Compile Include="ControlPanel\Src\DB\StudentDAO.cs" />
+    <Compile Include="ControlPanel\Src\DB\DBManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\DB\SaveDCDAO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\DB\SchoolDAO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\DB\UserDAO.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Exceptions\ApplicationConnectionException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Exceptions\ApplicationParameterInValidException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Managers\ClassManager.cs" />
+    <Compile Include="ControlPanel\Src\Utils\Common.cs" />
+    <Compile Include="ControlPanel\Src\Managers\FundManager.cs" />
+    <Compile Include="ControlPanel\Src\Managers\FamilyManager.cs" />
+    <Compile Include="ControlPanel\Src\Managers\StudentManager.cs" />
+    <Compile Include="ControlPanel\Src\Managers\HistoryManager.cs" />
+    <Compile Include="ControlPanel\Src\Managers\SchoolManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Managers\UserManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Objects\Class_.cs" />
+    <Compile Include="ControlPanel\Src\Objects\Family.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Objects\Fund.cs" />
+    <Compile Include="ControlPanel\Src\Objects\History.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Objects\School.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Objects\Student.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Objects\User.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ControlPanel\Src\Utils\Utils.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Themes\Default\Default.skin" />
+    <Content Include="App_Themes\Default\Styles.css" />
+    <Content Include="Global.asax" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ControlPanel\AddFamily.aspx" />
+    <Content Include="ControlPanel\Logs\ApplicationErrorLog.txt" />
+    <Content Include="ControlPanel\Menu.ascx" />
+    <Content Include="ControlPanel\CPHome.aspx" />
+    <Content Include="ControlPanel\CPMaster.Master" />
+    <Content Include="ControlPanel\search.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Themes\Default\Images\approve.png" />
+    <Content Include="App_Themes\Default\Images\backward.png" />
+    <Content Include="App_Themes\Default\Images\cancel.png" />
+    <Content Include="App_Themes\Default\Images\login.png" />
+    <Content Include="App_Themes\Default\Images\login1.png" />
+    <Content Include="App_Themes\Default\Images\LoginTitle.gif" />
+    <Content Include="App_Themes\Default\Images\logintitle1.gif" />
+    <Content Include="App_Themes\Default\Images\logo-hi.gif" />
+    <Content Include="App_Themes\Default\Images\logo2.gif" />
+    <Content Include="App_Themes\Default\Images\PagingFirst.png" />
+    <Content Include="App_Themes\Default\Images\PagingLast.png" />
+    <Content Include="App_Themes\Default\Images\PagingNext.png" />
+    <Content Include="App_Themes\Default\Images\PagingPrevious.png" />
+    <Content Include="App_Themes\Default\Images\print.png" />
+    <Content Include="App_Themes\Default\Images\print_preview.png" />
+    <Content Include="App_Themes\Default\Images\reject.png" />
+    <Content Include="App_Themes\Default\Images\savedc.bmp" />
+    <Content Include="App_Themes\Default\Images\submit.png" />
+    <Content Include="App_Themes\Default\Images\submit_red.png" />
+    <Content Include="ControlPanel\AddMonthlyExpense.aspx" />
+    <Content Include="ControlPanel\AddSchool.aspx" />
+    <Content Include="ControlPanel\AddStudentEstimation.aspx" />
+    <Content Include="ControlPanel\AddUsers.aspx" />
+    <Content Include="ControlPanel\AdminSettings.aspx" />
+    <Content Include="ControlPanel\Controls\AdvDataPager.ascx" />
+    <Content Include="ControlPanel\DetailsMonthlyExpense.aspx" />
+    <Content Include="ControlPanel\PrintDetailsMonthlyExpense.aspx" />
+    <Content Include="ControlPanel\DonorMonthlyExpReport.aspx" />
+    <Content Include="ControlPanel\GetDonationReport.aspx" />
+    <Content Include="ControlPanel\DetailsFund.aspx" />
+    <Content Include="ControlPanel\DetailsFamily.aspx" />
+    <Content Include="ControlPanel\DetailsStudentEstimation.aspx" />
+    <Content Include="ControlPanel\Errors\MessagesDetail.xml" />
+    <Content Include="ControlPanel\DetailUsers.aspx" />
+    <Content Include="ControlPanel\ListMonthlyExpenses.aspx" />
+    <Content Include="ControlPanel\ListStudentEstimations.aspx" />
+    <Content Include="ControlPanel\VarifyStudent.aspx" />
+    <Content Include="ControlPanel\ListFunds.aspx" />
+    <Content Include="ControlPanel\ListFamily.aspx" />
+    <Content Include="ControlPanel\Dummy.Master" />
+    <Content Include="images\address.png" />
+    <Content Include="images\expense.png" />
+    <Content Include="images\family.png" />
+    <Content Include="images\fund.png" />
+    <Content Include="images\nophoto.gif" />
+    <Content Include="images\report.png" />
+    <Content Include="images\savedc.bmp" />
+    <Content Include="images\savedc.png" />
+    <Content Include="images\school.png" />
+    <Content Include="images\settings.png" />
+    <Content Include="images\shortcut.png" />
+    <Content Include="images\student.png" />
+    <Content Include="images\user.png" />
+    <Content Include="js\css\jquery.datepick.css" />
+    <Content Include="js\css\ui-lightness\images\ui-bg_diagonals-thick_18_b81900_40x40.png" />
+    <Content Include="js\css\ui-lightness\images\ui-bg_diagonals-thick_20_666666_40x40.png" />
+    <Content Include="js\css\ui-lightness\images\ui-bg_flat_10_000000_40x100.png" />
+    <Content Include="js\css\ui-lightness\images\ui-bg_glass_100_f6f6f6_1x400.png" />
+    <Content Include="js\css\ui-lightness\images\ui-bg_glass_100_fdf5ce_1x400.png" />
+    <Content Include="js\css\ui-lightness\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="js\css\ui-lightness\images\ui-bg_gloss-wave_35_f6a828_500x100.png" />
+    <Content Include="js\css\ui-lightness\images\ui-bg_highlight-soft_100_eeeeee_1x100.png" />
+    <Content Include="js\css\ui-lightness\images\ui-bg_highlight-soft_75_ffe45c_1x100.png" />
+    <Content Include="js\css\ui-lightness\images\ui-icons_222222_256x240.png" />
+    <Content Include="js\css\ui-lightness\images\ui-icons_228ef1_256x240.png" />
+    <Content Include="js\css\ui-lightness\images\ui-icons_ef8c08_256x240.png" />
+    <Content Include="js\css\ui-lightness\images\ui-icons_ffd27a_256x240.png" />
+    <Content Include="js\css\ui-lightness\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="js\css\ui-lightness\jquery-ui-1.8.18.custom.css" />
+    <Content Include="js\jquery-1.7.1.min.js" />
+    <Content Include="js\jquery-ui-1.8.18.custom.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\buttons.psd" />
+    <None Include="images\print-back-32x32.psd" />
+    <None Include="images\savedc.psd" />
+    <None Include="images\search-40x40.psd" />
+    <Content Include="ControlPanel\AddFund.aspx" />
+    <Content Include="ControlPanel\AddNotesForDonor.aspx" />
+    <Content Include="ControlPanel\AddProgressReport.aspx" />
+    <Content Include="ControlPanel\AddRemarksForDonor.aspx" />
+    <Content Include="ControlPanel\AddStudent.aspx" />
+    <Content Include="ControlPanel\AssignDonor.aspx" />
+    <Content Include="ControlPanel\AddAnnualProgressReport.aspx" />
+    <Content Include="ControlPanel\AddApplication.aspx" />
+    <Content Include="ControlPanel\DonorsNotes.aspx" />
+    <Content Include="ControlPanel\GetSchoolDonationReport.aspx" />
+    <Content Include="ControlPanel\GetSchoolDonationReportDetail.aspx" />
+    <Content Include="ControlPanel\ListUserSms.aspx" />
+    <Content Include="ControlPanel\PrintDetailsApplication.aspx" />
+    <Content Include="ControlPanel\DetailsApplication.aspx" />
+    <Content Include="ControlPanel\DetailsStudent.aspx" />
+    <Content Include="ControlPanel\ListApplications.aspx" />
+    <Content Include="ControlPanel\GetExpenseReport.aspx" />
+    <Content Include="ControlPanel\GetSchoolExpenseReportDetail.aspx" />
+    <Content Include="ControlPanel\GetSchoolExpenseReport.aspx" />
+    <Content Include="ControlPanel\DetailsAnnualProgressReport.aspx" />
+    <Content Include="ControlPanel\DetailsProgressReport.aspx" />
+    <Content Include="ControlPanel\GetSMSReport.aspx" />
+    <Content Include="ControlPanel\ListAnnualProgressReports.aspx" />
+    <Content Include="ControlPanel\ListProgressReports.aspx" />
+    <Content Include="ControlPanel\ListStudents.aspx" />
+    <Content Include="ControlPanel\PrintDetailsStudent.aspx" />
+    <Content Include="ControlPanel\SendEmailToDonor.aspx" />
+    <Content Include="ControlPanel\SendMarkettingSMS.aspx" />
+    <Content Include="ControlPanel\ListDonorSms.aspx" />
+    <Content Include="ControlPanel\ListMarkettingSMS.aspx" />
+    <Content Include="ControlPanel\ListSchoolSms.aspx" />
+    <Content Include="ControlPanel\ListSchools.aspx" />
+    <Content Include="ControlPanel\EmailTemplate\Email.txt" />
+    <Content Include="ControlPanel\ListDonors.aspx" />
+    <Content Include="ControlPanel\DetailsSchool.aspx" />
+    <Content Include="ControlPanel\ListUsers.aspx" />
+    <Content Include="ControlPanel\PrintDetailsSchool.aspx" />
+    <Content Include="ControlPanel\SendSMSToDonor.aspx" />
+    <Content Include="ControlPanel\SendSMSToSchool.aspx" />
+    <Content Include="ControlPanel\SendSMSToUser.aspx" />
+    <Content Include="images\application.png" />
+    <Content Include="images\donor.png" />
+    <Content Include="images\sms.png" />
+    <Content Include="images\savedc-address.png" />
+    <Content Include="web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Browsers\" />
+    <Folder Include="App_Code\" />
+    <Folder Include="ControlPanel\images\" />
+    <Folder Include="Uploads\ProfileSnaps\" />
+    <Folder Include="Uploads\ProgressReports\" />
+    <Folder Include="Uploads\UtilityBills\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" Condition="" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>8278</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost/savedc</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

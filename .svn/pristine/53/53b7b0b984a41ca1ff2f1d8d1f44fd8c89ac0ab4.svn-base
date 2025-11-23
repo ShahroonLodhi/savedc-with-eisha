@@ -1,0 +1,101 @@
+using System;
+using System.Data;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class ListMarkettingSMS : Page
+    {
+        #region Delegates
+
+        public delegate void delPopulateData(int nCurrentPage);
+
+        #endregion
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // page validation
+                var oValidator = new Validator();
+                oValidator.ValidateRequest(Request);
+                oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                                  new[]
+                                                      {
+                                                          UserAccessLevels.SuperAdmin, UserAccessLevels.Admin,
+                                                      });
+
+                LoadSMSs(1);
+                RenderError(Request.QueryString["status"]);
+            }
+            delPopulateData delPopulate = LoadSMSs;
+            pagerApps.UpdatePageIndex = delPopulate;
+        }
+
+        private void RenderError(string szErrorCode)
+        {
+            if (string.IsNullOrEmpty(szErrorCode))
+            {
+                lblError.Text = "";
+                return;
+            }
+
+            string szErrorDesc = Utils.GetMessageText(szErrorCode);
+            if (!szErrorCode.EndsWith("1"))
+                lblError.CssClass = "FailureMessage";
+            else
+                lblError.CssClass = "SuccessMessage";
+
+            lblError.Text = szErrorDesc;
+        }
+
+        private void LoadSMSs(int nCurrentPage)
+        {
+            var common = new Common();
+            string szActionDate = Utils.fixNullString(Request.QueryString["ActionDate"]);
+
+            int nTotal;
+            DataTable oMarSms = common.GetSentSms(0, "MAR", nCurrentPage, 100, szActionDate, out nTotal);
+
+            //===============================================================
+            pagerApps.TotalRecords = nTotal;
+            //===============================================================
+
+            dgSchools.DataSource = oMarSms;
+            dgSchools.DataBind();
+
+
+            // hide/show grid if no rec found
+            if (oMarSms == null || oMarSms.Rows.Count <= 0)
+            {
+                // set the total
+                lblTotal.Text = "0";
+                tbDataFound.Visible = false;
+                tbNoDataFound.Visible = true;
+            }
+            else
+            {
+                // set the total
+                lblTotal.Text = oMarSms.Rows.Count.ToString();
+                tbDataFound.Visible = true;
+                tbNoDataFound.Visible = false;
+            }
+        }
+
+        protected void dgSchools_Databound(object sender, DataGridItemEventArgs e)
+        {
+        }
+
+        protected void searchbtn_Click(object sender, ImageClickEventArgs e)
+        {
+            string szSrchSchoolName = "";
+            if (!string.IsNullOrEmpty(txtActionDate.Text))
+                szSrchSchoolName = txtActionDate.Text;
+
+            Response.Redirect("ListMarkettingSMS.aspx?ActionDate=" + szSrchSchoolName);
+        }
+    }
+}

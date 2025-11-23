@@ -1,0 +1,131 @@
+using System;
+using System.Data.SqlClient;
+using System.IO;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class DetailsProgressReport : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // load edit user details.
+                var oCommon = new Common();
+                int nReportId = Utils.fixNullInt(Request.QueryString["ReportId"]);
+                string SchoolName = "";
+                if (nReportId > 0)
+                {
+                    int nMonth = 0, nYear = 0;
+                    string szNote = "", ImageGUID = "", szAddedBy = "";
+                    oCommon.GetProgressReportMonth(nReportId, ref nMonth, ref nYear, ref szNote, ref ImageGUID,
+                                                   ref szAddedBy, ref SchoolName);
+
+                    var month = new DateTime(nYear, nMonth, 1);
+                    lblMonth.Text = String.Format("{0:y}", month);
+
+                    addedBy.Text = szAddedBy;
+                    txtRemarks.Text = szNote;
+                    string szServerPath = Server.MapPath(SaveDCConstants.ReportUploadPath) + ImageGUID + ".jpg";
+                    if (File.Exists(szServerPath))
+                    {
+                        string szViewHTML =
+                            "window.open('{0}?modalwin=1', 'View', 'left=100,top=30,screenX=100,screenY=30, height=550,width=840,toolbar=no,directories=no,status=no,menubar=no,modal=yes,scrollbars=yes');";
+
+                        ViewReport.Attributes.Add("onclick",
+                                                  string.Format(szViewHTML,
+                                                                SaveDCConstants.ReportUploadPath + ImageGUID + ".jpg"));
+                    }
+                    else
+                    {
+                        ViewReport.Parent.Controls.Remove(ViewReport);
+                    }
+                }
+
+
+                int nStudentId = SaveDCSession.StudentId;
+
+                var oStudent = new Student();
+                oStudent.StudentId = nStudentId;
+                var oStudentManager = new StudentManager(oStudent);
+                oStudent = oStudentManager.Load();
+                lblStdName.Text = oStudent.FirstName + " " + oStudent.LastName;
+
+                if (oStudent.SchoolId > 0 && string.IsNullOrEmpty(SchoolName))
+                {
+                    var oSchool = new School();
+                    oSchool.SchoolID = oStudent.SchoolId;
+                    var oSchoolManager = new SchoolManager(oSchool);
+                    oSchool = oSchoolManager.Load();
+                    lblSchoolName.Text = oSchool.SchoolName;
+                }
+                else
+                {
+                    lblSchoolName.Text = SchoolName;
+                }
+
+                SqlDataReader oSqlData = oCommon.LoadStudentProgressReportDetails(nReportId);
+
+                Repeater1.DataSource = oSqlData;
+                Repeater1.DataBind();
+
+                RenderError(Request.QueryString["status"]);
+            }
+        }
+
+        private void RenderError(string szErrorCode)
+        {
+            if (string.IsNullOrEmpty(szErrorCode))
+            {
+                lblError.Text = "";
+                return;
+            }
+
+            string szErrorDesc = "";
+            if (szErrorCode == "04")
+            {
+                szErrorDesc = "Report already exists.";
+                lblError.CssClass = "FailureMessage";
+            }
+            else if (szErrorCode == "03")
+            {
+                szErrorDesc = "Error occured while adding report.";
+                lblError.CssClass = "FailureMessage";
+            }
+
+            lblError.Text = szErrorDesc;
+        }
+
+        protected void Repeater1_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            try
+            {
+                if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+                {
+                    string selectedRemarks = ((HiddenField) e.Item.FindControl("hdnPrevRemarks")).Value;
+                    var lblRemarksRec = (Label) e.Item.FindControl("lblRemarks");
+
+                    if (selectedRemarks == "1")
+                        lblRemarksRec.Text = "Below Average";
+                    else if (selectedRemarks == "2")
+                        lblRemarksRec.Text = "Average";
+                    else if (selectedRemarks == "3")
+                        lblRemarksRec.Text = "Above Average";
+                    else if (selectedRemarks == "4")
+                        lblRemarksRec.Text = "V-Good";
+                    else if (selectedRemarks == "5")
+                        lblRemarksRec.Text = "Exceptional";
+                }
+            }
+            catch (Exception exception)
+            {
+            }
+        }
+    }
+}

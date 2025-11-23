@@ -1,0 +1,270 @@
+<%@ Page Language="C#" Theme="Default" MasterPageFile="~/ControlPanel/CPMaster.Master" CodeBehind="DetailsApplication.aspx.cs"
+         Inherits="SaveDC.ControlPanel.DetailsApplication" Title="Application Details" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+
+    <script type="text/javascript" language="javascript">
+
+        function PrintForm() {
+            var studentId = "<%= hdnEditAppID.Value %>";
+            //winname = window.open('PrintDetailsStudent.aspx?StudentId=' + studentId, 'StudentDetails', 'left=100,top=30,screenX=100,screenY=30, height=550,width=900,toolbar=no,directories=no,status=no,menubar=yes,modal=no,scrollbars=yes');
+
+            winname = window.open('PrintDetailsApplication.aspx?AppId=' + studentId, "1328942502c");
+
+            winname.print();
+
+
+        }
+    </script>
+
+    <asp:ScriptManager ID="ScriptManager1" runat="server">
+    </asp:ScriptManager>
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <td height="20px" colspan="3" class="CellLabel">
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            Application Manager :: Application Details
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack" Height="24"
+                                             Width="24" OnClientClick="javascript:window.history.back(); return false;" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td height="20px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+        <asp:PlaceHolder ID="panPrintable" runat="server">
+            <tr>
+                <asp:HiddenField ID="hdnEditAppID" Value="0" runat="server" />
+                <td class="CellHeading" width="40%">
+                    Application Details
+                </td>
+                <td class="ContextLinks" colspan="3" align="right">
+                    <asp:ImageButton ID="ImageButton2" AlternateText="Print" ToolTip="Print" runat="server"
+                                     SkinID="sknImgPrint" Height="24" Width="24" OnClientClick="PrintForm();" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" class="SubHeading" style="height: 23px">
+                    Student Profile
+                </td>
+            </tr>
+            <tr>
+                <td class="CellLabel">
+                    First Name :
+                </td>
+                <td class="CellData">
+                    <asp:Label ID="txtStudentFName" runat="server" />
+                </td>
+                <td rowspan="5" width="190px">
+                    <table cellpadding='0' cellspacing='0' border="0" width='100%' style='margin-bottom: 10px;'>
+                        <tr>
+                            <td class='profile_photo' width='162'>
+                                <img class='photo' alt="" height="160" runat="server" width="150" id="imgUpload"
+                                     src='../images/nophoto.gif' border='0' />
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="CellLabel">
+                    Last Name :
+                </td>
+                <td class="CellData">
+                    <asp:Label ID="txtStudentLName" runat="server" />
+                </td>
+            </tr>
+            <tr>
+                <td class="CellLabel">
+                    Date of Birth :
+                </td>
+                <td class="CellData">
+                    <asp:Label ID="txtDOB" runat="server" />
+                </td>
+            </tr>
+            
+            
+            <tr>
+                <td class="CellLabel">
+                    Previous Class of Child/Children :
+                </td>
+                <td class="CellData">
+                    <asp:Label ID="txtPrevClass" runat="server"  />
+                </td>
+            </tr>
+        
+            <tr> 
+                <td class="CellLabel">Guardian Name : </td>
+                <td  class="CellData" >
+                    <asp:Label ID="txtGuardianName" runat="server"  />
+               
+                </td>
+            </tr> 
+        
+            <tr>
+                <td class="CellLabel">
+                    Residence/Mailing Address :
+                </td>
+                <td class="CellData">
+                    <asp:Label ID="txtGAddress" runat="server"  />
+                
+                
+                </td>
+            </tr>
+        
+        
+            <tr>
+                <td colspan="3" class="SubHeading" style="height: 23px">
+                    Applicant Details
+                </td>
+            </tr>
+            <tr> 
+                <td class="CellLabel">Applicant Name : </td>
+                <td  class="CellData" colspan="2">
+                    <asp:Label ID="txtApplicantName" runat="server"  />
+                      
+                
+                </td>
+            </tr> 
+            <tr> 
+                <td class="CellLabel">Applicant Contact # : </td>
+                <td  class="CellData" colspan="2">
+                    <asp:Label ID="txtApplicantContactNum" runat="server"  />
+               
+                </td>
+            </tr> 
+        
+        
+            <tr>
+                <td colspan="3" class="SubHeading" style="height: 23px">
+                    Application Details
+                </td>
+            </tr>
+            <tr> 
+                <td class="CellLabel">Application # : </td>
+                <td  class="CellData" colspan="2">
+                    <asp:Label ID="txtApplicationNum" runat="server"  />
+              
+                </td>
+            </tr> 
+        
+            <tr> 
+                <td class="CellLabel">Application Category : </td>
+                <td  class="CellData" colspan="2">
+                    <asp:Label ID="txtAppCategory" runat="server"  />
+                
+                
+                </td>
+            </tr>
+        
+            <tr> 
+                <td class="CellLabel">Delivered By : </td>
+                <td  class="CellData" colspan="2">
+                    <asp:Label ID="txtAppReceivedBy" runat="server"  />
+               
+                </td>
+            </tr> 
+        
+            <tr> 
+                <td class="CellLabel">Delivery Notes : </td>
+                <td  class="CellData" colspan="2" >
+                    <asp:Label  ID="txtDeliveryNotes" runat="server" />
+                </td>
+            </tr>
+        
+            <tr> 
+                <td class="CellLabel">Received On : </td>
+                <td  class="CellData" colspan="2" >
+                    <asp:Label  ID="txtReceivedOn" runat="server" />
+                </td>
+            </tr>
+        
+            <tr> 
+                <td class="CellLabel">Referred By : </td>
+                <td  class="CellData" colspan="2">
+                    <asp:Label ID="txtReferedBy" runat="server"  />
+               
+                </td>
+            </tr> 
+        
+        
+            <tr>
+                <td colspan="3" class="SubHeading" style="height: 23px">
+                    Supporting Documents
+                </td>
+            </tr>
+            <asp:PlaceHolder ID="PlaceHolder2" runat="server">
+                <tr>
+                    <td class="CellLabel">
+                        Death Certificate :
+                    </td>
+                    <td class="CellData"  colspan="2">
+                        <a href="javascript:void(0)" runat ="server"  id="viewCert1">View Certificate</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="CellLabel">
+                        Divorce Certificate :
+                    </td>
+                    <td class="CellData"  colspan="2">
+                        <a href="javascript:void(0)"  runat ="server"  id="viewCert2">View Certificate</a>
+                    </td>
+                </tr>
+            </asp:PlaceHolder>
+        
+            <tr>
+                <td colspan="3" class="SubHeading" style="height: 23px">
+                    Additional Details (if any)
+                </td>
+            </tr>
+            <tr>
+                <td class="CellLabel">
+                    Note :
+                </td>
+                <td colspan="2" class="CellData">
+                    <asp:Label ID="txtNote" runat="server"  />
+                </td>
+            </tr>
+            
+            
+            <tr>
+                <td colspan="3" class="SubHeading" style="height: 23px">
+                    Official Use
+                </td>
+            </tr>
+            <tr> 
+                <td class="CellLabel">Social Organizer Name : </td>
+                <td  class="CellData" colspan="2" >
+                    <asp:Label ID="txtApplicantDO" runat="server"  />
+                </td>
+            </tr> 
+            <tr> 
+                <td class="CellLabel">Field Verification Person : </td>
+                <td  class="CellData" colspan="2" >
+                    <asp:Label ID="txtFieldVarificationPerson" runat="server"  />
+                
+                </td>
+            </tr> 
+            <tr> 
+                <td class="CellLabel">Board Note : </td>
+                <td colspan="2" class="CellData">
+                    <asp:Label ID="txtBNote" runat="server"  />
+                </td>
+            </tr> 
+        </asp:PlaceHolder>
+          
+        
+    </table>
+</asp:Content>

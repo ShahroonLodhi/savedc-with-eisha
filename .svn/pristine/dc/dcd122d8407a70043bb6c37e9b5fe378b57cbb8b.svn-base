@@ -1,0 +1,88 @@
+<%@ Page Language="C#" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="DetailsStudentEstimation.aspx.cs" Inherits="SaveDC.ControlPanel.DetailsStudentEstimation" Title="Student Estimation Details"%>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <script type="text/javascript" language="javascript"> </script>
+
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <td height="20px" class="CellLabel"  colspan="3">
+	
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            Student Manager :: List Students :: Student Estimations :: Estimation Details
+                           
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack" Height="24"
+                                             Width="24" OnClientClick="javascript:window.history.back(); return false;" />
+                        </td>
+                    </tr>
+                </table>
+	
+            </td>
+        </tr>
+        <tr>
+            <td height="20px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label></td>
+        </tr>
+       
+        <tr>
+            <td class="CellHeading" width="40%">Student Estimation Details</td>
+            <td class="ContextLinks" colspan="2" align="right"></td>
+        </tr>
+	
+	
+        <tr>
+            <td class="CellLabel">
+                Student Name :
+            </td>
+            <td class="CellData" colspan="2">
+                <asp:Label ID="lblStdName" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>	
+        <tr>
+            <td class="CellLabel">
+                School Name :
+            </td>
+            <td class="CellData" colspan="2">
+                <asp:Label ID="lblSchool" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+	
+        <asp:Repeater ID="Repeater1" runat="server">
+            <HeaderTemplate>
+                <tr>
+                    <td class="SubHeading" style="height: 23px">
+                        Estimation Category
+                    </td>
+                    <td class="SubHeading" style="height: 23px">
+                        Estimated Amount
+                    </td>
+                    <td class="SubHeading" style="height: 23px">
+                        Actual Amount
+                    </td>
+                </tr>
+            </HeaderTemplate>
+            <ItemTemplate>
+                <tr>
+                    <td class="CellLabel">
+                        <%# DataBinder.Eval(Container.DataItem, "ExpenseName") %>  :
+                    </td>
+                    <td class="CellData">
+                        <%# DataBinder.Eval(Container.DataItem, "EstimatedAmount") %>
+                    </td>
+                    <td class="CellData">
+                        <%# DataBinder.Eval(Container.DataItem, "ActualAmount") %>
+                    </td>
+                </tr>
+            </ItemTemplate>
+        </asp:Repeater>
+	      
+    </table>
+
+</asp:Content>

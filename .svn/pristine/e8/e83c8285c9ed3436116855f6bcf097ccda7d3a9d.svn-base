@@ -1,0 +1,299 @@
+using System;
+using System.IO;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class AddStudent : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // page validation
+                var oValidator = new Validator();
+                oValidator.ValidateRequest(Request);
+                oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                                  new[]
+                                                      {
+                                                          UserAccessLevels.SuperAdmin, UserAccessLevels.Admin,
+                                                          UserAccessLevels.Operator
+                                                      });
+                oValidator = null;
+
+                // load classes.
+                var oclassManager = new ClassManager(new Class_());
+                Class_[] oClasses = oclassManager.GetClasses();
+                ddClassDoingStudyIn.DataSource = oClasses.Clone();
+                ddClassDoingStudyIn.DataValueField = "ClassId";
+                ddClassDoingStudyIn.DataTextField = "ClassName";
+                ddClassDoingStudyIn.DataBind();
+
+                ddClassLeftIn.DataSource = oClasses.Clone();
+                ddClassLeftIn.DataValueField = "ClassId";
+                ddClassLeftIn.DataTextField = "ClassName";
+                ddClassLeftIn.DataBind();
+
+                ddFamily.Items.Clear();
+                var oFamilyManager = new FamilyManager(new Family());
+                Family[] familyDNames = oFamilyManager.GetFamilies();
+                if (familyDNames == null || familyDNames.Length == 0)
+                {
+                    ddFamily.Items.Clear();
+                    var noFamilyItem = new ListItem();
+                    noFamilyItem.Text = "No Family Found.";
+                    noFamilyItem.Value = "0";
+                    ddFamily.Items.Add(noFamilyItem);
+                    // ddFamily.Visible = false;
+                }
+                else
+                {
+                    //ddFamily.Visible = true;
+                    ddFamily.DataSource = familyDNames;
+                    ddFamily.DataValueField = "FamilyId";
+                    ddFamily.DataTextField = "DisplayName";
+                    ddFamily.DataBind();
+                }
+
+
+                // dont allow operator to edit except few.
+                if (SaveDCSession.UserAccessLevel != UserAccessLevels.Operator ||
+                    SaveDCSession.UserName.ToLower() == "shamsa" || SaveDCSession.UserName.ToLower() == "muzaffar" || SaveDCSession.UserName.ToLower() == "irfan")
+                {
+                    // get form/query string values.
+                    int nEditStudentId = Utils.fixNullInt(Request.QueryString["StudentId"]);
+
+                    // load edit user details.
+                    if (nEditStudentId > 0)
+                    {
+                        var oStudent = new Student();
+                        oStudent.StudentId = nEditStudentId;
+                        var oStudentManager = new StudentManager(oStudent);
+                        oStudent = oStudentManager.Load();
+                        txtStudentFName.Text = oStudent.FirstName;
+                        txtStudentLName.Text = oStudent.LastName;
+                        txtEduLevel.Text = oStudent.EducationalLevel;
+                        txtDOB.Text = oStudent.DateOfBirth == null || oStudent.DateOfBirth == DateTime.MinValue
+                                          ? DateTime.Now.Date.ToString("dd/MM/yyyy")
+                                          : oStudent.DateOfBirth.ToString("dd/MM/yyyy");
+                        txtNote.Text = oStudent.Note;
+                        hdnEditStudentId.Value = nEditStudentId.ToString();
+
+                        // set history info.
+                        var ohistory = new History();
+                        ohistory.HistoryId = oStudent.HistoryId;
+                        if (ohistory.HistoryId > 0)
+                        {
+                            ohistory = new HistoryManager(ohistory).Load();
+                            rbIsDoingStudy.SelectedValue = ohistory.IsDoingStudy ? "1" : "0";
+                            ddClassDoingStudyIn.SelectedValue = ohistory.ClassDoingStudyIn.ToString();
+                            ddClassLeftIn.SelectedValue = ohistory.ClassLeftIn.ToString();
+                            txtPeriodLeftSince.Text = ohistory.PeriodLeftSince.ToString();
+                            txtLastSchool.Text = ohistory.LastSchoolAttended;
+                            txtHNote.Text = ohistory.Note;
+                            ddFamily.SelectedValue = oStudent.FamilyId.ToString();
+                        }
+                        hdnAddEdit.Value = "Edit";
+
+                        string szFileUniqueName = oStudent.ImageGUID;
+                        string szServerPath = Server.MapPath(SaveDCConstants.ProfileSnapUploadPath) + szFileUniqueName +
+                                              ".jpg";
+                        if (File.Exists(szServerPath))
+                        {
+                            hdnOldProfileImage.Value = szFileUniqueName;
+                            hdnProfileImage.Value = szFileUniqueName;
+                            hdnProfileImageURL.Value = SaveDCConstants.ProfileSnapUploadPath + szFileUniqueName + ".jpg";
+                        }
+                    }
+                }
+
+                if (Utils.fixNullInt(ddFamily.SelectedValue) > 0)
+                {
+                    repeaterChildren.DataSource =
+                        new Common().GetFamilyStudents(Utils.fixNullInt(ddFamily.SelectedValue));
+                    repeaterChildren.DataBind();
+                }
+
+                RenderError(Request.QueryString["status"]);
+            }
+        }
+
+
+        protected void btnUpdate_Click(object sender, ImageClickEventArgs e)
+        {
+            // ajax did not work on the sever so to minimize code changes assigning new file name to hdn control.
+            string szFileName = UploadFileAndReturnName();
+            if (!string.IsNullOrEmpty(szFileName))
+            {
+                hdnProfileImage.Value = szFileName;
+            }
+
+            // get the edit user id.
+            int nEditStudentId = 0;
+            int.TryParse(hdnEditStudentId.Value, out nEditStudentId);
+
+            // fill the history informations.
+            var ohistory = new History();
+            ohistory.IsDoingStudy = rbIsDoingStudy.SelectedValue == "1" ? true : false;
+            ohistory.ClassDoingStudyIn = Utils.fixNullInt(ddClassDoingStudyIn.SelectedValue);
+            ohistory.ClassLeftIn = Utils.fixNullInt(ddClassLeftIn.SelectedValue);
+            ohistory.PeriodLeftSince = Utils.fixNullInt(txtPeriodLeftSince.Text);
+            ohistory.LastSchoolAttended = txtLastSchool.Text;
+            ohistory.Note = txtHNote.Text;
+            // get the edit user historyid in case of edit. else set to 0.
+            ohistory.HistoryId = nEditStudentId > 0 ? new Common().GetStudentHistoryId(nEditStudentId) : 0;
+
+            var oHistoryManager = new HistoryManager(ohistory);
+            // save the history. new or old.
+            ohistory.HistoryId = oHistoryManager.Save();
+
+            // if history is added then add the user information too. else show error.
+            if (ohistory.HistoryId > 0)
+            {
+                // fill the studnet informations.
+                var oStudent = new Student();
+                oStudent.FirstName = txtStudentFName.Text;
+                oStudent.LastName = txtStudentLName.Text;
+                oStudent.DateOfBirth = DateTime.ParseExact(txtDOB.Text, "dd/MM/yyyy", null);
+                oStudent.EducationalLevel = txtEduLevel.Text;
+                oStudent.Note = txtNote.Text;
+                oStudent.FamilyId = Utils.fixNullInt(ddFamily.SelectedValue);
+                oStudent.StudentId = nEditStudentId;
+                oStudent.ImageGUID = hdnProfileImage.Value;
+                // assign the inserted history id to student.
+                oStudent.HistoryId = ohistory.HistoryId;
+
+                if (ohistory.IsDoingStudy)
+                    oStudent.ClassId = ohistory.ClassDoingStudyIn;
+                else
+                    oStudent.ClassId = ohistory.ClassLeftIn;
+
+                // save student info
+                var oStudentManager = new StudentManager(oStudent);
+                int nStatus = oStudentManager.Save();
+                if (nStatus > 0)
+                {
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(hdnOldProfileImage.Value) &&
+                            hdnOldProfileImage.Value != hdnProfileImage.Value)
+                        {
+                            string szServerPath = Server.MapPath(SaveDCConstants.ProfileSnapUploadPath) +
+                                                  hdnOldProfileImage.Value + ".jpg";
+                            if (File.Exists(szServerPath))
+                            {
+                                File.Delete(szServerPath);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+
+                    if (nEditStudentId > 0)
+                        Response.Redirect("ListStudents.aspx?status=5031161"); //  user updated successfully.
+                    else
+                        Response.Redirect("ListStudents.aspx?status=5031091");
+                }
+                else if (nStatus == 0)
+                {
+                    Response.Redirect("AddStudent.aspx?status=5031090");
+                }
+                else if (nStatus == -1)
+                {
+                    Response.Redirect("AddStudent.aspx?status=5031080");
+                }
+            }
+            else
+            {
+                Response.Redirect("AddStudent.aspx?status=5031090");
+            }
+        }
+
+        private string UploadFileAndReturnName()
+        {
+            try
+            {
+                //HttpFileCollection hfc = Request.Files;
+                //for (int i = 0; i < hfc.Count; i++)
+                //{
+                HttpPostedFile hpf = userprofile.PostedFile; //hfc[i];
+                if (hpf.ContentLength > 0)
+                {
+                    if (IsValidImageFile(Path.GetFileName(hpf.FileName)))
+                    {
+                        string szFileGUID = Guid.NewGuid().ToString();
+                        hpf.SaveAs(Server.MapPath(SaveDCConstants.ProfileSnapUploadPath) + szFileGUID + ".jpg");
+                        return szFileGUID;
+                    }
+                    //  }
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return "";
+        }
+
+        private void RenderError(string szErrorCode)
+        {
+            if (string.IsNullOrEmpty(szErrorCode))
+            {
+                lblError.Text = "";
+                return;
+            }
+
+            string szErrorDesc = Utils.GetMessageText(szErrorCode);
+            if (!szErrorCode.EndsWith("1"))
+                lblError.CssClass = "FailureMessage";
+            else
+                lblError.CssClass = "SuccessMessage";
+
+            lblError.Text = szErrorDesc;
+        }
+
+        protected void ddFamily_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            repeaterChildren.DataSource = new Common().GetFamilyStudents(Utils.fixNullInt(ddFamily.SelectedValue));
+            repeaterChildren.DataBind();
+        }
+
+        //protected void ProcessUpload(object sender, AjaxControlToolkit.AsyncFileUploadEventArgs e)
+        //{
+        //    //if (AsyncFileUpload1.HasFile && IsValidImageFile(AsyncFileUpload1.FileName))
+        //    //{
+        //    //    string szFileUniqueName = Guid.NewGuid().ToString();
+        //    //    string szServerPath = Server.MapPath("../Images/ProfileSnaps/") + szFileUniqueName + ".jpg";
+        //    //    AsyncFileUpload1.SaveAs(szServerPath);
+
+        //    //    string szScript = "top.document.getElementById('" + hdnProfileImage.ClientID + "').value='" + szFileUniqueName + "'; ";
+
+        //    //    ScriptManager.RegisterClientScriptBlock(AsyncFileUpload1, AsyncFileUpload1.GetType(), "img",
+        //    //        "top.document.getElementById('imgUpload').src='../Images/ProfileSnaps/" + szFileUniqueName + ".jpg';  " + szScript,
+        //    //        true);
+        //    //}
+        //}
+
+        private bool IsValidImageFile(string szFileName)
+        {
+            szFileName = szFileName.ToLower();
+            if (szFileName.EndsWith(".gif"))
+                return true;
+            if (szFileName.EndsWith(".jpg"))
+                return true;
+            if (szFileName.EndsWith(".jpeg"))
+                return true;
+            if (szFileName.EndsWith(".tiff"))
+                return true;
+            if (szFileName.EndsWith(".png"))
+                return true;
+            return false;
+        }
+    }
+}

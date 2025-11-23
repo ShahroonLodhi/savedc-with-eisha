@@ -1,0 +1,129 @@
+using System;
+using System.Web.UI;
+using SaveDC.ControlPanel.Src.Configurations;
+using SaveDC.ControlPanel.Src.Managers;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Utils;
+
+namespace SaveDC.ControlPanel
+{
+    public partial class AddSchool : Page
+    {
+        public AddSchool()
+        {
+            PreInit += AddSchool_PreInit;
+            // this.Load += new EventHandler(AddStudentEstimation_Load);
+        }
+
+        private void AddSchool_PreInit(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(Request.QueryString["modalwin"]) && Request.QueryString["modalwin"] == "1")
+                MasterPageFile = "~/ControlPanel/Dummy.master";
+        }
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                // page validation
+                var oValidator = new Validator();
+                oValidator.ValidateRequest(Request);
+                oValidator.ValidateUserPageAccess(SaveDCSession.UserAccessLevel,
+                                                  new[]
+                                                      {
+                                                          UserAccessLevels.SuperAdmin, UserAccessLevels.Admin,
+                                                          UserAccessLevels.Operator
+                                                      });
+                oValidator = null;
+
+                // dont allow operator to edit.
+                if (SaveDCSession.UserAccessLevel != UserAccessLevels.Operator)
+                {
+                    // get form/query string values.
+                    int nEditSchoolId = Utils.fixNullInt(Request.QueryString["SchoolId"]);
+
+                    // load edit user details.
+                    if (nEditSchoolId > 0)
+                    {
+                        var oSchool = new School();
+                        oSchool.SchoolID = nEditSchoolId;
+                        var oSchoolManager = new SchoolManager(oSchool);
+                        oSchool = oSchoolManager.Load();
+                        txtSchoolName.Text = oSchool.SchoolName;
+                        txtPrinName.Text = oSchool.PrincipalName;
+                        txtSocialOrg.Text = oSchool.SocialOrganizerName;
+                        txtAddress.Text = oSchool.Address;
+                        txtEmail.Text = oSchool.EmailAddress;
+                        txtPhone.Text = oSchool.PhoneNumber;
+                        txtNote.Text = oSchool.Notes;
+                        hdnEditSchoolId.Value = nEditSchoolId.ToString();
+                        hdnAddEdit.Value = "Edit";
+                    }
+                }
+                RenderError(Request.QueryString["status"]);
+            }
+        }
+
+        protected void btnUpdate_Click(object sender, ImageClickEventArgs e)
+        {
+            var oSchool = new School();
+            oSchool.SchoolName = txtSchoolName.Text;
+            oSchool.PrincipalName = txtPrinName.Text;
+            oSchool.SocialOrganizerName = txtSocialOrg.Text;
+            oSchool.Address = txtAddress.Text;
+            oSchool.EmailAddress = txtEmail.Text;
+            oSchool.PhoneNumber = txtPhone.Text;
+            oSchool.Notes = txtNote.Text;
+
+            int nEditSchoolId = 0;
+            int.TryParse(hdnEditSchoolId.Value, out nEditSchoolId);
+            oSchool.SchoolID = nEditSchoolId;
+            var oSchoolManager = new SchoolManager(oSchool);
+            int nStatus = oSchoolManager.Save();
+            if (nStatus > 0)
+            {
+                if (MasterPageFile.Contains("Dummy"))
+                {
+                    string szResponseStr = "<script type=\"text/javascript\">window.opener.AddListItem(\"" +
+                                           oSchool.SchoolName + "\",\"" + oSchool.SchoolID +
+                                           "\"); window.close(); </script>";
+                    ;
+                    Response.Write(szResponseStr);
+                    Response.End();
+                }
+                else
+                {
+                    if (nEditSchoolId > 0)
+                        Response.Redirect("ListSchools.aspx?status=5021071"); //  user updated successfully.
+                    else
+                        Response.Redirect("ListSchools.aspx?status=5021051");
+                }
+            }
+            else if (nStatus == 0)
+            {
+                Response.Redirect("AddSchool.aspx?status=5021050");
+            }
+            else if (nStatus == -1)
+            {
+                Response.Redirect("AddSchool.aspx?status=5021040");
+            }
+        }
+
+        private void RenderError(string szErrorCode)
+        {
+            if (string.IsNullOrEmpty(szErrorCode))
+            {
+                lblError.Text = "";
+                return;
+            }
+
+            string szErrorDesc = Utils.GetMessageText(szErrorCode);
+            if (!szErrorCode.EndsWith("1"))
+                lblError.CssClass = "FailureMessage";
+            else
+                lblError.CssClass = "SuccessMessage";
+
+            lblError.Text = szErrorDesc;
+        }
+    }
+}

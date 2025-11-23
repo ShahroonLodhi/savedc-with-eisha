@@ -1,0 +1,54 @@
+using System.Collections;
+
+namespace SaveDC.ControlPanel.Src.Objects
+{
+    public class User : IEnumerable
+    {
+        public string LastSMSDate { get; set; }
+        public string UserRoleName { get; set; }
+
+        public int UserID { get; set; }
+
+        public int RemarksPostedBy { get; set; }
+
+        public int UserRoleID { get; set; }
+
+        public string UserName { get; set; }
+
+        public string UserPassword { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string EmailAddress { get; set; }
+
+        public string PhoneNumber { get; set; }
+
+        public bool Gender { get; set; }
+
+        public string CNIC { get; set; }
+
+        public string RecevingDate { get; set; }
+
+        public string Occupation { get; set; }
+
+        public string Qualification { get; set; }
+
+        public string Notes { get; set; }
+
+        public bool IsSuspended { get; set; }
+
+        public string Country { get; set; }
+        public string Address { get; set; }
+
+        #region IEnumerable Members
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return null;
+        }
+
+        #endregion
+    }
+}

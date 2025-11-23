@@ -1,0 +1,98 @@
+<%@ Page Language="C#" Theme="Default" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="DetailsSchool.aspx.cs" Inherits="SaveDC.ControlPanel.DetailsSchool" Title="School Details"%>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <script type="text/javascript" language="javascript">
+
+        function PrintForm() {
+            var schoolId = "<%= hdnEditSchoolId.Value %>";
+            //winname = window.open('PrintDetailsStudent.aspx?StudentId=' + studentId, 'StudentDetails', 'left=100,top=30,screenX=100,screenY=30, height=550,width=900,toolbar=no,directories=no,status=no,menubar=yes,modal=no,scrollbars=yes');
+
+            winname = window.open('PrintDetailsSchool.aspx?SchoolId=' + schoolId, "1328942502c");
+
+            winname.print();
+
+        }
+
+    </script>
+
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+    
+    
+        <tr id="trBredCrum" runat="server">
+            <td height="20px" class="CellLabel" colspan="2">
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            School Manager :: School Details
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack" Height="24"
+                                             Width="24" OnClientClick="javascript:window.history.back(); return false;" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td height="20px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label></td>
+        </tr>
+       
+        <tr>
+            <asp:HiddenField ID="hdnEditSchoolId" Value="0" runat="server" />
+            <td class="CellHeading" width="40%">School Details</td>
+            <td class="ContextLinks" align="right">
+                <asp:ImageButton ID="ImageButton2" AlternateText="Print" ToolTip="Print" runat="server"
+                                 SkinID="sknImgPrint" Height="24" Width="24" OnClientClick="PrintForm();" />
+            </td>
+        </tr>
+	
+        <%--<tr>
+		<td colspan="2" class="SubHeading" style="height: 23px">Login Information</td>
+	</tr>--%>
+        <tr> 
+            <td class="CellLabel">School Name : </td>
+            <td class="CellData">
+                <asp:Label ID="txtSchoolName" runat="server" Text=""/>
+            </td>
+        </tr> 
+        <tr> 
+            <td class="CellLabel">Principal Name : </td>
+            <td class="CellData" >
+                <asp:Label ID="txtPrinName" runat="server" Text=""/>
+            </td>
+        </tr> 
+	 
+        <%--<tr>
+		<td colspan="2" class="SubHeading" style="height: 23px">Profile Information</td>
+	</tr>--%>
+	
+        <tr> 
+            <td class="CellLabel">Social Organizer Name : </td>
+            <td class="CellData">  <asp:Label ID="txtSocialOrg" runat="server" Text=""/></td>
+        </tr> 
+        <tr> 
+            <td class="CellLabel">Phone Number : </td>
+            <td class="CellData"><asp:Label ID="txtPhone" runat="server" Text=""/></td>
+        </tr> 
+        <tr> 
+            <td class="CellLabel">Email Adress : </td>
+            <td class="CellData"><asp:Label ID="txtEmail" runat="server" Text=""/></td>
+        </tr>
+        <tr> 
+            <td class="CellLabel">School Address : </td>
+            <td class="CellData"><asp:Label ID="txtAddress" runat="server" Text=""/></td>
+	     
+        </tr> 
+        <tr> 
+            <td class="CellLabel">Note : </td>
+            <td class="CellData"><asp:Label ID="txtNote" runat="server" Text=""/></td>
+        </tr>  
+               
+    </table>
+
+</asp:Content>

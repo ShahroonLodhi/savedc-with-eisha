@@ -1,0 +1,1758 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using SaveDC.ControlPanel.Src.DB;
+using SaveDC.ControlPanel.Src.Objects;
+using SaveDC.ControlPanel.Src.Configurations;
+
+namespace SaveDC.ControlPanel.Src.Utils
+{
+    public class Common
+    {
+        public SqlDataReader LoadUserRoles()
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                return dbmanager.GetDataReaderProc("GetUserRoles");
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+        public DataSet LoadStudentSchoolEstimations(int nStudentId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, nStudentId)
+                                            };
+                DataSet ds = dbmanager.GetDataSetProc("LoadStudentSchoolEstimations", parameters);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return null;
+        }
+
+        public SqlDataReader LoadStudentSchoolEstimationDetails(int nEstimationId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@EstimationId", SqlDbType.Int, 0, nEstimationId),
+                                            };
+                return dbmanager.GetDataReaderProc("LoadStudentSchoolEstimationDetails", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+
+        public int AddStudentSchoolEstimation(int nEstimationId, int nStudentId, int nSchoolId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@EstimationId", SqlDbType.Int, 0, nEstimationId),
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, nStudentId),
+                                                dbmanager.makeInParam("@SchoolId", SqlDbType.Int, 0, nSchoolId)
+                                            };
+                return dbmanager.RunProc("AddStudentSchoolEstimation", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        public int AddStudentSchoolEstimationDetail(int nEstimationId, int nExpenseCategoryId, decimal nEstimatedAmount,
+                                                    decimal nActualAmount)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@EstimationId", SqlDbType.Int, 0, nEstimationId),
+                                                dbmanager.makeInParam("@ExpenseCategoryId", SqlDbType.Int, 0,
+                                                                      nExpenseCategoryId),
+                                                dbmanager.makeInParam("@EstimatedAmount", SqlDbType.Decimal, 0,
+                                                                      nEstimatedAmount),
+                                                dbmanager.makeInParam("@ActualAmount", SqlDbType.Decimal, 0,
+                                                                      nActualAmount)
+                                            };
+                return dbmanager.RunProc("AddStudentSchoolEstimationDetail", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal int DeleteStudentSchoolEstimation(string szCurEstimationId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@EstimationId", SqlDbType.Int, 0,
+                                                                      szCurEstimationId)
+                                            };
+                return dbmanager.RunProc("DeleteStudentSchoolEstimation", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal DataSet LoadStudentProgressReports(int nStudentId, string szReportMonth, int nPageNo, int nPageSize,
+                                                    out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, nStudentId),
+                                                dbmanager.makeInParam("@MonthString", SqlDbType.NVarChar, 50,
+                                                                      szReportMonth),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet ds = dbmanager.GetDataSetProc("LoadStudentProgressReports", parameters);
+                nTotalRecord = Utils.fixNullInt(parameters[4].Value);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            nTotalRecord = 0;
+            return null;
+        }
+
+        internal int DeleteStudentProgressReport(string szCurReportId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ReportId", SqlDbType.Int, 0, szCurReportId)
+                                            };
+                return dbmanager.RunProc("DeleteStudentProgressReport", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal SqlDataReader LoadStudentProgressReportDetails(int nReportId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ReportId", SqlDbType.Int, 0, nReportId)
+                                            };
+                return dbmanager.GetDataReaderProc("LoadStudentProgressReportDetails", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+        internal int AddStudentProgressReport(int nEditReportId, int nStudentId, int nMonth, int nYear, string szNotes,
+                                              string szReportGUID, int AddedBy)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ReportId", SqlDbType.Int, 0, nEditReportId),
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, nStudentId),
+                                                dbmanager.makeInParam("@Month", SqlDbType.Int, 0, nMonth),
+                                                dbmanager.makeInParam("@Year", SqlDbType.Int, 0, nYear),
+                                                dbmanager.makeInParam("@Note", SqlDbType.NVarChar, 255, szNotes),
+                                                dbmanager.makeInParam("@ReportGUID", SqlDbType.NVarChar, 50,
+                                                                      szReportGUID),
+                                                dbmanager.makeInParam("@AddedBy", SqlDbType.Int, 0, AddedBy),
+                                            };
+                return dbmanager.RunProc("AddStudentProgressReport", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal int AddStudentProgressReportDetail(int nEditReportId, int nParticularId, string szNotes, int nRemarksId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ReportId", SqlDbType.Int, 0, nEditReportId),
+                                                dbmanager.makeInParam("@ParticularId", SqlDbType.Int, 0, nParticularId),
+                                                dbmanager.makeInParam("@Notes", SqlDbType.VarChar, 255, szNotes),
+                                                dbmanager.makeInParam("@RemarksId", SqlDbType.Int, 0, nRemarksId)
+                                            };
+                return dbmanager.RunProc("AddStudentProgressReportDetail", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal void GetProgressReportMonth(int nReportId, ref int nMonth, ref int nYear, ref string szNote,
+                                             ref string ReportGUID, ref string szAddedBy, ref string SchoolName)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ReportId", SqlDbType.Int, 0, nReportId)
+                                            };
+                SqlDataReader reader = dbmanager.GetDataReaderProc("GetProgressReportMonth", parameters);
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        nMonth = Utils.fixNullInt(reader["Month"].ToString());
+                        nYear = Utils.fixNullInt(reader["Year"].ToString());
+                        szNote = Utils.fixNullString(reader["Note"].ToString());
+                        szAddedBy = Utils.fixNullString(reader["UserName"].ToString());
+                        ReportGUID = Utils.fixNullString(reader["ReportGUID"].ToString());
+                        SchoolName = Utils.fixNullString(reader["SchoolName"].ToString());
+                    }
+                }
+                else
+                {
+                    nMonth = DateTime.Now.Month;
+                    nYear = DateTime.Now.Year;
+                }
+            }
+            catch (Exception e)
+            {
+                nMonth = DateTime.Now.Month;
+                nYear = DateTime.Now.Year;
+                Utils.LogErrorToFile(e);
+            }
+        }
+
+        internal int AssignSchool(string szCurStudentId, string szCurEstimationId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@EstimationId", SqlDbType.Int, 0,
+                                                                      szCurEstimationId),
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, szCurStudentId),
+                                            };
+                return dbmanager.RunProc("AssignSchool", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal object GetDonorStudents(int nDonorId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@DonorId", SqlDbType.Int, 0, nDonorId)
+                                            };
+                return dbmanager.GetDataReaderProc("GetDonorStudents", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+        internal int AssignDonor(string szCurStudentId, string nCurDonorId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@DonorId", SqlDbType.Int, 0, nCurDonorId),
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, szCurStudentId),
+                                            };
+                return dbmanager.RunProc("AssignDonor", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal string GetAdminSettingVal(string szSettingName)
+        {
+            string szVal = "";
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@SettingName", SqlDbType.VarChar, 50,
+                                                                      szSettingName)
+                                            };
+                DataSet settings = dbmanager.GetDataSetProc("GetAdminSettingVal", parameters);
+                if (settings != null && settings.Tables[0].Rows.Count > 0)
+                {
+                    szVal = settings.Tables[0].Rows[0]["SettingValue"].ToString();
+                }
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                szVal = "";
+            }
+            return szVal;
+        }
+
+        internal int SaveAdminSettingVal(string szSettingName, string szSettingVal)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@SettingName", SqlDbType.VarChar, 50,
+                                                                      szSettingName),
+                                                dbmanager.makeInParam("@SettingValue", SqlDbType.VarChar, 50,
+                                                                      szSettingVal)
+                                            };
+                return dbmanager.RunProc("SaveAdminSettingVal", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal DataSet LoadSchoolExpenseDetails(string szStudentId, int ExpenseId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, szStudentId),
+                                                dbmanager.makeInParam("@ExpenseId ", SqlDbType.Int, 0, ExpenseId)
+                                            };
+                return dbmanager.GetDataSetProc("LoadSchoolExpenseDetails", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+        internal DataSet LoadMonthlyExpenseCats()
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+
+                return dbmanager.GetDataSetProc("LoadMonthlyExpenseCats");
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+        internal DataSet LoadAllExpenses(string szPayeeName, string szPostedOnDate, DateTime fromDate, DateTime toDate,
+                                         int nPageNo, int nPageSize, out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ExpensePayee", SqlDbType.NVarChar, 250,
+                                                                      szPayeeName),
+                                                dbmanager.makeInParam("@PostedOnDate", SqlDbType.NVarChar, 50,
+                                                                      szPostedOnDate),
+                                                dbmanager.makeInParam("@FromDate", SqlDbType.Date, 0, fromDate),
+                                                dbmanager.makeInParam("@ToDate", SqlDbType.Date, 0, toDate),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet ds = dbmanager.GetDataSetProc("LoadAllExpenses", parameters);
+                nTotalRecord = Utils.fixNullInt(parameters[6].Value);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            nTotalRecord = 0;
+            return null;
+        }
+
+        internal int DeleteExpense(int ExpenseId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ExpenseId", SqlDbType.Int, 0, ExpenseId)
+                                            };
+                return dbmanager.RunProc("DeleteSchoolExpense", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal int AddSchoolMonthlyExpense(DateTime nEditMonth, int nSchoolId, int nStudentId, int nExpPaymentId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@SchoolId", SqlDbType.Int, 0, nSchoolId),
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, nStudentId),
+                                                dbmanager.makeInParam("@Month", SqlDbType.Date, 0, nEditMonth),
+                                                dbmanager.makeInParam("@ExpPaymentId", SqlDbType.Int, 0, nExpPaymentId)
+                                            };
+                return dbmanager.RunProc("AddSchoolMonthlyExpense", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal int AddSchoolExpenseDetail(int nExpenseId, int nExpCatId, decimal dAmount, int nStudnetId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ExpenseId", SqlDbType.Int, 0, nExpenseId),
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, nStudnetId),
+                                                dbmanager.makeInParam("@ExpCatId", SqlDbType.Int, 0, nExpCatId),
+                                                dbmanager.makeInParam("@Amount", SqlDbType.Decimal, 0, dAmount)
+                                            };
+                return dbmanager.RunProc("AddSchoolExpenseDetail", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal string GetRoleNameById(int RoleId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@RoleId", SqlDbType.Int, 0, RoleId)
+                                            };
+                SqlDataReader reader = dbmanager.GetDataReaderProc("GetRoleNameById", parameters);
+                if (reader.Read())
+                    return Utils.fixNullString(reader["RoleName"]);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return "";
+            }
+            return "";
+        }
+
+        internal string GetStatusNameById(int nStatusId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@StatusId", SqlDbType.Int, 0, nStatusId)
+                                            };
+                SqlDataReader reader = dbmanager.GetDataReaderProc("GetStatusNameById", parameters);
+                if (reader.Read())
+                    return Utils.fixNullString(reader["StatusDesc"]);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return "";
+            }
+            return "";
+        }
+
+        internal string GetDonorNameById(int DonorId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@DonorId", SqlDbType.Int, 0, DonorId)
+                                            };
+                SqlDataReader reader = dbmanager.GetDataReaderProc("GetDonorNameById", parameters);
+                if (reader.Read())
+                    return Utils.fixNullString(reader["UserName"]);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return "";
+            }
+            return "";
+        }
+
+        internal string GetFamilyNameById(int FamilyId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@FamilyId", SqlDbType.Int, 0, FamilyId)
+                                            };
+                SqlDataReader reader = dbmanager.GetDataReaderProc("GetFamilyNameById", parameters);
+                if (reader.Read())
+                    return Utils.fixNullString(reader["DisplayName"]);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return "";
+            }
+            return "";
+        }
+
+        internal string GetSchoolNameById(int SchoolId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@SchoolId", SqlDbType.Int, 0, SchoolId)
+                                            };
+                SqlDataReader reader = dbmanager.GetDataReaderProc("GetSchoolNameById", parameters);
+                if (reader.Read())
+                    return Utils.fixNullString(reader["SchoolName"]);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return "";
+            }
+            return "";
+        }
+
+        internal string GetClassNameById(int ClassId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ClassId", SqlDbType.Int, 0, ClassId)
+                                            };
+                SqlDataReader reader = dbmanager.GetDataReaderProc("GetClassNameById", parameters);
+                if (reader.Read())
+                    return Utils.fixNullString(reader["ClassName"]);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return "";
+            }
+            return "";
+        }
+
+        public int GetSchoolIdByEstimationId(int nEstimationId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@EstimationId", SqlDbType.Int, 0, nEstimationId),
+                                            };
+                SqlDataReader reader = dbmanager.GetDataReaderProc("GetSchoolIdByEstimationId", parameters);
+                if (reader.Read())
+                    return Utils.fixNullInt(reader["SchoolId"]);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return 0;
+        }
+
+        internal DataSet GetDonationReport(string DonorName, int nPageNo, int nPageSize, out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@DonorName", SqlDbType.VarChar, 250, DonorName),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet ds = dbmanager.GetDataSetProc("GetDonationsReport", parameters);
+                nTotalRecord = Utils.fixNullInt(parameters[3].Value);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                nTotalRecord = 0;
+            }
+            return null;
+        }
+
+        internal Int32 GetDonorsBalance(int nDonorId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@DonorId", SqlDbType.Int, 0, nDonorId),
+                                            };
+                SqlDataReader reader = dbmanager.GetDataReaderProc("GetDonorsBalance", parameters);
+
+                if (reader.Read())
+                    return Utils.fixNullInt(reader["DonorsBalance"].ToString());
+                else
+                    return 0;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return 0;
+        }
+
+        internal Control CreateTextLabel(string szID, string szText)
+        {
+            var oLebel = new Label();
+            oLebel.ID = szID;
+            oLebel.Text = szText;
+            oLebel.Attributes.Add("runat", "server");
+            return oLebel;
+        }
+
+        internal SqlDataReader GetPanelSummary(int nDonorId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@DonorId", SqlDbType.Int, 0, nDonorId),
+                                            };
+                return dbmanager.GetDataReaderProc("GetPanelSummary", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return null;
+        }
+
+        internal object GetFamilyStudents(int FamilyId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@FamilyId", SqlDbType.Int, 0, FamilyId)
+                                            };
+                return dbmanager.GetDataReaderProc("GetFamilyStudents", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return null;
+            }
+        }
+
+        internal DataSet GetExpenseReport(string SchoolName, int nPageNo, int nPageSize, out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@SchoolName", SqlDbType.VarChar, 250, SchoolName)
+                                                ,
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet ds = dbmanager.GetDataSetProc("GetExpenseReport", parameters);
+                nTotalRecord = Utils.fixNullInt(parameters[3].Value);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            nTotalRecord = 0;
+            return null;
+        }
+
+        internal int GetStudentHistoryId(int nStudentId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, nStudentId),
+                                            };
+                SqlDataReader reader = dbmanager.GetDataReaderProc("GetStudentHistoryId", parameters);
+                if (reader.Read())
+                    return Utils.fixNullInt(reader["HistoryId"]);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return 0;
+        }
+
+        internal SqlDataReader GetBanks()
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {};
+                return dbmanager.GetDataReaderProc("GetBanks", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return null;
+        }
+
+        internal SqlDataReader GetExpenseTypes()
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = { };
+                return dbmanager.GetDataReaderProc("GetExpenseTypes", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return null;
+        }
+
+        internal SqlDataReader GetEmployees()
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = { };
+                return dbmanager.GetDataReaderProc("GetEmployees", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return null;
+        }
+
+        internal SqlDataReader GetUtilities()
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = { };
+                return dbmanager.GetDataReaderProc("GetUtilities", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return null;
+        }
+
+        internal int AddExpensePaymentDetails(int nPaymentDetailId, int nPaymentMode, int nBankId, string szAccountNum,
+                                              string szChequeNum, string szNote, decimal nNetAmount)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@PaymentDetailId", SqlDbType.Int, 0,
+                                                                      nPaymentDetailId),
+                                                dbmanager.makeInParam("@PaymentMode", SqlDbType.Int, 0, nPaymentMode),
+                                                dbmanager.makeInParam("@BankId", SqlDbType.Int, 0, nBankId),
+                                                dbmanager.makeInParam("@AccountNum", SqlDbType.NVarChar, 50,
+                                                                      szAccountNum),
+                                                dbmanager.makeInParam("@ChequeNum", SqlDbType.NVarChar, 50, szChequeNum)
+                                                ,
+                                                dbmanager.makeInParam("@Note", SqlDbType.NVarChar, 250, szNote),
+                                                dbmanager.makeInParam("@NetAmount", SqlDbType.Decimal, 0, nNetAmount)
+                                            };
+                return dbmanager.RunProc("AddExpensePaymentDetails", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal DataTable GetExpensePaymentDetails(int nSchoolId, DateTime dtMonth)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@SchoolId", SqlDbType.Int, 0, nSchoolId),
+                                                dbmanager.makeInParam("@Month", SqlDbType.Date, 0, dtMonth),
+                                            };
+                return dbmanager.GetDataSetProc("GetExpensePaymentDetails", parameters).Tables[0];
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return null;
+        }
+
+        internal object GetShourtcutLinks()
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {};
+                return dbmanager.GetDataReaderProc("GetShourtcutLinks", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return null;
+        }
+
+        internal int AddExpense(Expense expense)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ExpenseId", SqlDbType.Int, 0, expense.ExpenseId)
+                                                ,
+                                                dbmanager.makeInParam("@SchoolId", SqlDbType.Int, 0, expense.SchoolId),
+                                                dbmanager.makeInParam("@Month", SqlDbType.Date, 0, expense.Month),
+                                                dbmanager.makeInParam("@ExpenseType", SqlDbType.Int, 0,
+                                                                      expense.ExpenseType),
+                                                dbmanager.makeInParam("@ExpensePayee", SqlDbType.NVarChar, 255,
+                                                                      expense.ExpensePayee),
+                                                dbmanager.makeInParam("@ExpenseAmount", SqlDbType.Decimal, 0,
+                                                                      expense.ExpenseAmount),
+                                                dbmanager.makeInParam("@ExpenseDetail", SqlDbType.NVarChar, 255,
+                                                                      expense.ExpenseDetail),
+                                                dbmanager.makeInParam("@PaymentMode", SqlDbType.Int, 0,
+                                                                      expense.PaymentMode),
+                                                dbmanager.makeInParam("@BankId", SqlDbType.Int, 0, expense.BankId),
+                                                dbmanager.makeInParam("@BenefiName", SqlDbType.NVarChar, 250,
+                                                                      expense.BenefiName),
+                                                dbmanager.makeInParam("@FileNum", SqlDbType.NVarChar, 250,
+                                                                      expense.FileNum),
+                                                dbmanager.makeInParam("@VoucherNum", SqlDbType.NVarChar, 250,
+                                                                      expense.VoucherNum),
+                                                dbmanager.makeInParam("@ChequeNum", SqlDbType.NVarChar, 50,
+                                                                      expense.ChequeNum),
+                                                dbmanager.makeInParam("@Note", SqlDbType.NVarChar, 1000,
+                                                                      expense.PaymentNote),
+                                                dbmanager.makeInParam("@PostedBy", SqlDbType.Int, 0, expense.PostedBy),
+                                            };
+                return dbmanager.RunProc("AddExpense", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal Expense GetExpenseDetails(int ExpenseId)
+        {
+            Expense expenseDetails = null;
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ExpenseId", SqlDbType.Int, 0, ExpenseId),
+                                            };
+                SqlDataReader reader = dbmanager.GetDataReaderProc("GetExpenseDetails", parameters);
+
+                expenseDetails = new Expense();
+                if (reader.Read())
+                {
+                    expenseDetails.ExpenseId = Utils.fixNullInt(reader["ExpenseId"].ToString());
+                    expenseDetails.ExpenseType = Utils.fixNullString(reader["ExpenseType"].ToString());
+                    expenseDetails.ExpenseName = Utils.fixNullString(reader["ExpenseName"].ToString());
+                    
+                    expenseDetails.SchoolId = Utils.fixNullInt(reader["SchoolId"].ToString());
+                    expenseDetails.ExpensePayee = Utils.fixNullString(reader["ExpensePayee"].ToString());
+                    expenseDetails.Month = Utils.fixNullDate(reader["Month"].ToString());
+                    expenseDetails.ExpenseAmount = Utils.fixNullDecimal(reader["ExpenseAmount"].ToString());
+                    expenseDetails.ExpenseDetail = Utils.fixNullString(reader["ExpenseDetail"].ToString());
+                    expenseDetails.PaymentMode = Utils.fixNullInt(reader["PaymentMode"].ToString());
+                    expenseDetails.BankId = Utils.fixNullInt(reader["BankId"].ToString());
+                    expenseDetails.BankName = Utils.fixNullString(reader["BankName"].ToString());
+
+                    expenseDetails.BenefiName = Utils.fixNullString(reader["BenefiName"].ToString());
+                    expenseDetails.ChequeNum = Utils.fixNullString(reader["ChequeNum"].ToString());
+                    expenseDetails.PaymentNote = Utils.fixNullString(reader["Note"].ToString());
+                    expenseDetails.PostedByName = Utils.fixNullString(reader["PostedByName"].ToString());
+                    expenseDetails.ActionDate = Utils.fixNullDate(reader["ActionDate"].ToString());
+
+                    expenseDetails.FileNum = Utils.fixNullString(reader["FileNum"].ToString());
+                    expenseDetails.VoucherNum = Utils.fixNullString(reader["VoucherNum"].ToString());
+                }
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return expenseDetails;
+        }
+
+
+        internal void AddnAdjustDonorExp()
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {};
+                dbmanager.RunProc("AddDonorExpense", parameters);
+
+                SendReminders();
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+        }
+
+        private void SendReminders()
+        {
+            if (EmailConfiguration.SendReminders)
+            {
+                try
+                {
+                    var dbmanager = new DBManager();
+                    SqlDataReader oReminderDonors = dbmanager.GetDataReaderProc("GetDonorsForReminder");
+
+                    while (oReminderDonors.Read())
+                    {
+                        string szDonorId = Utils.fixNullString(oReminderDonors["DonorId"]);
+
+                        if (EmailSender.SendEmail(EmailConfiguration.FromAddressInfo, Convert.ToInt32(szDonorId), new Email
+                                                      {
+                                                          DonorName = Utils.fixNullString(oReminderDonors["UserName"]),
+                                                          FirstName = Utils.fixNullString(oReminderDonors["FirstName"]),
+                                                          LastName = Utils.fixNullString(oReminderDonors["LastName"]),
+                                                          DonorEmail = Utils.fixNullString(oReminderDonors["Email"]),
+                                                          Amount = Utils.fixNullString(oReminderDonors["Amount"])
+                                                      }))
+                        {
+                            UpdateDonorReminderStatus(szDonorId);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Utils.LogErrorToFile(e);
+                }
+            }
+        }
+
+        private void UpdateDonorReminderStatus(string szDonorId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+
+                dbmanager.ExecuteNonQuery("update tblDonorsExpense set IsReminderSent = 1 where DonorId = " +
+                                          szDonorId +
+                                          " and Month(ExpenseMonth) = Month(GETDATE()) and Year(ExpenseMonth) = Year(GETDATE()) ");
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+        }
+
+        internal DataSet GetDonorMonthlyReport(int DonorId, int nCurrentPage, int nRecourdPerPage, out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@DonorId", SqlDbType.Int, 0, DonorId),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nCurrentPage),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nRecourdPerPage),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet ds = dbmanager.GetDataSetProc("GetDonorMonthlyReport", parameters);
+                nTotalRecord = Utils.fixNullInt(parameters[3].Value);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            nTotalRecord = 0;
+            return null;
+        }
+
+        internal object SchoolExpenseStudents(int ExpenseId, int nSchoolId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ExpenseId", SqlDbType.Int, 0, ExpenseId),
+                                                dbmanager.makeInParam("@SchoolId", SqlDbType.Int, 0, nSchoolId),
+                                            };
+                DataTable ds = dbmanager.GetDataSetProc("GetSchoolExpenseStudents", parameters).Tables[0];
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return null;
+        }
+
+        internal void DiscontinueStudent(string szCurStudentId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                string prevStatus =
+                    dbmanager.ExecuteScalar("select top 1 StatusId from tblStudents where StudentId =" + szCurStudentId);
+                // set to approve now.
+                if (prevStatus == "6")
+                {
+                    dbmanager.ExecuteNonQuery("Update tblStudents set StatusId = 3 where StudentId =" + szCurStudentId);
+                }
+                    // dicontinue.
+                else
+                {
+                    dbmanager.ExecuteNonQuery(
+                        "Update tblStudents set StatusId = 6, SchoolId = null, DonorId = null where StudentId =" +
+                        szCurStudentId);
+                }
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+        }
+
+        internal int SendSMSAndLogInDatabase(int RecipientId, string recipientPhoneNum, string message,
+                                             string recipientType)
+        {
+            try
+            {
+                var recipientsList = new List<SMSRecipient>();
+
+                List<string> recipientNum = recipientPhoneNum.Split(new[] {'\n'}).ToList();
+                foreach (string recipi in recipientNum)
+                {
+                    if (string.IsNullOrEmpty(recipi.Trim())) continue;
+
+                    if (recipi.Contains(","))
+                    {
+                        string[] splitedRecpi = recipi.Split(new[] {','});
+                        recipientsList.Add(new SMSRecipient
+                                               {Name = splitedRecpi[0], PhoneNum = splitedRecpi[1].Replace("\r", "")});
+                    }
+                    else
+                    {
+                        recipientsList.Add(new SMSRecipient {Name = "", PhoneNum = recipi});
+                    }
+                }
+
+                var smsSender = new SMSSender(message, recipientsList);
+                short statusCode = smsSender.SendSMS();
+
+                if (statusCode > 0)
+                {
+                    if (RecipientId != 0) recipientPhoneNum = recipientsList[0].PhoneNum;
+                    // add in db
+                    var dbmanager = new DBManager();
+                    SqlParameter[] parameters = {
+                                                    dbmanager.makeInParam("@RecipientNum", SqlDbType.Text, 0,
+                                                                          recipientPhoneNum),
+                                                    dbmanager.makeInParam("@ParentId", SqlDbType.Int, 0, RecipientId),
+                                                    dbmanager.makeInParam("@ParentType", SqlDbType.VarChar, 3,
+                                                                          recipientType),
+                                                    dbmanager.makeInParam("@MessageText", SqlDbType.NVarChar, 1000,
+                                                                          message),
+                                                    dbmanager.makeInParam("@RecipientCount", SqlDbType.Int, 0,
+                                                                          statusCode)
+                                                };
+                    return dbmanager.RunProc("LogSentSms", parameters);
+                }
+                return statusCode;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return 0;
+        }
+
+        public DataTable GetSentSms(int recipientId, string recipientType, int nPageNo, int nPageSize,
+                                    string szActionDate,
+                                    out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ParentId", SqlDbType.Int, 0, recipientId),
+                                                dbmanager.makeInParam("@ParentType", SqlDbType.VarChar, 3,
+                                                                      recipientType),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeInParam("@ActionDate", SqlDbType.NVarChar, 50,
+                                                                      szActionDate),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataTable ds = dbmanager.GetDataSetProc("GetSentSms", parameters).Tables[0];
+                nTotalRecord = Utils.fixNullInt(parameters[5].Value);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            nTotalRecord = 0;
+            return null;
+        }
+
+        public DataTable GetSentEmails(int recipientId, int nPageNo, int nPageSize,
+                                    string szActionDate,
+                                    out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@UserId", SqlDbType.Int, 0, recipientId),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeInParam("@DateSent", SqlDbType.NVarChar, 50,
+                                                                      szActionDate),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataTable ds = dbmanager.GetDataSetProc("GetSentEmails", parameters).Tables[0];
+                nTotalRecord = Utils.fixNullInt(parameters[4].Value);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            nTotalRecord = 0;
+            return null;
+        }
+
+        public DataTable GetDonorsRemarks(int DonorId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@DonorId", SqlDbType.Int, 0, DonorId)
+                                            };
+                DataTable ds = dbmanager.GetDataSetProc("GetDonorsRemarks", parameters).Tables[0];
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return null;
+        }
+
+        public DataTable GetMembersFees(int MemberId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@MemberId", SqlDbType.Int, 0, MemberId)
+                                            };
+                DataTable ds = dbmanager.GetDataSetProc("GetMembersFees", parameters).Tables[0];
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return null;
+        }
+
+        public DataTable GetDonorsNotes(int DonorId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@DonorId", SqlDbType.Int, 0, DonorId)
+                                            };
+                DataTable ds = dbmanager.GetDataSetProc("GetDonorsNotes", parameters).Tables[0];
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return null;
+        }
+
+        internal DataSet GetSMSReport(int nPageNo, int nPageSize, string szActionDate, out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeInParam("@ActionDate", SqlDbType.NVarChar, 50,
+                                                                      szActionDate),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet ds = dbmanager.GetDataSetProc("GetSMSReport", parameters);
+                nTotalRecord = Utils.fixNullInt(parameters[3].Value);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            nTotalRecord = 0;
+            return null;
+        }
+
+        internal DataSet LoadStudentAnnualProgressReports(int nStudentId, string szSrchYearName, int nPageNo,
+                                                          int nPageSize, out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, nStudentId),
+                                                dbmanager.makeInParam("@YearString", SqlDbType.NVarChar, 50,
+                                                                      szSrchYearName),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet ds = dbmanager.GetDataSetProc("LoadStudentAnnualProgressReports", parameters);
+                nTotalRecord = Utils.fixNullInt(parameters[4].Value);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            nTotalRecord = 0;
+            return null;
+        }
+
+        internal DataSet LoadStudentAttachments(int nStudentId, int nPageNo,
+                                                          int nPageSize, out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, nStudentId),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet ds = dbmanager.GetDataSetProc("LoadStudentLeavingCertificate", parameters);
+                nTotalRecord = Utils.fixNullInt(parameters[3].Value);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            nTotalRecord = 0;
+            return null;
+        }
+
+        internal int DeleteAnnualStudentProgressReport(string szCurReportId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ReportId", SqlDbType.Int, 0, szCurReportId)
+                                            };
+                return dbmanager.RunProc("DeleteStudentAnnualProgressReport", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal int DeleteStudentAttachment(string szCurReportId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ReportId", SqlDbType.Int, 0, szCurReportId)
+                                            };
+                return dbmanager.RunProc("DeleteStudentAttachment", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal void GetAnnualProgressReportDetail(int nReportId, ref int nYear, ref string szNote,
+                                                    ref string ReportGUID, ref string szAddedBy, ref string SchoolName)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ReportId", SqlDbType.Int, 0, nReportId)
+                                            };
+                SqlDataReader reader = dbmanager.GetDataReaderProc("GetAnnualProgressReportDetail", parameters);
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        nYear = Utils.fixNullInt(reader["Year"].ToString());
+                        szNote = Utils.fixNullString(reader["Note"].ToString());
+                        szAddedBy = Utils.fixNullString(reader["UserName"].ToString());
+                        ReportGUID = Utils.fixNullString(reader["ReportGUID"].ToString());
+                        SchoolName = Utils.fixNullString(reader["SchoolName"].ToString());
+                    }
+                }
+                else
+                {
+                    nYear = DateTime.Now.Year;
+                }
+            }
+            catch (Exception e)
+            {
+                nYear = DateTime.Now.Year;
+                Utils.LogErrorToFile(e);
+            }
+        }
+
+        internal void GetStudentAttachmentDetail(int nReportId, ref string szNote,
+                                                    ref string ReportGUID, ref string szAddedBy)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ReportId", SqlDbType.Int, 0, nReportId)
+                                            };
+                SqlDataReader reader = dbmanager.GetDataReaderProc("GetStudentLeavingCertificateDetail", parameters);
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        szNote = Utils.fixNullString(reader["Note"].ToString());
+                        szAddedBy = Utils.fixNullString(reader["UserName"].ToString());
+                        ReportGUID = Utils.fixNullString(reader["ReportGUID"].ToString());
+                    }
+                }
+                else
+                {
+                    //nYear = DateTime.Now.Year;
+                }
+            }
+            catch (Exception e)
+            {
+                //nYear = DateTime.Now.Year;
+                Utils.LogErrorToFile(e);
+            }
+        }
+
+        internal int AddStudentAnnualProgressReport(int nEditReportId, int nStudentId, int nYear, string szNotes,
+                                                    string szReportGUID, int AddedBy)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ReportId", SqlDbType.Int, 0, nEditReportId),
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, nStudentId),
+                                                dbmanager.makeInParam("@Year", SqlDbType.Int, 0, nYear),
+                                                dbmanager.makeInParam("@Note", SqlDbType.NVarChar, 255, szNotes),
+                                                dbmanager.makeInParam("@ReportGUID", SqlDbType.NVarChar, 50,
+                                                                      szReportGUID),
+                                                dbmanager.makeInParam("@AddedBy", SqlDbType.Int, 0, AddedBy),
+                                            };
+                return dbmanager.RunProc("AddStudentAnnualProgressReport", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal int AddStudentAttachment(int nEditReportId, int nStudentId, string szNotes,
+                                                    string szReportGUID, int AddedBy)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ReportId", SqlDbType.Int, 0, nEditReportId),
+                                                dbmanager.makeInParam("@StudentId", SqlDbType.Int, 0, nStudentId),
+                                                dbmanager.makeInParam("@Note", SqlDbType.NVarChar, 255, szNotes),
+                                                dbmanager.makeInParam("@ReportGUID", SqlDbType.NVarChar, 50,
+                                                                      szReportGUID),
+                                                dbmanager.makeInParam("@AddedBy", SqlDbType.Int, 0, AddedBy),
+                                            };
+                return dbmanager.RunProc("AddStudentLeavingCertificate", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal DataSet GetSchoolExpenseReport(int nPageNo, int nPageSize, string szActionDate, out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeInParam("@ActionDate", SqlDbType.NVarChar, 50,
+                                                                      szActionDate),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet ds = dbmanager.GetDataSetProc("GetSchoolExpenseReport", parameters);
+                nTotalRecord = Utils.fixNullInt(parameters[3].Value);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            nTotalRecord = 0;
+            return null;
+        }
+
+        internal DataSet GetSchoolDonationReport(int nPageNo, int nPageSize, string szActionDate, out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeInParam("@ActionDate", SqlDbType.NVarChar, 50,
+                                                                      szActionDate),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet ds = dbmanager.GetDataSetProc("GetSchoolDonationReport", parameters);
+                nTotalRecord = Utils.fixNullInt(parameters[3].Value);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            nTotalRecord = 0;
+            return null;
+        }
+
+        internal DataSet GetSchoolMonthlyExpenseReportDetail(string szSchoolName, string szExpMonth, int nPageNo,
+                                                             int nPageSize, out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@SchoolName", SqlDbType.VarChar, 250,
+                                                                      szSchoolName),
+                                                dbmanager.makeInParam("@ExpenseMonth", SqlDbType.VarChar, 250,
+                                                                      szExpMonth),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet ds = dbmanager.GetDataSetProc("GetSchoolMonthlyExpenseReportDetail", parameters);
+                nTotalRecord = Utils.fixNullInt(parameters[4].Value);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            nTotalRecord = 0;
+            return null;
+        }
+
+        internal DataSet GetSchoolMonthlyDonationReportDetail(string szSchoolName, string szDonMonth, int nPageNo,
+                                                             int nPageSize, out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@SchoolName", SqlDbType.VarChar, 250,
+                                                                      szSchoolName),
+                                                dbmanager.makeInParam("@DonationMonth", SqlDbType.VarChar, 250,
+                                                                      szDonMonth),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nPageNo),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet ds = dbmanager.GetDataSetProc("GetSchoolMonthlyDonationReportDetail", parameters);
+
+                for (int intCount = 0; intCount < ds.Tables[0].Rows.Count; intCount++)
+                {
+                    if (ds.Tables[0].Rows[intCount][5].ToString() != "")
+                    {
+                        ds.Tables[0].Rows[intCount][5] = "/Uploads/Attachments/" + ds.Tables[0].Rows[0][5] + ".jpg";
+                    }
+                }
+
+                ds.Tables[0].AcceptChanges();
+
+                nTotalRecord = Utils.fixNullInt(parameters[4].Value);
+                return ds;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            nTotalRecord = 0;
+            return null;
+        }
+
+        public DataTable GetApplicationsList(string szSrchStudentName, int nCurrentPage, int nPageSize,
+                                             out int nTotalRecord)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@StudentName", SqlDbType.VarChar, 250,
+                                                                      szSrchStudentName),
+                                                dbmanager.makeInParam("@PageNo", SqlDbType.Int, 0, nCurrentPage),
+                                                dbmanager.makeInParam("@PageSize", SqlDbType.Int, 0, nPageSize),
+                                                dbmanager.makeOutParam("@TotalRecord", SqlDbType.Int, 4)
+                                            };
+                DataSet ds = dbmanager.GetDataSetProc("GetApplicationsList", parameters);
+                nTotalRecord = Utils.fixNullInt(parameters[3].Value);
+                return ds.Tables[0];
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            nTotalRecord = 0;
+            return null;
+        }
+
+        internal int AddNewApplication(Application oApp)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ApplicationId", SqlDbType.Int, 0,
+                                                                      oApp.ApplicationId),
+                                                dbmanager.makeInParam("@StdFirstName", SqlDbType.NVarChar, 255,
+                                                                      oApp.StdFirstName),
+                                                dbmanager.makeInParam("@StdLastName", SqlDbType.NVarChar, 255,
+                                                                      oApp.StdLastName),
+                                                dbmanager.makeInParam("@StdDateOfBirth", SqlDbType.Date, 0,
+                                                                      oApp.StdDateOfBirth),
+                                                dbmanager.makeInParam("@StdPrevClasses", SqlDbType.NVarChar, 1000,
+                                                                      oApp.StdPrevClasses),
+                                                dbmanager.makeInParam("@GuardianName", SqlDbType.NVarChar, 255,
+                                                                      oApp.GuardianName),
+                                                dbmanager.makeInParam("@GuardianAddress", SqlDbType.NVarChar, 1000,
+                                                                      oApp.GuardianAddress),
+                                                dbmanager.makeInParam("@ApplicantName", SqlDbType.NVarChar, 255,
+                                                                      oApp.ApplicantName),
+                                                dbmanager.makeInParam("@ApplicantFatherName", SqlDbType.NVarChar, 255,
+                                                                      oApp.ApplicantFatherName),
+                                                dbmanager.makeInParam("@ApplicantContactNum", SqlDbType.NVarChar, 255,
+                                                                      oApp.ApplicantContactNum),
+                                                dbmanager.makeInParam("@ApplicationNum", SqlDbType.NVarChar, 255,
+                                                                      oApp.ApplicationNum),
+                                                dbmanager.makeInParam("@ApplicationCategory", SqlDbType.NVarChar, 255,
+                                                                      oApp.ApplicationCategory),
+                                                dbmanager.makeInParam("@ReceivedBy", SqlDbType.NVarChar, 255,
+                                                                      oApp.ReceivedBy),
+                                                dbmanager.makeInParam("@ReferredBy", SqlDbType.NVarChar, 255,
+                                                                      oApp.ReferredBy),
+                                                dbmanager.makeInParam("@ImageGuid", SqlDbType.NVarChar, 255,
+                                                                      oApp.ImageGuid),
+                                                dbmanager.makeInParam("@ReceivedOn", SqlDbType.Date, 0, oApp.ReceivedOn)
+                                                ,
+                                                dbmanager.makeInParam("@Notes", SqlDbType.NVarChar, 1000, oApp.Notes),
+                                                dbmanager.makeInParam("@Cert1GUID", SqlDbType.NVarChar, 50,
+                                                                      oApp.Cert1GUID),
+                                                dbmanager.makeInParam("@Cert2GUID", SqlDbType.NVarChar, 50,
+                                                                      oApp.Cert2GUID),
+                                                dbmanager.makeInParam("@DeliveryNotes", SqlDbType.NVarChar, 1000,
+                                                                      oApp.DeliveryNotes),
+                                                dbmanager.makeInParam("@FieldVarificationPerson", SqlDbType.NVarChar,
+                                                                      255, oApp.FieldVarificationPerson),
+                                                dbmanager.makeInParam("@BoardNotes", SqlDbType.NVarChar, 1000,
+                                                                      oApp.BoardNotes),
+                                            };
+                return dbmanager.RunProc("AddApplication", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+
+        public Int32 DeleteApplication(int nApplicationId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ApplicationId", SqlDbType.Int, 0,
+                                                                      nApplicationId)
+                                            };
+                return dbmanager.RunProc("DeleteApplication", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+                return 0;
+            }
+        }
+
+        internal Application LoadNewApplication(int nEditAppId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ApplicationId", SqlDbType.Int, 0, nEditAppId)
+                                            };
+                DataTable ds = dbmanager.GetDataSetProc("LoadApplication", parameters).Tables[0];
+
+                var oApp = new Application
+                               {
+                                   ApplicationId = Utils.fixNullInt(ds.Rows[0]["ApplicationId"].ToString()),
+                                   StdFirstName = ds.Rows[0]["StdFirstName"].ToString(),
+                                   StdLastName = ds.Rows[0]["StdLastName"].ToString(),
+                                   StdDateOfBirth = Utils.fixNullDate(ds.Rows[0]["StdDateOfBirth"].ToString()),
+                                   StdPrevClasses = ds.Rows[0]["StdPrevClasses"].ToString(),
+                                   GuardianName = ds.Rows[0]["GuardianName"].ToString(),
+                                   GuardianAddress = ds.Rows[0]["GuardianAddress"].ToString(),
+                                   ApplicantName = ds.Rows[0]["ApplicantName"].ToString(),
+                                   ApplicantFatherName = ds.Rows[0]["ApplicantFatherName"].ToString(),
+                                   ApplicantContactNum = ds.Rows[0]["ApplicantContactNum"].ToString(),
+                                   ApplicationNum = ds.Rows[0]["ApplicationNum"].ToString(),
+                                   ReceivedOn = Utils.fixNullDate(ds.Rows[0]["ReceivedOn"].ToString()),
+                                   ApplicationCategory = ds.Rows[0]["ApplicationCategory"].ToString(),
+                                   ReceivedBy = ds.Rows[0]["ReceivedBy"].ToString(),
+                                   ReferredBy = ds.Rows[0]["ReferredBy"].ToString(),
+                                   ImageGuid = ds.Rows[0]["ImageGuid"].ToString(),
+                                   ActionDate = ds.Rows[0]["ActionDate"].ToString(),
+                                   Notes = ds.Rows[0]["Notes"].ToString(),
+                                   Cert1GUID = ds.Rows[0]["Cert1GUID"].ToString(),
+                                   Cert2GUID = ds.Rows[0]["Cert2GUID"].ToString(),
+                                   BoardNotes = ds.Rows[0]["BoardNotes"].ToString(),
+                                   FieldVarificationPerson = ds.Rows[0]["FieldVarificationPerson"].ToString(),
+                                   DeliveryNotes = ds.Rows[0]["DeliveryNotes"].ToString(),
+                               };
+
+                return oApp;
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+            return null;
+        }
+
+
+        public void MoveApplicationToStudent(int nApplicationId)
+        {
+            try
+            {
+                var dbmanager = new DBManager();
+                SqlParameter[] parameters = {
+                                                dbmanager.makeInParam("@ApplicationId", SqlDbType.Int, 0,
+                                                                      nApplicationId)
+                                            };
+                dbmanager.RunProc("MoveApplication", parameters);
+            }
+            catch (Exception e)
+            {
+                Utils.LogErrorToFile(e);
+            }
+        }
+    }
+}

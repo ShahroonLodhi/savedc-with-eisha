@@ -1,0 +1,349 @@
+<%@ Page Language="C#" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  EnableEventValidation="False" CodeBehind="AddStudent.aspx.cs" Inherits="SaveDC.ControlPanel.AddStudent" Title="Add Student"%>
+
+<%--<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>--%>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    
+    <link type="text/css" href="../js/css/ui-lightness/jquery-ui-1.8.18.custom.css" rel="stylesheet" />	    <script type="text/javascript" src="../js/jquery-1.7.1.min.js"> </script>    <script type="text/javascript" src="../js/jquery-ui-1.8.18.custom.min.js"> </script>    <script type="text/javascript" language="javascript">
+
+        $(document).ready(function() {
+            $("#<%= txtDOB.ClientID %>").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'dd/mm/yy'
+            });
+            $("#<%= txtDOB.ClientID %>").datepicker("option", "showAnim", "slideDown");
+        });
+
+        function ShowModel() {
+
+            window.open('AddFamily.aspx?modalwin=1', 'AddFamily', 'left=100,top=30,screenX=100,screenY=30, height=550,width=840,toolbar=no,directories=no,status=no,menubar=no,modal=yes,scrollbars=yes');
+        }
+
+        function AddNewFamily(text, val) {
+            var familyCombo = document.getElementById('<%= ddFamily.ClientID %>');
+            // remove the No family item if exists.
+            var selectedItem = familyCombo.options[familyCombo.selectedIndex];
+
+
+            if (selectedItem.value == "0") {
+                //alert(selectedItem.value);
+                familyCombo.remove(0);
+            }
+            // add new item.
+            var option = document.createElement("option");
+            option.text = text;
+            option.value = val;
+            try {
+                familyCombo.add(option, null); //Standard
+            } catch(error) {
+                familyCombo.add(option); // IE only
+            }
+
+            // reset the childs detail to 0.
+
+            familyCombo.selectedIndex = familyCombo.options.length - 1;
+
+            // remove the
+            ResetAutoFillDiv();
+        }
+
+        function ResetAutoFillDiv() {
+            var childParent = document.getElementById('<%= UpdatePanel3.ClientID %>');
+//        alert(childParent.innerHTML);
+
+            childParent.innerHTML = '';
+            return;
+
+//        var childnodex = childParent.childNodes;
+
+//        alert(childnodex.length);
+//        
+//        for (var j = 0; j < childnodex.length; j++) {
+//            alert("Prev " + j);
+//            childParent.removeChild(childnodex[j]);
+//            alert("Nxt " + j);
+//        }
+        }
+
+        function ShowHideHistory(val, savedVal) {
+
+            if (!savedVal || savedVal == '')
+                savedVal = 0;
+            if (val == '1') {
+
+                document.getElementById("<%= txtPeriodLeftSince.ClientID %>").value = savedVal;
+                document.getElementById('classDoingIn').style.display = "";
+
+                document.getElementById('classLeftIn1').style.display = "none";
+                document.getElementById('classLeftIn2').style.display = "none";
+            } else {
+                document.getElementById("<%= txtPeriodLeftSince.ClientID %>").value = savedVal;
+                document.getElementById('classDoingIn').style.display = "none";
+
+                document.getElementById('classLeftIn1').style.display = "";
+                document.getElementById('classLeftIn2').style.display = "";
+            }
+        }
+
+    </script>
+    <%--<asp:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server"></asp:ToolkitScriptManager>--%>
+    <asp:ScriptManager ID="ScriptManager1" runat="server">
+    </asp:ScriptManager>
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <asp:HiddenField ID="hdnAddEdit" Value="Add" runat="server" />
+            <td height="20px" class="CellLabel" colspan="3">
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            Student Manager ::
+                            <%= hdnAddEdit.Value %>
+                            Student
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack" Height="24"
+                                             Width="24" OnClientClick="javascript:window.history.back(); return false;" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td height="20px">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label>
+            </td>
+        </tr>
+        <tr>
+            <asp:HiddenField ID="hdnEditStudentId" Value="0" runat="server" />
+            <td class="CellHeading" width="40%">
+                <%= hdnAddEdit.Value %>
+                Student
+            </td>
+            <td class="ContextLinks" colspan="2" align="right">
+                <%--<a id="context" href= "AddStudent.aspx">[ Student Profile ]</a> <a id="context" href= "AddFamily.aspx">[ Student Family ]</a><a id="context" onclick="AddNewFamily('akmal family','3');" href= "#">[ Add Family Item ]</a>--%>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" class="SubHeading" style="height: 23px">
+                Student Profile
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                First Name :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtStudentFName" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="txtStudentFName"
+                                            ErrorMessage="Please enter a First Name."></asp:RequiredFieldValidator>
+            </td>
+            <td rowspan="5" Width = "190px">
+                <table cellpadding='0' border="0" cellspacing='0' width='100%' style='margin-bottom: 10px;'>
+                    <tr>
+                        <asp:HiddenField runat ="server"  ID="hdnOldProfileImage" Value = ""/>
+                        <asp:HiddenField runat ="server"  ID="hdnProfileImage" Value = ""/>
+                        <asp:HiddenField runat ="server"  ID="hdnProfileImageURL" Value = "../images/nophoto.gif"/>
+                        <td class='profile_photo' width='162'>
+                            <img class='photo' height="160" width="150" id="imgUpload" src='<%= hdnProfileImageURL.Value %>' border='0' />
+                        </td>
+                    </tr>
+                </table>
+                <table cellpadding='0' cellspacing='0' width='100%' style='margin-bottom: 10px;'>
+                    <tr>
+                        <td align="center">
+                            <input type="file" accept="image/*" width='162px' id="userprofile" runat ="server"/>
+                            <%--<asp:asyncfileupload id="AsyncFileUpload1" runat="server" Width = "190px"
+                                    onuploadedcomplete="ProcessUpload" throbberid="spanUploading" />
+                                <span id="spanUploading" runat="server">Uploading...</span>--%>
+                        </td>
+                    </tr>
+                </table>
+                (select any image like jpg, gif, png etc...)
+            </td>
+        </tr> 
+        <tr> 
+            <td class="CellLabel">Last Name : </td>
+            <td  class="CellData" ><asp:TextBox CssClass="Textbox" ID="txtStudentLName" runat="server" Columns="50"/>
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="txtStudentLName"
+                                            ErrorMessage="Please enter a Last name."></asp:RequiredFieldValidator></td>
+        </tr> 
+	 
+	
+        <tr> 
+            <td class="CellLabel">Date of Birth : </td>
+            <td  class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtDOB" runat="server" Columns="50"/>
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ControlToValidate="txtDOB"
+                                            ErrorMessage="Please enter Date of Birth." Display="Dynamic"></asp:RequiredFieldValidator>
+                <asp:RegularExpressionValidator 
+                    ID="RegularExpressionValidator1" runat="server" ControlToValidate="txtDOB" 
+                    ErrorMessage="Please enter valid Date of Birth. e.g. 12/15/2001" 
+                  
+                    ValidationExpression="^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d$" 
+                    Display="Dynamic"></asp:RegularExpressionValidator><br />(valid date format is dd/mm/yyyy. e.g. 15/12/2001)
+            </td>
+        </tr> 
+        <tr> 
+            <td class="CellLabel">Educational Level : </td>
+            <td  class="CellData"><asp:TextBox CssClass="Textbox" ID="txtEduLevel" runat="server" Columns="50"/>
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator4" runat="server" ControlToValidate="txtEduLevel"
+                  
+                                            ErrorMessage="Please enter an Educational Level. e.g. Primary, Middle, Secondary"></asp:RequiredFieldValidator><br />(e.g. Primary, Middle or Secondary)</td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Note :
+            </td>
+            <td class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtNote" runat="server" Columns="50" MaxLength="1024"
+                             Rows="4" TextMode="MultiLine" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" class="SubHeading" style="height: 23px">
+                Student History
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Is Studying Currently? :
+            </td>
+            <td colspan="2" class="CellData">
+                <asp:RadioButtonList ID="rbIsDoingStudy" runat="server" CellPadding="1" CellSpacing="1"
+                                     RepeatDirection="Horizontal">
+                    <asp:ListItem Selected="True" onclick=" ShowHideHistory('1', '1') " Value="1">Yes</asp:ListItem>
+                    <asp:ListItem  onclick=" ShowHideHistory('0', '') " Value="0">No</asp:ListItem>
+                </asp:RadioButtonList>
+            </td>
+        </tr> 
+        <tr id="classDoingIn">
+            <td class="CellLabel">
+                Class Doing Study In :
+            </td>
+            <td colspan="2" class="CellData">
+                <asp:DropDownList ID="ddClassDoingStudyIn" runat="server">
+                </asp:DropDownList>
+            </td>
+        </tr>
+        <tr id="classLeftIn1">
+            <td class="CellLabel">
+                Class Left In :
+            </td>
+            <td colspan="2" class="CellData">
+                <asp:DropDownList ID="ddClassLeftIn" runat="server">
+                </asp:DropDownList>
+            </td>
+        </tr>
+        <tr  id="classLeftIn2">
+            <td class="CellLabel">
+                Period Left Since (<i>months</i>):
+            </td>
+            <td colspan="2" class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtPeriodLeftSince" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator Display="Dynamic" ID="RequiredFieldValidator7" runat="server" ControlToValidate="txtPeriodLeftSince"
+                                            ErrorMessage="Please enter Period Left Since in months."></asp:RequiredFieldValidator>
+                <asp:RegularExpressionValidator 
+                    ID="RegularExpressionValidator2" runat="server" ControlToValidate="txtPeriodLeftSince" 
+                    ErrorMessage="Please enter a valid Period Left Since in months from 1 to 999. e.g 1, 99, 20." 
+                    ValidationExpression="^([0-9]|[1-9][0-9]|[1-9][0-9][0-9])$" 
+                    Display="Dynamic"></asp:RegularExpressionValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Last School Attended :
+            </td>
+            <td colspan="2" class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtLastSchool" runat="server" Columns="50" />
+                <asp:RequiredFieldValidator ID="RequiredFieldValidator8" runat="server" ControlToValidate="txtLastSchool"
+                                            ErrorMessage="Please enter a School name last attended by student."></asp:RequiredFieldValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Note :
+            </td>
+            <td colspan="2" class="CellData">
+                <asp:TextBox CssClass="Textbox" ID="txtHNote" runat="server" Columns="50" MaxLength="1024"
+                             Rows="4" TextMode="MultiLine" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" class="SubHeading" style="height: 23px">
+                Family Details
+            </td>
+        </tr>
+          
+        <tr>
+            <td class="CellLabel">
+                Family Name :
+            </td>
+            <td colspan="2" class="CellData">
+                <asp:PlaceHolder ID="PlaceHolder1" runat="server">
+                    <asp:UpdatePanel ID="UpdatePanel1" runat="server" >
+                        <ContentTemplate>
+                            <asp:DropDownList ID="ddFamily" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddFamily_SelectedIndexChanged">
+                              
+                            </asp:DropDownList>
+                            &nbsp;&nbsp;<a href="###" onclick=" ShowModel() ">Add New?</a> <%--<asp:HyperLink ID="HyperLink1" runat="server">Add New?</asp:HyperLink>--%>
+                        </ContentTemplate>
+                        <Triggers>
+                            <asp:AsyncPostBackTrigger ControlID="ddFamily" EventName="SelectedIndexChanged" />
+                        </Triggers>
+                    </asp:UpdatePanel>
+                </asp:PlaceHolder>
+            </td>
+        </tr>
+        <tr>
+            <td class="CellLabel">
+                Other Children of the Family:
+            </td>
+            <td colspan="2" class="CellData">
+                <%--  <asp:PlaceHolder ID="PlaceHolder2" runat="server">
+                  <asp:UpdatePanel ID="UpdatePanel2" runat="server">
+                       <ContentTemplate>
+                           <asp:Label ID="lblChildren" runat="server" Text="No children found."></asp:Label>
+                       </ContentTemplate>
+                       <Triggers>
+                           <asp:AsyncPostBackTrigger ControlID="ddFamily" EventName="SelectedIndexChanged" />
+                       </Triggers>
+                   </asp:UpdatePanel>
+               </asp:PlaceHolder>--%>
+               
+                <asp:PlaceHolder ID="PlaceHolder3" runat="server" >
+                    <asp:UpdatePanel ID="UpdatePanel3" runat="server" >
+                        <ContentTemplate>
+                            <asp:Repeater ID="repeaterChildren" runat="server">
+                                <ItemTemplate>
+                                    <a href="DetailsStudent.aspx?StudentId=<%# DataBinder.Eval(Container.DataItem, "StudentId") %>" ><%# DataBinder.Eval(Container.DataItem, "StudentName") %></a><br/>
+                                </ItemTemplate>
+                            </asp:Repeater>
+                        </ContentTemplate>
+                        <Triggers>
+                            <asp:AsyncPostBackTrigger ControlID="ddFamily" EventName="SelectedIndexChanged" />
+                        </Triggers>
+                    </asp:UpdatePanel>
+                </asp:PlaceHolder>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td colspan="2" class="ButtonSpacer">
+                <asp:ImageButton runat="server" ID="btnUpdate" SkinID="sknImgBtnAddUser" OnClick="btnUpdate_Click" />
+            </td>
+        </tr>
+
+        <script language="javascript" type="text/javascript">
+            ShowHideHistory("<%= rbIsDoingStudy.SelectedValue %>", '<%= txtPeriodLeftSince.Text %>');
+        </script>
+
+    </table>
+
+</asp:Content>

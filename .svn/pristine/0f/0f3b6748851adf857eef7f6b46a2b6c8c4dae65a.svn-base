@@ -1,0 +1,329 @@
+<%@ Page Language="C#" MasterPageFile="~/ControlPanel/CPMaster.Master" AutoEventWireup="true"  CodeBehind="ListStudents.aspx.cs" Inherits="SaveDC.ControlPanel.ListStudents" Title="List Students"%>
+<%@ Register Src="Controls/AdvDataPager.ascx" TagName="DataPager" TagPrefix="uc1" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+
+    <script type="text/javascript" language="javascript">
+
+        function ValidateAction(action) {
+            //  if (action == 'DELETE') {
+            if (confirm("Are you sure, you want to " + action + " this student?"))
+                return true;
+            else
+                return false;
+            //  }
+        }
+
+        function SelectOne(rdo, gridName) {
+            /* Getting an array of all the "INPUT" controls on the form.*/
+            all = document.getElementsByTagName("input");
+            for (i = 0; i < all.length; i++) {
+                if (all[i].type == "radio")/*Checking if it is a radio button*/ {
+                    var count = all[i].id.indexOf(gridName);
+                    if (count != -1) {
+                        all[i].checked = false;
+                    }
+                }
+            }
+            rdo.checked = true; /* Finally making the clicked radio button CHECKED */
+            document.getElementById('<%= hdnStudentID.ClientID %>').value = rdo.value;
+
+            var firstStdStatus = rdo.parentNode.getAttribute('status');
+
+            var btnNewTest = '';
+            if (firstStdStatus == 'Discontinued')
+                btnNewTest = 'Continue';
+            else
+                btnNewTest = 'Discontinue';
+            document.getElementById("ctl00_ContentPlaceHolder1_btnDisconStudent").value = btnNewTest;
+        }
+
+
+        function SelectFirst(gridName) {
+            /* Getting an array of all the "INPUT" controls on the form.*/
+            all = document.getElementsByTagName("input");
+            for (i = 0; i < all.length; i++) {
+                if (all[i].type == "radio")/*Checking if it is a radio button*/ {
+                    var count = all[i].id.indexOf("rowbtn");
+                    if (count != -1) {
+                        {
+                            SelectOne(all[i], gridName);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        function ShowModel(href) {
+
+            window.open(href + "&modalwin=1", 'Details', 'left=100,top=30,screenX=100,screenY=30, height=550,width=840,toolbar=no,directories=no,status=no,menubar=no,modal=yes,scrollbars=yes');
+        }
+
+//     SelectFirst('dgStudents');
+</script>
+    <table width="95%" cellpadding="2" cellspacing="2" border="0">
+        <tr>
+            <td  colspan="2" class="CellLabel" height="20px" class="CellLabel">
+                <table width="100%">
+                    <tr>
+                        <td width="80%">
+                            Student Manager :: List Students
+                        </td>
+                        <td align="right" width="20%">
+                            <asp:ImageButton ID="ImageButton1" runat="server" SkinID="sknImgBack"  Height="24"
+                                             Width="24" OnClientClick = "javascript:window.history.back(); return false;"/>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td height="20px" colspan="2">This is Student Manager. Here all of your donated students are listed with their brief details like the Class, Family Name and School Name.
+                For a quick view about Family and School of any student; just click on its name for a quick view. If you want to have a detail view of the student then select the appropriate student and click on Student Details button. 
+                Also if you like to view school Progress Reports of a student then select the appropriate student and click on Progress Reports button.<br /><br />
+                You can also filter specific student in the listing through Student Name, Family Name or School Name. e.g. if you want to view all the students studying in a specific school then provide the School Name and click the search and it will list you all the students of that specific school.
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <asp:Label ID="lblError" runat="server" Text=""></asp:Label></td>
+        </tr>
+        <tr>
+            <td colspan="1" class="CellLabel">
+                <table id="Table1" runat="server" border="0" width="100%">
+                    <form name="frmsearch" method="post" id="frmsearch">
+                        <tr>
+                            <td width="40%">
+                                Student Name:
+                            </td>
+                            <td valign="middle">
+                                <asp:TextBox CssClass="Textbox" ID="txtStudentName" runat="server" />
+                            </td>
+                            <td width="70%" align="left">
+                                <asp:ImageButton ID="searchbtn" runat="server" ImageUrl="search.jpg" Height="40"
+                                                 Width="40" OnClick="searchbtn_Click" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="40%">
+                                Family Name:
+                            </td>
+                            <td colspan="2" valign="middle">
+                                <asp:TextBox CssClass="Textbox" ID="txtFamilyName" runat="server" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="40%">
+                                School Name:
+                            </td>
+                            <td colspan="2" valign="middle">
+                                <asp:TextBox CssClass="Textbox" ID="txtSchoolName" runat="server" />
+                            </td>
+                        </tr>
+                        <tr id="trStatusSrch" runat="server">
+                            <td width="40%">
+                                Status:
+                            </td>
+                            <td colspan="2" valign="middle">
+                                <asp:RadioButtonList ID="rblStatus" runat="server" RepeatDirection="Horizontal">
+                                    <asp:ListItem Text="All" Value="00"></asp:ListItem>
+                                    <asp:ListItem Text="New" Value="1-0"></asp:ListItem>
+                                    <asp:ListItem Text="Verified" Value="1-1"></asp:ListItem>
+                                    <asp:ListItem Selected="True" Text="Approved" Value="3"></asp:ListItem>
+                                    <asp:ListItem Text="Discontinued" Value="6"></asp:ListItem>
+                                </asp:RadioButtonList>
+                            </td>
+                        </tr>
+                    </form>
+                </table>
+            </td>
+        </tr>
+	
+        <tr id="trAddStudent" runat ="server"><td colspan="2" height="10px" align="right">
+                                                  [ <a href="AddStudent.aspx" >Add Student</a> ]
+                                              </td>
+        </tr>
+        <tr>
+            <td class="CellHeading" width="60%">Student Manager</td>
+            <td class="ContextLinks" align="right">Total Students: 
+                <asp:Label ID="lblTotal" runat="server" Text="0"></asp:Label>
+            </td>
+        </tr>
+        <tr> 
+            <td class="CellLabel" colspan="2">
+                <table width="100%" border = 0 id="tbDataFound" runat="server">
+                    <tr>
+                        <td valign="top" width="85%" >
+                            <asp:HiddenField runat="server" ID="hdnStudentID" Value ="" />
+                            <asp:DataGrid ID="dgStudents" runat="server" AutoGenerateColumns="False" Width="100%" SkinID="StanderdGrid" OnItemDataBound="dgStudents_Databound">
+                                <Columns>
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <asp:RadioButton onclick="SelectOne(this,'dgStudents');" status='<%# DataBinder.Eval(Container.DataItem, "StatusName") %>' ID="rowbtn" name="rowbtn" runat="server" Value='<%# DataBinder.Eval(Container.DataItem, "StudentId") %>'/>
+                                            <%--       <%# DataBinder.Eval(Container.DataItem, "StudentName")%>--%>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="3%" />
+                                    </asp:TemplateColumn>	
+				    
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            Student Name
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "FirstName") %>&nbsp;<%# DataBinder.Eval(Container.DataItem, "LastName") %>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="19%" />
+                                    </asp:TemplateColumn>	
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            Class
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "ClassName") %>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="9%" />
+                                    </asp:TemplateColumn>
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            Family Name
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+						
+						
+                                            <a onclick="   ShowModel('DetailsFamily.aspx?FamilyId=<%# DataBinder.Eval(Container.DataItem, "FamilyId") %>');" href="javascript:void(0);">	<%# DataBinder.Eval(Container.DataItem, "FamilyName") %> </a>
+						
+                                        </ItemTemplate>
+                                        <ItemStyle Width="16%" />
+                                    </asp:TemplateColumn>		
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            School Name
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+						
+                                            <a onclick="   ShowModel('DetailsSchool.aspx?SchoolId=<%# DataBinder.Eval(Container.DataItem, "SchoolId") %>');" href="javascript:void(0);">	<%# DataBinder.Eval(Container.DataItem, "SchoolName") %> </a>
+                                        </ItemTemplate>
+                                        <ItemStyle Width="32%" />
+                                    </asp:TemplateColumn>	
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            Donor Name
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <%# DataBinder.Eval(Container.DataItem, "DonorName") %>  
+                                        </ItemTemplate>
+                                        <ItemStyle Width="12%" />
+                                    </asp:TemplateColumn>	
+                                    <asp:TemplateColumn>
+                                        <HeaderTemplate>
+                                            Status
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <asp:HiddenField ID="IsVarificationExists" runat="server" Value='<%# DataBinder.Eval(Container.DataItem, "IsVarificationExists") %>' />
+                                            <asp:HiddenField ID="StatusId" runat="server" Value='<%# DataBinder.Eval(Container.DataItem, "StatusId") %>' />
+                                            <asp:HiddenField ID="StatusName" runat="server" Value='<%# DataBinder.Eval(Container.DataItem, "StatusName") %>' />
+                                        </ItemTemplate>
+                                        <ItemStyle Width="12%" />
+                                    </asp:TemplateColumn>				
+                                    <%-- <asp:TemplateColumn>
+					    <HeaderTemplate>
+						    Email Address
+					    </HeaderTemplate>
+					    <ItemTemplate>
+						    <%# DataBinder.Eval(Container.DataItem, "EmailAddress")%>
+					    </ItemTemplate>
+                        <ItemStyle Width="15%" />
+				    </asp:TemplateColumn>--%>
+                                </Columns>
+                                <HeaderStyle BackColor="#6699CC" Font-Bold="False" Font-Italic="False" Font-Overline="False"
+                                             Font-Strikeout="False" Font-Underline="False" />
+                            </asp:DataGrid>
+                            <%-- <br />--%>
+                            <uc1:DataPager ID="pagerApps" runat="server" PageIndex="1" RecordsPerPage="100" TotalRecords="0" />
+                        </td>
+                        <td valign="top">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <asp:Button ID="btnDetail" runat="server" Width="100%" Text="Student Details" OnClick="btnDetailStudent_Click" />
+                                    </td>
+                                </tr>
+                                <tr id="trEditStudent" runat="server">
+                                    <td>
+                                        <asp:Button ID="btnEditStudent" runat="server" Width="100%" Text="Edit Student" OnClick="btnEditStudent_Click" />
+                                    </td>
+                                </tr>
+                                <tr id="trAssignDonor" runat="server">
+                                    <td>
+                                        <asp:Button ID="btnAssignDonor" runat="server" Width="100%" Text="Assign Donor" OnClick="btnAssignDonor_Click" />
+                                    </td>
+                                </tr>
+                                <tr id="trUnAssignDonor" runat="server">
+                                    <td>
+                                        <asp:Button ID="btnUnAssignDonor" runat="server" Width="100%" Text="Un-Assign Donor"
+                                                    OnClick="btnUnAssignDonor_Click" />
+                                    </td>
+                                </tr>
+                                <tr id="trVarify" runat="server">
+                                    <td>
+                                        <asp:Button ID="btnVarify" runat="server" Width="100%" Text="Verify Student" OnClick="btnVarify_Click" />
+                                    </td>
+                                </tr>
+                                <tr id="trExpense" runat="server">
+                                    <td>
+                                        <asp:Button ID="btnExpense" runat="server" Width="100%" Text="Student Estimations"
+                                                    OnClick="btnExpense_Click" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <asp:Button ID="btnProgressReport" runat="server" Width="100%" Text="Progress Reports"
+                                                    OnClick="btnProgressReport_Click" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <asp:Button ID="btnAnnualProgressReport" runat="server" Width="100%" Text="Annual Progress Reports"
+                                                    OnClick="btnAnnualProgressReport_Click" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <asp:Button ID="btnLeavingCertificate" runat="server" Width="100%" Text="Leaving Certificate"
+                                                    OnClick="btnLeavingCertificate_Click" />
+                                    </td>
+                                </tr>
+                                <tr id="trDisconStd" runat="server">
+                                    <td>
+                                        <asp:Button ID="btnDisconStudent" runat="server" Width="100%" Text="Discontinue"  OnClientClick="return ValidateAction('cont./discont.')"
+                                                    OnClick="btnDisconStudent_Click" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <asp:Button ID="btnDelStudent" runat="server" OnClientClick="return ValidateAction('delete')"
+                                                    Width="100%" Text="Delete Student" OnClick="btnDelStudent_Click" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+	        
+                <script type="text/javascript" language="javascript">
+                    SelectFirst('dgStudents');
+
+                </script>
+          
+                <table id="tbNoDataFound" runat="server" width="100%" visible="false">
+                    <tr>
+                        <td>No Student Found.</td>
+                    </tr>
+                </table>		
+            </td>
+        </tr> 
+    </table>
+</asp:Content>
